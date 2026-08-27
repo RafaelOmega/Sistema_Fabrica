@@ -1,0 +1,190 @@
+/* ===== GLOBAL ===== */
+QMainWindow, QWidget {
+    background-color: rgb(19, 27, 47);
+    color: rgb(255, 255, 255);
+}
+
+/* ===== MENU BAR (topo) ===== */
+QMenuBar {
+    background-color: rgb(19, 27, 47);
+    color: rgb(255, 255, 255);
+    border-bottom: 1px solid rgb(55, 75, 115);
+    padding: 2px;
+}
+
+QMenuBar::item {
+    background: transparent;
+    padding: 6px 10px;
+    margin: 2px 4px;
+    border-radius: 6px;
+}
+
+QMenuBar::item:selected {
+    background-color: rgb(32, 44, 72);
+    color: rgb(255, 255, 255);
+}
+
+QMenuBar::item:pressed {
+    background-color: rgb(40, 56, 92);
+    color: rgb(255, 255, 255);
+    border: 1px solid rgb(85, 170, 255);
+}
+
+/* ===== MENU DROPDOWN ===== */
+QMenu {
+    background-color: rgb(19, 27, 47);
+    color: rgb(255, 255, 255);
+    border: 1px solid rgb(55, 75, 115);
+    padding: 6px;
+}
+
+QMenu::item {
+    padding: 6px 28px 6px 10px;
+    border-radius: 6px;
+}
+
+QMenu::item:selected {
+    background-color: rgb(40, 56, 92);
+    color: rgb(255, 255, 255);
+}
+
+QMenu::item:disabled {
+    color: rgb(150, 160, 180);
+}
+
+QMenu::separator {
+    height: 1px;
+    background: rgb(55, 75, 115);
+    margin: 6px 4px;
+}
+
+/* ===== FRAMES ===== */
+QFrame {
+    background-color: #1A243C;
+    border: 1px solid #2F3E63;
+    border-radius: 6px;
+}
+
+/* ===== LABELS ===== */
+QLabel {
+    background-color: #222E4A;
+    color: #FFD36E;
+    border: 1px solid #485C8C;
+    border-radius: 4px;
+    padding: 4px 8px;
+    min-width: 120px;
+    qproperty-alignment: AlignRight;
+    font-weight: bold;
+}
+
+/* ===== BOTÕES ===== */
+QPushButton {
+    background: #243258;
+    color: #FFFFFF;
+    border: 1px solid #485C8C;
+    border-radius: 4px;
+    padding: 4px 12px;
+}
+QPushButton:hover { background: #2E3E68; }
+QPushButton:pressed { background: #1B2643; }
+QPushButton:disabled {
+    background: #1A2030;
+    color: #5A6680;
+    border: 1px solid #2A3450;
+}
+
+/* ===== CAMPOS DE ENTRADA ===== */
+QLineEdit, QSpinBox, QDoubleSpinBox {
+    background: #1A243C;
+    color: #FFFFFF;
+    border: 1px solid #485C8C;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
+    border-color: #6A8AE0;
+}
+
+/* ===== DATE/TIME EDIT ===== */
+QDateEdit, QTimeEdit {
+    background: #1A243C;
+    color: #FFFFFF;
+    border: 1px solid #485C8C;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+QDateEdit:hover, QTimeEdit:hover { border-color: #6A8AE0; }
+QDateEdit:disabled, QTimeEdit:disabled {
+    background: #1A2030;
+    color: #5A6680;
+    border: 1px solid #2A3450;
+}
+
+/* ===== COMBO BOX ===== */
+QComboBox {
+    background: #1A243C;
+    color: #FFFFFF;
+    border: 1px solid #485C8C;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+QComboBox:hover { border-color: #6A8AE0; }
+
+/* ===== TABELA ===== */
+QTableView, QTableWidget {
+    background-color: #1A243C;
+    alternate-background-color: #1E2A48;
+    color: #FFFFFF;
+    border: 1px solid #2F3E63;
+    border-radius: 4px;
+    gridline-color: #2F3E63;
+    selection-background-color: #2E3E68;
+    selection-color: #FFFFFF;
+}
+
+QHeaderView::section {
+    background-color: #243258;
+    color: #FFFFFF;
+    border: 1px solid #2F3E63;
+    padding: 4px 8px;
+    font-weight: bold;
+}
+
+/* ===== SCROLLBAR ===== */
+QScrollBar:vertical {
+    background: #1A243C;
+    width: 10px;
+    border: none;
+}
+QScrollBar::handle:vertical {
+    background: #485C8C;
+    border-radius: 5px;
+    min-height: 30px;
+}
+QScrollBar::handle:vertical:hover { background: #6A8AE0; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+
+QScrollBar:horizontal {
+    background: #1A243C;
+    height: 10px;
+    border: none;
+}
+QScrollBar::handle:horizontal {
+    background: #485C8C;
+    border-radius: 5px;
+    min-width: 30px;
+}
+QScrollBar::handle:horizontal:hover { background: #6A8AE0; }
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
+
+/* ===== MDI AREA ===== */
+QMdiArea {
+    background-color: #131B2F;
+    border: none;
+}
+
+QMdiSubWindow {
+    background-color: #1A243C;
+    border: 1px solid #485C8C;
+    border-radius: 4px;
+}
