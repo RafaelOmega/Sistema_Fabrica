@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from PySide6.QtCore import QDate, Qt, QTime, QTimer
-from PySide6.QtWidgets import QMainWindow, QMdiSubWindow
+from PySide6.QtWidgets import QMainWindow, QMdiSubWindow, QMessageBox
 
 from app.utils.logger import get_logger
 from app.views.ui_main_window import Ui_MainWindow
@@ -16,9 +16,38 @@ class MainWindowController(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Controle de Fábrica")
 
+        self._database_ready = False
+
         self._iniciar_relogio()
         self._conectar_sinais()
+        self._configurar_estado_inicial()
+
         logger.info("MainWindow inicializada")
+
+    def _configurar_estado_inicial(self):
+        self.ui.actionProdutos.setEnabled(False)
+
+        if self.statusBar():
+            self.statusBar().showMessage("Inicializando conexão com o banco...")
+
+    def on_database_ready(self):
+        self._database_ready = True
+        self.ui.actionProdutos.setEnabled(True)
+
+        if self.statusBar():
+            self.statusBar().showMessage("Pronto", 3000)
+
+        logger.info("Banco pronto - menus liberados")
+
+    def on_database_failed(self, error_message):
+        self._database_ready = False
+        self.ui.actionProdutos.setEnabled(False)
+
+        if self.statusBar():
+            self.statusBar().showMessage("Falha ao conectar no banco")
+
+        logger.error(
+            f"Falha informada para a janela principal: {error_message}")
 
     def _iniciar_relogio(self):
         self.timer = QTimer(self)
@@ -37,11 +66,6 @@ class MainWindowController(QMainWindow):
         self.ui.actionProdutos.triggered.connect(self.abrir_produtos)
 
     def _abrir_subjanela(self, classe_controller, titulo):
-        """Abre (ou foca, se já aberta) uma tela de cadastro dentro do MDI.
-
-        Reutilize este método para cada novo cadastro (Clientes, Pedidos,
-        etc.) em vez de duplicar a lógica de verificação/abertura de janela.
-        """
         for sub in self.ui.mdiArea.subWindowList():
             widget = sub.widget()
             if widget is not None and isinstance(widget, classe_controller):
@@ -55,8 +79,17 @@ class MainWindowController(QMainWindow):
         sub.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.ui.mdiArea.addSubWindow(sub)
         sub.showMaximized()
+
         logger.info(f"Janela '{titulo}' aberta no MDI")
 
     def abrir_produtos(self):
+        if not self._database_ready:
+            QMessageBox.information(
+                self,
+                "Aguarde",
+                "O sistema ainda está inicializando a conexão com o banco."
+            )
+            return
+
         from app.controllers.cad_produtos_controller import ProdutosController
         self._abrir_subjanela(ProdutosController, "Cadastro de Produtos")

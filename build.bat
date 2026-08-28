@@ -1,5 +1,6 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
+set PYTHONDONTWRITEBYTECODE=1
 
 REM ========= AJUSTE AQUI =========
 set "APP_NAME=ControleFabrica"
@@ -25,6 +26,7 @@ if not exist "%VENV_DIR%\Scripts\python.exe" (
     exit /b 1
   )
 )
+
 call "%VENV_DIR%\Scripts\activate.bat"
 if errorlevel 1 (
   echo ERRO: Falha ao ativar venv.
@@ -34,35 +36,52 @@ if errorlevel 1 (
 
 REM ----- instala deps -----
 python -m pip install --upgrade pip setuptools wheel
+if errorlevel 1 (
+  echo ERRO: Falha ao atualizar pip/setuptools/wheel.
+  pause
+  exit /b 1
+)
 
 if exist "requirements.txt" (
   pip install -r requirements.txt
+  if errorlevel 1 (
+    echo ERRO: Falha ao instalar requirements.txt.
+    pause
+    exit /b 1
+  )
+
+  pip install pyinstaller
+  if errorlevel 1 (
+    echo ERRO: Falha ao instalar pyinstaller.
+    pause
+    exit /b 1
+  )
 ) else (
   pip install pyinstaller PySide6 sqlalchemy psycopg2-binary
+  if errorlevel 1 (
+    echo ERRO: Falha ao instalar dependencias basicas.
+    pause
+    exit /b 1
+  )
 )
 
-REM ----- limpa builds antigos (pasta, spec e dist) -----
+REM ----- limpa builds antigos -----
 echo Limpando builds anteriores...
 if exist "build" rmdir /s /q "build"
 if exist "dist" rmdir /s /q "dist"
 if exist "%APP_NAME%.spec" del /q "%APP_NAME%.spec"
 
-REM ----- limpa cache __pycache__ das pastas do projeto -----
-for /d %%D in (app) do (
-  if exist "%%D" (
-    for /d %%P in ("%%D\*") do (
-      if exist "%%P\__pycache__" rmdir /s /q "%%P\__pycache__"
-    )
-    if exist "%%D\__pycache__" rmdir /s /q "%%D\__pycache__"
-  )
+REM ----- limpa __pycache__ recursivamente -----
+for /d /r %%D in (__pycache__) do (
+  if exist "%%D" rmdir /s /q "%%D"
 )
 
-REM ----- inclui arquivos/pastas necessárias -----
+REM ----- inclui arquivos/pastas necessarias -----
 set "ADD_DATA_ARGS="
 if exist "app\styles" set "ADD_DATA_ARGS=!ADD_DATA_ARGS! --add-data ""app\styles;app\styles"""
 if exist "assets" set "ADD_DATA_ARGS=!ADD_DATA_ARGS! --add-data ""assets;assets"""
 
-REM ----- ícone (opcional) -----
+REM ----- icone (opcional) -----
 set "ICON_ARG="
 if not "%ICON_FILE%"=="" (
   if exist "%ICON_FILE%" (
@@ -80,9 +99,14 @@ pyinstaller ^
   --name "%APP_NAME%" ^
   %ICON_ARG% ^
   %ADD_DATA_ARGS% ^
-  --hidden-import="psycopg2" ^
-  --hidden-import="app.models.produto" ^
   --paths "." ^
+  --hidden-import="psycopg2" ^
+  --hidden-import="psycopg2.extensions" ^
+  --hidden-import="psycopg2.extras" ^
+  --hidden-import="sqlalchemy.dialects.postgresql" ^
+  --hidden-import="app.models.produto" ^
+  --hidden-import="app.models.produto_table_model" ^
+  --hidden-import="app.models.produto_filter_proxy_model" ^
   "%ENTRY_POINT%"
 
 if errorlevel 1 (
