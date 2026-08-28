@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowgoYlnJ.ui'
+## Form generated from reading UI file 'main_windowUofhao.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -33,6 +33,8 @@ class Ui_MainWindow(object):
         MainWindow.setFont(font)
         self.actionProdutos = QAction(MainWindow)
         self.actionProdutos.setObjectName(u"actionProdutos")
+        self.actionMotivo_Entrada = QAction(MainWindow)
+        self.actionMotivo_Entrada.setObjectName(u"actionMotivo_Entrada")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -98,6 +100,7 @@ class Ui_MainWindow(object):
 
         self.menubar.addAction(self.menuCadastros.menuAction())
         self.menuCadastros.addAction(self.actionProdutos)
+        self.menuCadastros.addAction(self.actionMotivo_Entrada)
 
         self.retranslateUi(MainWindow)
 
@@ -107,6 +110,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.actionProdutos.setText(QCoreApplication.translate("MainWindow", u"Produtos", None))
+        self.actionMotivo_Entrada.setText(QCoreApplication.translate("MainWindow", u"Motivo Entrada", None))
         self.lb_Comandos.setText("")
         self.menuCadastros.setTitle(QCoreApplication.translate("MainWindow", u"Cadastros", None))
     # retranslateUi

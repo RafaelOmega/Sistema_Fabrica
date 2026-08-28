@@ -16,4 +16,4 @@ def aplicar_tema(app: QApplication):
         with open(qss_path, "r", encoding="utf-8") as f:
             app.setStyleSheet(f.read())
     except FileNotFoundError:
-        pass
+        print("Arquivo de tema não encontrado.")

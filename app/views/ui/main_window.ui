@@ -171,12 +171,18 @@
      <string>Cadastros</string>
     </property>
     <addaction name="actionProdutos"/>
+    <addaction name="actionMotivo_Entrada"/>
    </widget>
    <addaction name="menuCadastros"/>
   </widget>
   <action name="actionProdutos">
    <property name="text">
     <string>Produtos</string>
+   </property>
+  </action>
+  <action name="actionMotivo_Entrada">
+   <property name="text">
+    <string>Motivo Entrada</string>
    </property>
   </action>
  </widget>

@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'produtosQgxrmt.ui'
+# Form generated from reading UI file 'produtosLHHRLJ.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.2
+# Created by: Qt User Interface Compiler version 6.11.2
 ##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
+# WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
+                            QMetaObject, QObject, QPoint, QRect,
+                            QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
+                           QFont, QFontDatabase, QGradient, QIcon,
+                           QImage, QKeySequence, QLinearGradient, QPainter,
+                           QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDoubleSpinBox, QFormLayout, QFrame,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QPushButton, QSizePolicy, QSpacerItem, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+                               QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+                               QPushButton, QSizePolicy, QSpacerItem, QTableView,
+                               QVBoxLayout, QWidget)
+
 
 class Ui_Produtos(object):
     def setupUi(self, Produtos):
@@ -58,57 +59,64 @@ class Ui_Produtos(object):
         self.lb_Codigo.setMinimumSize(QSize(0, 30))
         self.lb_Codigo.setMaximumSize(QSize(16777215, 30))
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lb_Codigo)
+        self.formLayout.setWidget(
+            0, QFormLayout.ItemRole.LabelRole, self.lb_Codigo)
 
         self.txt_Codigo = QLineEdit(self.frm_Cad_Prod)
         self.txt_Codigo.setObjectName(u"txt_Codigo")
         self.txt_Codigo.setMinimumSize(QSize(0, 30))
         self.txt_Codigo.setMaximumSize(QSize(16777215, 30))
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.txt_Codigo)
+        self.formLayout.setWidget(
+            0, QFormLayout.ItemRole.FieldRole, self.txt_Codigo)
 
         self.lb_Descricao = QLabel(self.frm_Cad_Prod)
         self.lb_Descricao.setObjectName(u"lb_Descricao")
         self.lb_Descricao.setMinimumSize(QSize(0, 30))
         self.lb_Descricao.setMaximumSize(QSize(16777215, 30))
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.lb_Descricao)
+        self.formLayout.setWidget(
+            1, QFormLayout.ItemRole.LabelRole, self.lb_Descricao)
 
         self.txt_Descricao = QLineEdit(self.frm_Cad_Prod)
         self.txt_Descricao.setObjectName(u"txt_Descricao")
         self.txt_Descricao.setMinimumSize(QSize(0, 30))
         self.txt_Descricao.setMaximumSize(QSize(16777215, 30))
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.txt_Descricao)
+        self.formLayout.setWidget(
+            1, QFormLayout.ItemRole.FieldRole, self.txt_Descricao)
 
         self.lb_Peso = QLabel(self.frm_Cad_Prod)
         self.lb_Peso.setObjectName(u"lb_Peso")
         self.lb_Peso.setMinimumSize(QSize(0, 30))
         self.lb_Peso.setMaximumSize(QSize(16777215, 30))
 
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.lb_Peso)
+        self.formLayout.setWidget(
+            2, QFormLayout.ItemRole.LabelRole, self.lb_Peso)
 
         self.txt_Peso = QDoubleSpinBox(self.frm_Cad_Prod)
         self.txt_Peso.setObjectName(u"txt_Peso")
         self.txt_Peso.setMinimumSize(QSize(120, 30))
         self.txt_Peso.setMaximumSize(QSize(120, 30))
 
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.txt_Peso)
+        self.formLayout.setWidget(
+            2, QFormLayout.ItemRole.FieldRole, self.txt_Peso)
 
         self.lb_Custo = QLabel(self.frm_Cad_Prod)
         self.lb_Custo.setObjectName(u"lb_Custo")
-        self.lb_Custo.setMinimumSize(QSize(0, 30))
-        self.lb_Custo.setMaximumSize(QSize(16777215, 30))
+        self.lb_Custo.setMinimumSize(QSize(90, 30))
+        self.lb_Custo.setMaximumSize(QSize(90, 30))
 
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.lb_Custo)
+        self.formLayout.setWidget(
+            3, QFormLayout.ItemRole.LabelRole, self.lb_Custo)
 
         self.txt_Custo = QDoubleSpinBox(self.frm_Cad_Prod)
         self.txt_Custo.setObjectName(u"txt_Custo")
         self.txt_Custo.setMinimumSize(QSize(120, 30))
         self.txt_Custo.setMaximumSize(QSize(120, 30))
 
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.txt_Custo)
-
+        self.formLayout.setWidget(
+            3, QFormLayout.ItemRole.FieldRole, self.txt_Custo)
 
         self.verticalLayout_2.addWidget(self.frm_Cad_Prod)
 
@@ -148,13 +156,12 @@ class Ui_Produtos(object):
 
         self.horizontalLayout_2.addWidget(self.bt_Excluir)
 
-
         self.verticalLayout_2.addWidget(self.frm_Crud)
 
-        self.verticalSpacer = QSpacerItem(20, 273, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer = QSpacerItem(
+            20, 273, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_2.addItem(self.verticalSpacer)
-
 
         self.horizontalLayout.addWidget(self.frm_Cadastro)
 
@@ -195,7 +202,6 @@ class Ui_Produtos(object):
 
         self.horizontalLayout_3.addWidget(self.bt_Pesquisar)
 
-
         self.verticalLayout_3.addWidget(self.frm_Filtro)
 
         self.frm_Lista = QFrame(self.frm_Pesquisar)
@@ -207,31 +213,14 @@ class Ui_Produtos(object):
         self.verticalLayout.setSpacing(5)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(5, 5, 5, 5)
-        self.tb_Produtos = QTableWidget(self.frm_Lista)
-        if (self.tb_Produtos.columnCount() < 4):
-            self.tb_Produtos.setColumnCount(4)
-        __qtablewidgetitem = QTableWidgetItem()
-        __qtablewidgetitem.setFont(font)
-        self.tb_Produtos.setHorizontalHeaderItem(0, __qtablewidgetitem)
-        __qtablewidgetitem1 = QTableWidgetItem()
-        __qtablewidgetitem1.setFont(font)
-        self.tb_Produtos.setHorizontalHeaderItem(1, __qtablewidgetitem1)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        __qtablewidgetitem2.setFont(font)
-        self.tb_Produtos.setHorizontalHeaderItem(2, __qtablewidgetitem2)
-        __qtablewidgetitem3 = QTableWidgetItem()
-        __qtablewidgetitem3.setFont(font)
-        self.tb_Produtos.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        self.tb_Produtos = QTableView(self.frm_Lista)
         self.tb_Produtos.setObjectName(u"tb_Produtos")
 
         self.verticalLayout.addWidget(self.tb_Produtos)
 
-
         self.verticalLayout_3.addWidget(self.frm_Lista)
 
-
         self.horizontalLayout.addWidget(self.frm_Pesquisar)
-
 
         self.retranslateUi(Produtos)
 
@@ -239,26 +228,30 @@ class Ui_Produtos(object):
     # setupUi
 
     def retranslateUi(self, Produtos):
-        Produtos.setWindowTitle(QCoreApplication.translate("Produtos", u"Cadastro de Produtos", None))
-        self.lb_Codigo.setText(QCoreApplication.translate("Produtos", u"C\u00f3digo:", None))
-        self.lb_Descricao.setText(QCoreApplication.translate("Produtos", u"Descri\u00e7\u00e3o:", None))
-        self.lb_Peso.setText(QCoreApplication.translate("Produtos", u"Peso do Saco:", None))
-        self.txt_Peso.setSuffix(QCoreApplication.translate("Produtos", u" Kg", None))
-        self.lb_Custo.setText(QCoreApplication.translate("Produtos", u"Custo Unit\u00e1rio:", None))
-        self.txt_Custo.setPrefix(QCoreApplication.translate("Produtos", u"R$ ", None))
-        self.bt_Salvar.setText(QCoreApplication.translate("Produtos", u"Salvar", None))
-        self.bt_Editar.setText(QCoreApplication.translate("Produtos", u"Editar", None))
-        self.bt_Limpar.setText(QCoreApplication.translate("Produtos", u"Limpar", None))
-        self.bt_Excluir.setText(QCoreApplication.translate("Produtos", u"Excluir", None))
-        self.lb_Pesquisar.setText(QCoreApplication.translate("Produtos", u"Pesquisar:", None))
-        self.bt_Pesquisar.setText(QCoreApplication.translate("Produtos", u"Confirmar", None))
-        ___qtablewidgetitem = self.tb_Produtos.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("Produtos", u"C\u00f3digo", None))
-        ___qtablewidgetitem1 = self.tb_Produtos.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("Produtos", u"Descri\u00e7\u00e3o", None))
-        ___qtablewidgetitem2 = self.tb_Produtos.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("Produtos", u"Peso", None))
-        ___qtablewidgetitem3 = self.tb_Produtos.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("Produtos", u"Custo", None))
+        Produtos.setWindowTitle(QCoreApplication.translate(
+            "Produtos", u"Cadastro de Produtos", None))
+        self.lb_Codigo.setText(QCoreApplication.translate(
+            "Produtos", u"C\u00f3digo:", None))
+        self.lb_Descricao.setText(QCoreApplication.translate(
+            "Produtos", u"Descri\u00e7\u00e3o:", None))
+        self.lb_Peso.setText(QCoreApplication.translate(
+            "Produtos", u"Peso do Saco:", None))
+        self.txt_Peso.setSuffix(
+            QCoreApplication.translate("Produtos", u" Kg", None))
+        self.lb_Custo.setText(QCoreApplication.translate(
+            "Produtos", u"Custo Unit\u00e1rio:", None))
+        self.txt_Custo.setPrefix(
+            QCoreApplication.translate("Produtos", u"R$ ", None))
+        self.bt_Salvar.setText(
+            QCoreApplication.translate("Produtos", u"Salvar", None))
+        self.bt_Editar.setText(
+            QCoreApplication.translate("Produtos", u"Editar", None))
+        self.bt_Limpar.setText(
+            QCoreApplication.translate("Produtos", u"Limpar", None))
+        self.bt_Excluir.setText(
+            QCoreApplication.translate("Produtos", u"Excluir", None))
+        self.lb_Pesquisar.setText(QCoreApplication.translate(
+            "Produtos", u"Pesquisar:", None))
+        self.bt_Pesquisar.setText(
+            QCoreApplication.translate("Produtos", u"Confirmar", None))
     # retranslateUi
-

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Produtos</class>
- <widget class="QWidget" name="Produtos">
+ <class>Motivo_Entrada</class>
+ <widget class="QWidget" name="Motivo_Entrada">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>400</height>
+    <width>707</width>
+    <height>387</height>
    </rect>
   </property>
   <property name="font">
@@ -18,7 +18,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Cadastro de Produtos</string>
+   <string>Motivo Entrada</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <property name="spacing">
@@ -37,54 +37,39 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QFrame" name="frm_Cadastro">
-     <property name="minimumSize">
-      <size>
-       <width>400</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>400</width>
-       <height>16777215</height>
-      </size>
-     </property>
+    <widget class="QFrame" name="frm_Entrada">
      <property name="frameShape">
       <enum>QFrame::Shape::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Shadow::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <property name="spacing">
-       <number>5</number>
+       <number>0</number>
       </property>
       <property name="leftMargin">
-       <number>5</number>
+       <number>0</number>
       </property>
       <property name="topMargin">
-       <number>5</number>
+       <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>5</number>
+       <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>5</number>
+       <number>0</number>
       </property>
       <item>
-       <widget class="QFrame" name="frm_Cad_Prod">
+       <widget class="QFrame" name="frm_Codigo">
         <property name="frameShape">
          <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
         </property>
-        <layout class="QFormLayout" name="formLayout">
-         <property name="horizontalSpacing">
-          <number>5</number>
-         </property>
-         <property name="verticalSpacing">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
           <number>5</number>
          </property>
          <property name="leftMargin">
@@ -99,7 +84,7 @@
          <property name="bottomMargin">
           <number>5</number>
          </property>
-         <item row="0" column="0">
+         <item>
           <widget class="QLabel" name="lb_Codigo">
            <property name="minimumSize">
             <size>
@@ -118,23 +103,82 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item>
           <widget class="QLineEdit" name="txt_Codigo">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>16777215</width>
+             <width>100</width>
              <height>30</height>
             </size>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item>
+          <widget class="QPushButton" name="bt_Novo">
+           <property name="minimumSize">
+            <size>
+             <width>40</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>+</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frm_Descricao">
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>5</number>
+         </property>
+         <item>
           <widget class="QLabel" name="lb_Descricao">
            <property name="minimumSize">
             <size>
@@ -153,7 +197,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item>
           <widget class="QLineEdit" name="txt_Descricao">
            <property name="minimumSize">
             <size>
@@ -169,82 +213,6 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="lb_Peso">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Peso do Saco:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="txt_Peso">
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>120</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="suffix">
-            <string> Kg</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="lb_Custo">
-           <property name="minimumSize">
-            <size>
-             <width>90</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>90</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Custo Unitário:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QDoubleSpinBox" name="txt_Custo">
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>120</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="prefix">
-            <string>R$ </string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
@@ -256,7 +224,7 @@
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <property name="spacing">
           <number>5</number>
          </property>
@@ -359,7 +327,7 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>273</height>
+          <height>248</height>
          </size>
         </property>
        </spacer>
@@ -368,53 +336,23 @@
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="frm_Pesquisar">
+    <widget class="QFrame" name="frm_Lista">
      <property name="frameShape">
       <enum>QFrame::Shape::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Shadow::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="spacing">
-       <number>5</number>
-      </property>
-      <property name="leftMargin">
-       <number>5</number>
-      </property>
-      <property name="topMargin">
-       <number>5</number>
-      </property>
-      <property name="rightMargin">
-       <number>5</number>
-      </property>
-      <property name="bottomMargin">
-       <number>5</number>
-      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QFrame" name="frm_Filtro">
+       <widget class="QFrame" name="frm_Pesquisar">
         <property name="frameShape">
          <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <property name="leftMargin">
-          <number>5</number>
-         </property>
-         <property name="topMargin">
-          <number>5</number>
-         </property>
-         <property name="rightMargin">
-          <number>5</number>
-         </property>
-         <property name="bottomMargin">
-          <number>5</number>
-         </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
           <widget class="QLabel" name="lb_Pesquisar">
            <property name="minimumSize">
@@ -473,39 +411,31 @@
        </widget>
       </item>
       <item>
-       <widget class="QFrame" name="frm_Lista">
-        <property name="minimumSize">
-         <size>
-          <width>450</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Shape::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Shadow::Raised</enum>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <property name="spacing">
-          <number>5</number>
+       <widget class="QTableWidget" name="tb_Lista">
+        <column>
+         <property name="text">
+          <string>Código</string>
          </property>
-         <property name="leftMargin">
-          <number>5</number>
+         <property name="font">
+          <font>
+           <family>Segoe UI Semibold</family>
+           <pointsize>10</pointsize>
+           <bold>true</bold>
+          </font>
          </property>
-         <property name="topMargin">
-          <number>5</number>
+        </column>
+        <column>
+         <property name="text">
+          <string>Descrição</string>
          </property>
-         <property name="rightMargin">
-          <number>5</number>
+         <property name="font">
+          <font>
+           <family>Segoe UI Semibold</family>
+           <pointsize>10</pointsize>
+           <bold>true</bold>
+          </font>
          </property>
-         <property name="bottomMargin">
-          <number>5</number>
-         </property>
-         <item>
-          <widget class="QTableView" name="tb_Produtos"/>
-         </item>
-        </layout>
+        </column>
        </widget>
       </item>
      </layout>

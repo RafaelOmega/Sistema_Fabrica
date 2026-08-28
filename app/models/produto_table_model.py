@@ -1,0 +1,109 @@
+from decimal import Decimal
+
+from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
+
+
+class ProdutoTableModel(QAbstractTableModel):
+    HEADERS = ["Código", "Descrição", "Peso", "Custo"]
+
+    def __init__(self, produtos=None, parent=None):
+        super().__init__(parent)
+        self._produtos = produtos or []
+
+    def rowCount(self, parent=QModelIndex()):
+        if parent.isValid():
+            return 0
+        return len(self._produtos)
+
+    def columnCount(self, parent=QModelIndex()):
+        if parent.isValid():
+            return 0
+        return len(self.HEADERS)
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid():
+            return None
+
+        produto = self.obter_produto(index.row())
+        if produto is None:
+            return None
+
+        coluna = index.column()
+
+        if role == Qt.DisplayRole:
+            if coluna == 0:
+                return "" if produto.codigo is None else str(produto.codigo)
+            if coluna == 1:
+                return "" if produto.descricao is None else str(produto.descricao)
+            if coluna == 2:
+                return self._formatar_peso(produto.peso)
+            if coluna == 3:
+                return self._formatar_custo(produto.custo)
+
+        if role == Qt.UserRole:
+            if coluna == 0:
+                return "" if produto.codigo is None else str(produto.codigo)
+            if coluna == 1:
+                return "" if produto.descricao is None else str(produto.descricao)
+            if coluna == 2:
+                return self._to_float(produto.peso)
+            if coluna == 3:
+                return self._to_decimal(produto.custo)
+
+        if role == Qt.TextAlignmentRole:
+            if coluna in (2, 3):
+                return Qt.AlignRight | Qt.AlignVCenter
+            return Qt.AlignLeft | Qt.AlignVCenter
+
+        return None
+
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if role != Qt.DisplayRole:
+            return None
+
+        if orientation == Qt.Horizontal and 0 <= section < len(self.HEADERS):
+            return self.HEADERS[section]
+
+        return str(section + 1)
+
+    def atualizar_dados(self, produtos):
+        self.beginResetModel()
+        self._produtos = produtos or []
+        self.endResetModel()
+
+    def obter_produto(self, row):
+        if 0 <= row < len(self._produtos):
+            return self._produtos[row]
+        return None
+
+    @staticmethod
+    def _formatar_peso(valor):
+        if valor is None:
+            return ""
+        return f"{float(valor):.2f}".replace(".", ",")
+
+    @staticmethod
+    def _formatar_custo(valor):
+        if valor is None:
+            return "0,00"
+
+        if isinstance(valor, Decimal):
+            return format(valor, ".2f").replace(".", ",")
+
+        return f"{float(valor):.2f}".replace(".", ",")
+
+    @staticmethod
+    def _to_float(valor):
+        if valor is None:
+            return 0.0
+        return float(valor)
+
+    @staticmethod
+    def _to_decimal(valor):
+        if valor is None:
+            return Decimal("0.00")
+
+        if isinstance(valor, Decimal):
+            return valor
+
+        return Decimal(str(valor))
