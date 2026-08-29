@@ -6,7 +6,7 @@ REM ========= AJUSTE AQUI =========
 set "APP_NAME=ControleFabrica"
 set "ENTRY_POINT=main.py"
 set "VENV_DIR=.venv"
-set "ICON_FILE="
+set "ICON_FILE=Omega-1.ico"
 REM =================================
 
 cd /d "%~dp0"
@@ -80,12 +80,13 @@ REM ----- inclui arquivos/pastas necessarias -----
 set "ADD_DATA_ARGS="
 if exist "app\styles" set "ADD_DATA_ARGS=!ADD_DATA_ARGS! --add-data ""app\styles;app\styles"""
 if exist "assets" set "ADD_DATA_ARGS=!ADD_DATA_ARGS! --add-data ""assets;assets"""
+if exist "Omega-1.ico" set "ADD_DATA_ARGS=!ADD_DATA_ARGS! --add-data ""Omega-1.ico;."""
 
-REM ----- icone (opcional) -----
+REM ----- icone -----
 set "ICON_ARG="
 if not "%ICON_FILE%"=="" (
   if exist "%ICON_FILE%" (
-    set "ICON_ARG=--icon ""%ICON_FILE%"""
+    set "ICON_ARG=--icon ""%ICON_FILE%"
   )
 )
 
@@ -107,6 +108,9 @@ pyinstaller ^
   --hidden-import="app.models.produto" ^
   --hidden-import="app.models.produto_table_model" ^
   --hidden-import="app.models.produto_filter_proxy_model" ^
+  --hidden-import="app.models.motivo_entrada" ^
+  --hidden-import="app.models.motivo_entrada_table_model" ^
+  --hidden-import="app.models.motivo_entrada_filter_proxy_model" ^
   "%ENTRY_POINT%"
 
 if errorlevel 1 (

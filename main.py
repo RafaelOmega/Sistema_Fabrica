@@ -2,11 +2,23 @@ from app.utils.theme import aplicar_tema
 from app.utils.logger import setup_logging, get_logger
 from PySide6.QtWidgets import QApplication, QMessageBox
 from PySide6.QtCore import Qt, QObject, QThread, QTimer, Signal, Slot
+from PySide6.QtGui import QIcon
+from pathlib import Path
 from time import perf_counter
 import traceback
 import sys
+import ctypes
 
 sys.dont_write_bytecode = True
+
+
+def _icone_app():
+    """Retorna o caminho do ícone compatível com dev e PyInstaller."""
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base = Path(sys._MEIPASS)
+    else:
+        base = Path(__file__).resolve().parent
+    return str(base / "Omega-1.ico")
 
 
 class DatabaseInitWorker(QObject):
@@ -66,8 +78,13 @@ def main():
 
     app = QApplication(sys.argv)
 
+    if sys.platform == "win32":
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            "ControleFabrica")
+
     aplicar_tema(app)
-    logger.info("Tema aplicado")
+    app.setWindowIcon(QIcon(_icone_app()))
+    logger.info("Tema e ícone aplicados")
 
     from app.controllers.carregamento_controller import CarregamentoController
     from app.controllers.main_window_controller import MainWindowController
