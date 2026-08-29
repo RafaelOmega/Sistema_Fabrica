@@ -17,6 +17,7 @@ def init_db():
     """Cria todas as tabelas no banco."""
     from app.models.produto import Produto  # noqa: F401
     from app.models.motivo_entrada import Motivo_Entrada  # noqa: F401
+    from app.models.entrada import Entrada, ItemEntrada  # noqa: F401
 
     logger.info("Criando tabelas no banco (se não existirem)")
     try:

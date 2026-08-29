@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowUofhao.ui'
+## Form generated from reading UI file 'main_windowrBmouo.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -35,6 +35,8 @@ class Ui_MainWindow(object):
         self.actionProdutos.setObjectName(u"actionProdutos")
         self.actionMotivo_Entrada = QAction(MainWindow)
         self.actionMotivo_Entrada.setObjectName(u"actionMotivo_Entrada")
+        self.actionEntrada = QAction(MainWindow)
+        self.actionEntrada.setObjectName(u"actionEntrada")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -96,11 +98,15 @@ class Ui_MainWindow(object):
         self.menubar.setGeometry(QRect(0, 0, 800, 33))
         self.menuCadastros = QMenu(self.menubar)
         self.menuCadastros.setObjectName(u"menuCadastros")
+        self.menuLan_amentos = QMenu(self.menubar)
+        self.menuLan_amentos.setObjectName(u"menuLan_amentos")
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.menuCadastros.menuAction())
+        self.menubar.addAction(self.menuLan_amentos.menuAction())
         self.menuCadastros.addAction(self.actionProdutos)
         self.menuCadastros.addAction(self.actionMotivo_Entrada)
+        self.menuLan_amentos.addAction(self.actionEntrada)
 
         self.retranslateUi(MainWindow)
 
@@ -111,7 +117,9 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.actionProdutos.setText(QCoreApplication.translate("MainWindow", u"Produtos", None))
         self.actionMotivo_Entrada.setText(QCoreApplication.translate("MainWindow", u"Motivo Entrada", None))
+        self.actionEntrada.setText(QCoreApplication.translate("MainWindow", u"Entrada", None))
         self.lb_Comandos.setText("")
         self.menuCadastros.setTitle(QCoreApplication.translate("MainWindow", u"Cadastros", None))
+        self.menuLan_amentos.setTitle(QCoreApplication.translate("MainWindow", u"Lan\u00e7amentos", None))
     # retranslateUi
 

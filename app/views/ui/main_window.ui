@@ -173,7 +173,14 @@
     <addaction name="actionProdutos"/>
     <addaction name="actionMotivo_Entrada"/>
    </widget>
+   <widget class="QMenu" name="menuLan_amentos">
+    <property name="title">
+     <string>Lançamentos</string>
+    </property>
+    <addaction name="actionEntrada"/>
+   </widget>
    <addaction name="menuCadastros"/>
+   <addaction name="menuLan_amentos"/>
   </widget>
   <action name="actionProdutos">
    <property name="text">
@@ -183,6 +190,11 @@
   <action name="actionMotivo_Entrada">
    <property name="text">
     <string>Motivo Entrada</string>
+   </property>
+  </action>
+  <action name="actionEntrada">
+   <property name="text">
+    <string>Entrada</string>
    </property>
   </action>
  </widget>

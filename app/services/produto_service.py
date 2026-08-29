@@ -20,6 +20,9 @@ class ProdutoService:
     def buscar_por_id(self, produto_id):
         return self.repo.buscar_por_id(produto_id)
 
+    def buscar_por_codigo(self, codigo):
+        return self.repo.buscar_por_codigo(codigo)
+
     def _validar(self, codigo, descricao, peso, custo):
         if not codigo or not descricao:
             raise ValueError("Preencha código e descrição.")
