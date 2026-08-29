@@ -16,6 +16,7 @@ Session = sessionmaker(bind=engine)
 def init_db():
     """Cria todas as tabelas no banco."""
     from app.models.produto import Produto  # noqa: F401
+    from app.models.motivo_entrada import Motivo_Entrada  # noqa: F401
 
     logger.info("Criando tabelas no banco (se não existirem)")
     try:
@@ -49,7 +50,8 @@ def session_scope():
         session.commit()
     except Exception:
         session.rollback()
-        logger.warning("Sessão revertida (rollback) devido a um erro", exc_info=True)
+        logger.warning(
+            "Sessão revertida (rollback) devido a um erro", exc_info=True)
         raise
     finally:
         session.close()

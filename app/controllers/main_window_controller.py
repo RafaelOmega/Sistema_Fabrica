@@ -26,6 +26,7 @@ class MainWindowController(QMainWindow):
 
     def _configurar_estado_inicial(self):
         self.ui.actionProdutos.setEnabled(False)
+        self.ui.actionMotivo_Entrada.setEnabled(False)
 
         if self.statusBar():
             self.statusBar().showMessage("Inicializando conexão com o banco...")
@@ -33,6 +34,7 @@ class MainWindowController(QMainWindow):
     def on_database_ready(self):
         self._database_ready = True
         self.ui.actionProdutos.setEnabled(True)
+        self.ui.actionMotivo_Entrada.setEnabled(True)
 
         if self.statusBar():
             self.statusBar().showMessage("Pronto", 3000)
@@ -42,6 +44,7 @@ class MainWindowController(QMainWindow):
     def on_database_failed(self, error_message):
         self._database_ready = False
         self.ui.actionProdutos.setEnabled(False)
+        self.ui.actionMotivo_Entrada.setEnabled(False)
 
         if self.statusBar():
             self.statusBar().showMessage("Falha ao conectar no banco")
@@ -64,6 +67,8 @@ class MainWindowController(QMainWindow):
 
     def _conectar_sinais(self):
         self.ui.actionProdutos.triggered.connect(self.abrir_produtos)
+        self.ui.actionMotivo_Entrada.triggered.connect(
+            self.abrir_motivos_entrada)
 
     def _abrir_subjanela(self, classe_controller, titulo):
         for sub in self.ui.mdiArea.subWindowList():
@@ -93,3 +98,16 @@ class MainWindowController(QMainWindow):
 
         from app.controllers.cad_produtos_controller import ProdutosController
         self._abrir_subjanela(ProdutosController, "Cadastro de Produtos")
+
+    def abrir_motivos_entrada(self):
+        if not self._database_ready:
+            QMessageBox.information(
+                self,
+                "Aguarde",
+                "O sistema ainda está inicializando a conexão com o banco."
+            )
+            return
+
+        from app.controllers.cad_motivo_entrada_controller import MotivoEntradaController
+        self._abrir_subjanela(MotivoEntradaController,
+                              "Cadastro de Motivos de Entrada")

@@ -1,7 +1,7 @@
 from app.utils.theme import aplicar_tema
-from app.utils.logger import setup_logging
+from app.utils.logger import setup_logging, get_logger
 from PySide6.QtWidgets import QApplication, QMessageBox
-from PySide6.QtCore import QObject, QThread, QTimer, Signal, Slot
+from PySide6.QtCore import Qt, QObject, QThread, QTimer, Signal, Slot
 from time import perf_counter
 import traceback
 import sys
@@ -26,6 +26,38 @@ class DatabaseInitWorker(QObject):
             self.failed.emit(str(e), traceback.format_exc())
 
 
+class DatabaseCallbackHandler(QObject):
+    def __init__(self, splash, window, parent=None):
+        super().__init__(parent)
+        self._splash = splash
+        self._window = window
+        self._logger = get_logger("main")
+
+    @Slot(float)
+    def on_ready(self, elapsed):
+        self._logger.info(f"Banco de dados inicializado em {elapsed:.3f}s")
+        self._splash.fechar()
+        self._window.showMaximized()
+        if hasattr(self._window, "on_database_ready"):
+            self._window.on_database_ready()
+
+    @Slot(str, str)
+    def on_failed(self, error_message, error_trace):
+        self._logger.critical(f"Erro ao conectar no banco: {error_message}")
+        self._logger.critical(error_trace)
+        self._splash.fechar()
+
+        if hasattr(self._window, "on_database_failed"):
+            self._window.on_database_failed(error_message)
+
+        QMessageBox.critical(
+            None,
+            "Erro de conexão",
+            f"Erro ao conectar no banco:\n{error_message}"
+        )
+        QApplication.quit()
+
+
 def main():
     inicio_total = perf_counter()
 
@@ -37,15 +69,20 @@ def main():
     aplicar_tema(app)
     logger.info("Tema aplicado")
 
+    from app.controllers.carregamento_controller import CarregamentoController
     from app.controllers.main_window_controller import MainWindowController
-    window = MainWindowController()
-    window.showMaximized()
 
+    splash = CarregamentoController()
+    splash.mostrar()
     app.processEvents()
+    logger.info("Splash de carregamento exibido")
 
+    window = MainWindowController()
     logger.info(
-        f"Janela principal exibida em {perf_counter() - inicio_total:.3f}s"
+        f"Janela principal criada em {perf_counter() - inicio_total:.3f}s"
     )
+
+    handler = DatabaseCallbackHandler(splash, window, parent=app)
 
     db_thread = QThread()
     db_worker = DatabaseInitWorker()
@@ -59,30 +96,13 @@ def main():
     db_worker.failed.connect(db_worker.deleteLater)
     db_thread.finished.connect(db_thread.deleteLater)
 
-    def on_database_ready(elapsed):
-        logger.info(f"Banco de dados inicializado em {elapsed:.3f}s")
-        if hasattr(window, "on_database_ready"):
-            window.on_database_ready()
-
-    def on_database_failed(error_message, error_trace):
-        logger.critical(f"Erro ao conectar no banco: {error_message}")
-        logger.critical(error_trace)
-
-        if hasattr(window, "on_database_failed"):
-            window.on_database_failed(error_message)
-
-        QMessageBox.critical(
-            window,
-            "Erro de conexão",
-            f"Erro ao conectar no banco:\n{error_message}"
-        )
-        app.quit()
-
-    db_worker.finished.connect(on_database_ready)
-    db_worker.failed.connect(on_database_failed)
+    db_worker.finished.connect(handler.on_ready)
+    db_worker.failed.connect(handler.on_failed)
 
     app._db_thread = db_thread
     app._db_worker = db_worker
+    app._splash = splash
+    app._handler = handler
 
     QTimer.singleShot(100, db_thread.start)
 

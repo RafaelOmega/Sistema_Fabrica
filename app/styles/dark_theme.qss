@@ -3,7 +3,6 @@ QMainWindow, QWidget {
     background-color: rgb(19, 27, 47);
     color: rgb(255, 255, 255);
 }
-
 /* ===== MENU BAR (topo) ===== */
 QMenuBar {
     background-color: rgb(19, 27, 47);
@@ -11,25 +10,21 @@ QMenuBar {
     border-bottom: 1px solid rgb(55, 75, 115);
     padding: 2px;
 }
-
 QMenuBar::item {
     background: transparent;
     padding: 6px 10px;
     margin: 2px 4px;
     border-radius: 6px;
 }
-
 QMenuBar::item:selected {
     background-color: rgb(32, 44, 72);
     color: rgb(255, 255, 255);
 }
-
 QMenuBar::item:pressed {
     background-color: rgb(40, 56, 92);
     color: rgb(255, 255, 255);
     border: 1px solid rgb(85, 170, 255);
 }
-
 /* ===== MENU DROPDOWN ===== */
 QMenu {
     background-color: rgb(19, 27, 47);
@@ -37,34 +32,28 @@ QMenu {
     border: 1px solid rgb(55, 75, 115);
     padding: 6px;
 }
-
 QMenu::item {
     padding: 6px 28px 6px 10px;
     border-radius: 6px;
 }
-
 QMenu::item:selected {
     background-color: rgb(40, 56, 92);
     color: rgb(255, 255, 255);
 }
-
 QMenu::item:disabled {
     color: rgb(150, 160, 180);
 }
-
 QMenu::separator {
     height: 1px;
     background: rgb(55, 75, 115);
     margin: 6px 4px;
 }
-
 /* ===== FRAMES ===== */
 QFrame {
     background-color: #1A243C;
     border: 1px solid #2F3E63;
     border-radius: 6px;
 }
-
 /* ===== LABELS ===== */
 QLabel {
     background-color: #222E4A;
@@ -72,11 +61,8 @@ QLabel {
     border: 1px solid #485C8C;
     border-radius: 4px;
     padding: 4px 8px;
-    min-width: 120px;
-    qproperty-alignment: AlignRight;
     font-weight: bold;
 }
-
 /* ===== BOTÕES ===== */
 QPushButton {
     background: #243258;
@@ -92,7 +78,6 @@ QPushButton:disabled {
     color: #5A6680;
     border: 1px solid #2A3450;
 }
-
 /* ===== CAMPOS DE ENTRADA ===== */
 QLineEdit, QSpinBox, QDoubleSpinBox {
     background: #1A243C;
@@ -104,7 +89,6 @@ QLineEdit, QSpinBox, QDoubleSpinBox {
 QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
     border-color: #6A8AE0;
 }
-
 /* ===== DATE/TIME EDIT ===== */
 QDateEdit, QTimeEdit {
     background: #1A243C;
@@ -119,7 +103,6 @@ QDateEdit:disabled, QTimeEdit:disabled {
     color: #5A6680;
     border: 1px solid #2A3450;
 }
-
 /* ===== COMBO BOX ===== */
 QComboBox {
     background: #1A243C;
@@ -129,7 +112,6 @@ QComboBox {
     padding: 2px 6px;
 }
 QComboBox:hover { border-color: #6A8AE0; }
-
 /* ===== TABELA ===== */
 QTableView, QTableWidget {
     background-color: #1A243C;
@@ -141,7 +123,6 @@ QTableView, QTableWidget {
     selection-background-color: #2E3E68;
     selection-color: #FFFFFF;
 }
-
 QHeaderView::section {
     background-color: #243258;
     color: #FFFFFF;
@@ -149,7 +130,6 @@ QHeaderView::section {
     padding: 4px 8px;
     font-weight: bold;
 }
-
 /* ===== SCROLLBAR ===== */
 QScrollBar:vertical {
     background: #1A243C;
@@ -163,7 +143,6 @@ QScrollBar::handle:vertical {
 }
 QScrollBar::handle:vertical:hover { background: #6A8AE0; }
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
-
 QScrollBar:horizontal {
     background: #1A243C;
     height: 10px;
@@ -176,13 +155,11 @@ QScrollBar::handle:horizontal {
 }
 QScrollBar::handle:horizontal:hover { background: #6A8AE0; }
 QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
-
 /* ===== MDI AREA ===== */
 QMdiArea {
     background-color: #131B2F;
     border: none;
 }
-
 QMdiSubWindow {
     background-color: #1A243C;
     border: 1px solid #485C8C;
