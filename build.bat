@@ -86,7 +86,7 @@ REM ----- icone -----
 set "ICON_ARG="
 if not "%ICON_FILE%"=="" (
   if exist "%ICON_FILE%" (
-    set "ICON_ARG=--icon ""%ICON_FILE%"
+    set "ICON_ARG=--icon %ICON_FILE%"
   )
 )
 
@@ -111,6 +111,9 @@ pyinstaller ^
   --hidden-import="app.models.motivo_entrada" ^
   --hidden-import="app.models.motivo_entrada_table_model" ^
   --hidden-import="app.models.motivo_entrada_filter_proxy_model" ^
+  --hidden-import="app.models.entrada" ^
+  --hidden-import="app.models.item_entrada_table_model" ^
+  --hidden-import="app.models.entrada_table_model" ^
   "%ENTRY_POINT%"
 
 if errorlevel 1 (
