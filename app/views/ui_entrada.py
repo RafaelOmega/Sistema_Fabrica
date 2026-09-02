@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'entradaCpMyHK.ui'
+## Form generated from reading UI file 'entradatHVQUe.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -171,6 +171,20 @@ class Ui_Entrada(object):
         self.txt_Descricao_Prod.setMaximumSize(QSize(16777215, 30))
 
         self.horizontalLayout_7.addWidget(self.txt_Descricao_Prod)
+
+        self.lb_Milho = QLabel(self.frm_Prod)
+        self.lb_Milho.setObjectName(u"lb_Milho")
+        self.lb_Milho.setMinimumSize(QSize(0, 30))
+        self.lb_Milho.setMaximumSize(QSize(16777215, 30))
+
+        self.horizontalLayout_7.addWidget(self.lb_Milho)
+
+        self.txt_Milho = QLineEdit(self.frm_Prod)
+        self.txt_Milho.setObjectName(u"txt_Milho")
+        self.txt_Milho.setMinimumSize(QSize(100, 30))
+        self.txt_Milho.setMaximumSize(QSize(100, 30))
+
+        self.horizontalLayout_7.addWidget(self.txt_Milho)
 
 
         self.verticalLayout.addWidget(self.frm_Prod)
@@ -379,6 +393,7 @@ class Ui_Entrada(object):
         self.bt_Abrir_Itens.setText(QCoreApplication.translate("Entrada", u"Abrir Itens", None))
         self.lb_Cod_Prod.setText(QCoreApplication.translate("Entrada", u"C\u00f3d:", None))
         self.bt_Pesquisa_Itens.setText(QCoreApplication.translate("Entrada", u"...", None))
+        self.lb_Milho.setText(QCoreApplication.translate("Entrada", u"Milho 60KG:", None))
         self.lb_Un.setText(QCoreApplication.translate("Entrada", u"Un:", None))
         self.cmb_Un.setItemText(0, QCoreApplication.translate("Entrada", u"SC", None))
         self.cmb_Un.setItemText(1, QCoreApplication.translate("Entrada", u"KG", None))

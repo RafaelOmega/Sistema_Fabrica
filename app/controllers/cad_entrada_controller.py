@@ -16,6 +16,8 @@ from app.views.ui_entrada import Ui_Entrada
 
 logger = get_logger("entrada_controller")
 
+CODIGO_MILHO = "116431"
+
 
 class EntradaController(QWidget):
     def __init__(self):
@@ -67,6 +69,10 @@ class EntradaController(QWidget):
         self.ui.txt_Total_Itens.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.ui.txt_Total_Itens.setText("R$ 0,00")
 
+        # Campos de milho — ocultos por padrão
+        self.ui.lb_Milho.setVisible(False)
+        self.ui.txt_Milho.setVisible(False)
+
     def _carregar_motivos(self):
         try:
             motivos = self.motivo_service.listar_todos()
@@ -87,6 +93,7 @@ class EntradaController(QWidget):
         self.ui.bt_Pesquisa_Itens.clicked.connect(self.abrir_pesquisa_produto)
         self.ui.txt_Cod_Prod.returnPressed.connect(
             self.pesquisar_produto_direto)
+        self.ui.txt_Milho.editingFinished.connect(self._calcular_custo_milho)
         self.ui.bt_Salvar_Itens.clicked.connect(self.salvar_item)
         self.ui.bt_Limpar_Itens.clicked.connect(self.limpar_item)
         self.ui.bt_Excluir_Itens.clicked.connect(self.excluir_item)
@@ -312,8 +319,10 @@ class EntradaController(QWidget):
                 self.ui.txt_Cod_Prod.setText(produto.codigo or "")
                 self.ui.txt_Descricao_Prod.setText(produto.descricao or "")
                 self._peso_produto = getattr(produto, "peso", None)
-                custo = getattr(produto, "custo", 0) or 0
-                self.ui.txt_Custo.setText(f"{custo:.2f}".replace(".", ","))
+                self._verificar_produto_milho(produto.codigo or "")
+                if produto.codigo != CODIGO_MILHO:
+                    custo = getattr(produto, "custo", 0) or 0
+                    self.ui.txt_Custo.setText(f"{custo:.2f}".replace(".", ","))
                 self.ui.cmb_Un.setFocus()
                 logger.debug(
                     f"Produto selecionado do dialog: {produto.codigo}")
@@ -329,8 +338,10 @@ class EntradaController(QWidget):
                 self._produto_atual_id = produto.id
                 self.ui.txt_Descricao_Prod.setText(produto.descricao or "")
                 self._peso_produto = getattr(produto, "peso", None)
-                custo = getattr(produto, "custo", 0) or 0
-                self.ui.txt_Custo.setText(f"{custo:.2f}".replace(".", ","))
+                self._verificar_produto_milho(produto.codigo or "")
+                if produto.codigo != CODIGO_MILHO:
+                    custo = getattr(produto, "custo", 0) or 0
+                    self.ui.txt_Custo.setText(f"{custo:.2f}".replace(".", ","))
                 self.ui.cmb_Un.setFocus()
                 logger.debug(f"Produto encontrado: {produto.codigo}")
             else:
@@ -339,11 +350,43 @@ class EntradaController(QWidget):
                 self.ui.txt_Custo.clear()
                 self._produto_atual_id = None
                 self._peso_produto = None
+                self._ocultar_milho()
                 self.ui.txt_Cod_Prod.setFocus()
                 self.ui.txt_Cod_Prod.selectAll()
         except Exception as e:
             logger.error(f"Erro ao pesquisar produto: {e}", exc_info=True)
             QMessageBox.critical(self, "Erro", f"Erro ao pesquisar: {e}")
+
+    def _verificar_produto_milho(self, codigo):
+        """Exibe campos de milho se o código for 116431."""
+        if codigo.strip() == CODIGO_MILHO:
+            self.ui.lb_Milho.setVisible(True)
+            self.ui.txt_Milho.setVisible(True)
+            self.ui.txt_Milho.clear()
+            self.ui.txt_Custo.clear()
+            self.ui.txt_Milho.setFocus()
+            logger.debug("Produto milho detectado - campos exibidos")
+        else:
+            self._ocultar_milho()
+
+    def _ocultar_milho(self):
+        self.ui.lb_Milho.setVisible(False)
+        self.ui.txt_Milho.setVisible(False)
+        self.ui.txt_Milho.clear()
+
+    def _calcular_custo_milho(self):
+        """Divide o valor de txt_Milho por 60 para obter o custo."""
+        valor_text = self.ui.txt_Milho.text().strip()
+        if not valor_text:
+            return
+
+        try:
+            valor = float(valor_text.replace(",", "."))
+            custo = valor / 60
+            self.ui.txt_Custo.setText(f"{custo:.4f}".replace(".", ","))
+            logger.debug(f"Cálculo milho: {valor} / 60 = {custo:.4f}")
+        except ValueError:
+            QMessageBox.warning(self, "Aviso", "Valor do milho inválido.")
 
     def salvar_item(self):
         codigo = self.ui.txt_Cod_Prod.text().strip()
@@ -457,6 +500,8 @@ class EntradaController(QWidget):
             str(item.get("quantidade", "")).replace(".", ","))
         self.ui.txt_Custo.setText(str(item.get("custo", "")).replace(".", ","))
 
+        self._verificar_produto_milho(item.get("codigo", ""))
+
         logger.debug(f"Item selecionado | row={row}")
 
     # --- Limpeza ---
@@ -476,6 +521,7 @@ class EntradaController(QWidget):
         self.ui.txt_Custo.clear()
         self._produto_atual_id = None
         self._peso_produto = None
+        self._ocultar_milho()
 
     def _limpar_itens(self):
         self.item_model.limpar()
