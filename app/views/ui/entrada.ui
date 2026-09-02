@@ -220,13 +220,13 @@
           <widget class="QDateEdit" name="dt_Entrada">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>120</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>16777215</width>
+             <width>120</width>
              <height>30</height>
             </size>
            </property>
@@ -832,6 +832,30 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>txt_Sequencia</tabstop>
+  <tabstop>dt_Entrada</tabstop>
+  <tabstop>cmb_Motivo</tabstop>
+  <tabstop>bt_Abrir_Itens</tabstop>
+  <tabstop>txt_Cod_Prod</tabstop>
+  <tabstop>cmb_Un</tabstop>
+  <tabstop>txt_Qtde</tabstop>
+  <tabstop>txt_Custo</tabstop>
+  <tabstop>bt_Salvar_Itens</tabstop>
+  <tabstop>bt_Pesquisa_Entrada</tabstop>
+  <tabstop>bt_Novo</tabstop>
+  <tabstop>bt_Pesquisa_Itens</tabstop>
+  <tabstop>txt_Descricao_Prod</tabstop>
+  <tabstop>bt_Limpar_Itens</tabstop>
+  <tabstop>bt_Excluir_Itens</tabstop>
+  <tabstop>bt_Sair_Itens</tabstop>
+  <tabstop>txt_Total_Itens</tabstop>
+  <tabstop>tb_Itens</tabstop>
+  <tabstop>bt_Salvar</tabstop>
+  <tabstop>bt_Editar</tabstop>
+  <tabstop>bt_Limpar</tabstop>
+  <tabstop>bt_Excluir</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

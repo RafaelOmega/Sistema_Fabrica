@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-# Form generated from reading UI file 'entradagZTZBq.ui'
+## Form generated from reading UI file 'entradaCpMyHK.ui'
 ##
-# Created by: Qt User Interface Compiler version 6.11.2
+## Created by: Qt User Interface Compiler version 6.11.2
 ##
-# WARNING! All changes made in this file will be lost when recompiling UI file!
+## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QDateEdit, QFrame,
-                               QGridLayout, QHBoxLayout, QHeaderView, QLabel,
-                               QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                               QTableView, QVBoxLayout, QWidget)
-
+    QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
+    QTableView, QVBoxLayout, QWidget)
 
 class Ui_Entrada(object):
     def setupUi(self, Entrada):
@@ -79,10 +78,10 @@ class Ui_Entrada(object):
 
         self.horizontalLayout_2.addWidget(self.bt_Novo)
 
-        self.horizontalSpacer = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
+
 
         self.verticalLayout.addWidget(self.frm_Sequencia)
 
@@ -103,8 +102,8 @@ class Ui_Entrada(object):
 
         self.dt_Entrada = QDateEdit(self.frm_Abrir_Itens)
         self.dt_Entrada.setObjectName(u"dt_Entrada")
-        self.dt_Entrada.setMinimumSize(QSize(0, 30))
-        self.dt_Entrada.setMaximumSize(QSize(16777215, 30))
+        self.dt_Entrada.setMinimumSize(QSize(120, 30))
+        self.dt_Entrada.setMaximumSize(QSize(120, 30))
         self.dt_Entrada.setCalendarPopup(True)
 
         self.horizontalLayout_3.addWidget(self.dt_Entrada)
@@ -130,10 +129,10 @@ class Ui_Entrada(object):
 
         self.horizontalLayout_3.addWidget(self.bt_Abrir_Itens)
 
-        self.horizontalSpacer_2 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
+
 
         self.verticalLayout.addWidget(self.frm_Abrir_Itens)
 
@@ -172,6 +171,7 @@ class Ui_Entrada(object):
         self.txt_Descricao_Prod.setMaximumSize(QSize(16777215, 30))
 
         self.horizontalLayout_7.addWidget(self.txt_Descricao_Prod)
+
 
         self.verticalLayout.addWidget(self.frm_Prod)
 
@@ -248,8 +248,7 @@ class Ui_Entrada(object):
 
         self.horizontalLayout_8.addWidget(self.bt_Excluir_Itens)
 
-        self.horizontalSpacer_3 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_3)
 
@@ -259,6 +258,7 @@ class Ui_Entrada(object):
         self.bt_Sair_Itens.setMaximumSize(QSize(16777215, 30))
 
         self.horizontalLayout_8.addWidget(self.bt_Sair_Itens)
+
 
         self.verticalLayout.addWidget(self.frm_Qtde)
 
@@ -284,8 +284,7 @@ class Ui_Entrada(object):
 
         self.gridLayout.addWidget(self.txt_Total_Itens, 1, 2, 1, 1)
 
-        self.horizontalSpacer_5 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayout.addItem(self.horizontalSpacer_5, 1, 0, 1, 1)
 
@@ -293,6 +292,7 @@ class Ui_Entrada(object):
         self.tb_Itens.setObjectName(u"tb_Itens")
 
         self.gridLayout.addWidget(self.tb_Itens, 0, 0, 1, 3)
+
 
         self.verticalLayout.addWidget(self.frm_Itens)
 
@@ -318,8 +318,7 @@ class Ui_Entrada(object):
 
         self.horizontalLayout_4.addWidget(self.bt_Editar)
 
-        self.horizontalSpacer_4 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
 
@@ -337,9 +336,33 @@ class Ui_Entrada(object):
 
         self.horizontalLayout_4.addWidget(self.bt_Excluir)
 
+
         self.verticalLayout.addWidget(self.frm_Crud)
 
+
         self.horizontalLayout.addWidget(self.frm_Entrada)
+
+        QWidget.setTabOrder(self.txt_Sequencia, self.dt_Entrada)
+        QWidget.setTabOrder(self.dt_Entrada, self.cmb_Motivo)
+        QWidget.setTabOrder(self.cmb_Motivo, self.bt_Abrir_Itens)
+        QWidget.setTabOrder(self.bt_Abrir_Itens, self.txt_Cod_Prod)
+        QWidget.setTabOrder(self.txt_Cod_Prod, self.cmb_Un)
+        QWidget.setTabOrder(self.cmb_Un, self.txt_Qtde)
+        QWidget.setTabOrder(self.txt_Qtde, self.txt_Custo)
+        QWidget.setTabOrder(self.txt_Custo, self.bt_Salvar_Itens)
+        QWidget.setTabOrder(self.bt_Salvar_Itens, self.bt_Pesquisa_Entrada)
+        QWidget.setTabOrder(self.bt_Pesquisa_Entrada, self.bt_Novo)
+        QWidget.setTabOrder(self.bt_Novo, self.bt_Pesquisa_Itens)
+        QWidget.setTabOrder(self.bt_Pesquisa_Itens, self.txt_Descricao_Prod)
+        QWidget.setTabOrder(self.txt_Descricao_Prod, self.bt_Limpar_Itens)
+        QWidget.setTabOrder(self.bt_Limpar_Itens, self.bt_Excluir_Itens)
+        QWidget.setTabOrder(self.bt_Excluir_Itens, self.bt_Sair_Itens)
+        QWidget.setTabOrder(self.bt_Sair_Itens, self.txt_Total_Itens)
+        QWidget.setTabOrder(self.txt_Total_Itens, self.tb_Itens)
+        QWidget.setTabOrder(self.tb_Itens, self.bt_Salvar)
+        QWidget.setTabOrder(self.bt_Salvar, self.bt_Editar)
+        QWidget.setTabOrder(self.bt_Editar, self.bt_Limpar)
+        QWidget.setTabOrder(self.bt_Limpar, self.bt_Excluir)
 
         self.retranslateUi(Entrada)
 
@@ -347,49 +370,29 @@ class Ui_Entrada(object):
     # setupUi
 
     def retranslateUi(self, Entrada):
-        Entrada.setWindowTitle(QCoreApplication.translate(
-            "Entrada", u"Entradas", None))
-        self.lb_Sequencia.setText(
-            QCoreApplication.translate("Entrada", u"Sequencia:", None))
-        self.bt_Pesquisa_Entrada.setText(
-            QCoreApplication.translate("Entrada", u"...", None))
+        Entrada.setWindowTitle(QCoreApplication.translate("Entrada", u"Entradas", None))
+        self.lb_Sequencia.setText(QCoreApplication.translate("Entrada", u"Sequencia:", None))
+        self.bt_Pesquisa_Entrada.setText(QCoreApplication.translate("Entrada", u"...", None))
         self.bt_Novo.setText(QCoreApplication.translate("Entrada", u"+", None))
-        self.lb_Data.setText(
-            QCoreApplication.translate("Entrada", u"Data:", None))
-        self.lb_Motivo.setText(
-            QCoreApplication.translate("Entrada", u"Motivo:", None))
-        self.bt_Abrir_Itens.setText(
-            QCoreApplication.translate("Entrada", u"Abrir Itens", None))
-        self.lb_Cod_Prod.setText(
-            QCoreApplication.translate("Entrada", u"C\u00f3d:", None))
-        self.bt_Pesquisa_Itens.setText(
-            QCoreApplication.translate("Entrada", u"...", None))
+        self.lb_Data.setText(QCoreApplication.translate("Entrada", u"Data:", None))
+        self.lb_Motivo.setText(QCoreApplication.translate("Entrada", u"Motivo:", None))
+        self.bt_Abrir_Itens.setText(QCoreApplication.translate("Entrada", u"Abrir Itens", None))
+        self.lb_Cod_Prod.setText(QCoreApplication.translate("Entrada", u"C\u00f3d:", None))
+        self.bt_Pesquisa_Itens.setText(QCoreApplication.translate("Entrada", u"...", None))
         self.lb_Un.setText(QCoreApplication.translate("Entrada", u"Un:", None))
-        self.cmb_Un.setItemText(
-            0, QCoreApplication.translate("Entrada", u"SC", None))
-        self.cmb_Un.setItemText(
-            1, QCoreApplication.translate("Entrada", u"KG", None))
+        self.cmb_Un.setItemText(0, QCoreApplication.translate("Entrada", u"SC", None))
+        self.cmb_Un.setItemText(1, QCoreApplication.translate("Entrada", u"KG", None))
 
-        self.lb_Qtde.setText(
-            QCoreApplication.translate("Entrada", u"Qtde:", None))
-        self.lb_Custo.setText(
-            QCoreApplication.translate("Entrada", u"Custo:", None))
-        self.bt_Salvar_Itens.setText(
-            QCoreApplication.translate("Entrada", u"Salvar", None))
-        self.bt_Limpar_Itens.setText(
-            QCoreApplication.translate("Entrada", u"Limpar", None))
-        self.bt_Excluir_Itens.setText(
-            QCoreApplication.translate("Entrada", u"Excluir", None))
-        self.bt_Sair_Itens.setText(
-            QCoreApplication.translate("Entrada", u"Sair Itens", None))
-        self.lb_Total.setText(
-            QCoreApplication.translate("Entrada", u"Total:", None))
-        self.bt_Salvar.setText(
-            QCoreApplication.translate("Entrada", u"Salvar", None))
-        self.bt_Editar.setText(
-            QCoreApplication.translate("Entrada", u"Editar", None))
-        self.bt_Limpar.setText(
-            QCoreApplication.translate("Entrada", u"Limpar", None))
-        self.bt_Excluir.setText(
-            QCoreApplication.translate("Entrada", u"Excluir", None))
+        self.lb_Qtde.setText(QCoreApplication.translate("Entrada", u"Qtde:", None))
+        self.lb_Custo.setText(QCoreApplication.translate("Entrada", u"Custo:", None))
+        self.bt_Salvar_Itens.setText(QCoreApplication.translate("Entrada", u"Salvar", None))
+        self.bt_Limpar_Itens.setText(QCoreApplication.translate("Entrada", u"Limpar", None))
+        self.bt_Excluir_Itens.setText(QCoreApplication.translate("Entrada", u"Excluir", None))
+        self.bt_Sair_Itens.setText(QCoreApplication.translate("Entrada", u"Sair Itens", None))
+        self.lb_Total.setText(QCoreApplication.translate("Entrada", u"Total:", None))
+        self.bt_Salvar.setText(QCoreApplication.translate("Entrada", u"Salvar", None))
+        self.bt_Editar.setText(QCoreApplication.translate("Entrada", u"Editar", None))
+        self.bt_Limpar.setText(QCoreApplication.translate("Entrada", u"Limpar", None))
+        self.bt_Excluir.setText(QCoreApplication.translate("Entrada", u"Excluir", None))
     # retranslateUi
+

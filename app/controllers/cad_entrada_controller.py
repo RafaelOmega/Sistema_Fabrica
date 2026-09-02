@@ -33,6 +33,7 @@ class EntradaController(QWidget):
         self.entrada_id = None
         self._produto_atual_id = None
         self._item_edicao_row = None
+        self._peso_produto = None
 
         self._configurar_tabela()
         self._configurar_campos()
@@ -129,7 +130,6 @@ class EntradaController(QWidget):
         logger.debug("Modo nova entrada ativado")
 
     def abrir_pesquisa_entrada(self):
-        """Abre o dialog de pesquisa de entradas."""
         from app.controllers.pesquisa_entrada_controller import (
             PesquisaEntradaController
         )
@@ -141,7 +141,6 @@ class EntradaController(QWidget):
                 self._carregar_entrada(entrada["id"])
 
     def pesquisar_entrada_direto(self):
-        """Busca entrada pela sequência digitada."""
         sequencia = self.ui.txt_Sequencia.text().strip()
         if not sequencia:
             return
@@ -157,7 +156,6 @@ class EntradaController(QWidget):
             QMessageBox.critical(self, "Erro", f"Erro ao pesquisar: {e}")
 
     def _carregar_entrada(self, entrada_id):
-        """Carrega uma entrada existente pelo ID."""
         try:
             entrada, itens = self.entrada_service.buscar_com_itens(entrada_id)
 
@@ -186,6 +184,11 @@ class EntradaController(QWidget):
             QMessageBox.critical(self, "Erro", f"Erro ao carregar: {e}")
 
     def salvar(self):
+        if self.ui.bt_Sair_Itens.isEnabled():
+            QMessageBox.warning(
+                self, "Aviso", "Clique em Sair Itens antes de continuar.")
+            return
+
         sequencia = self.ui.txt_Sequencia.text().strip()
         data_entrada = self.ui.dt_Entrada.date().toPython()
         motivo_id = self.ui.cmb_Motivo.currentData()
@@ -219,6 +222,11 @@ class EntradaController(QWidget):
             QMessageBox.critical(self, "Erro", f"Erro inesperado: {e}")
 
     def editar(self):
+        if self.ui.bt_Sair_Itens.isEnabled():
+            QMessageBox.warning(
+                self, "Aviso", "Clique em Sair Itens antes de continuar.")
+            return
+
         if self.entrada_id is None:
             QMessageBox.warning(self, "Aviso", "Nenhuma entrada carregada.")
             return
@@ -231,6 +239,11 @@ class EntradaController(QWidget):
         self._resetar_tela()
 
     def excluir(self):
+        if self.ui.bt_Sair_Itens.isEnabled():
+            QMessageBox.warning(
+                self, "Aviso", "Clique em Sair Itens antes de continuar.")
+            return
+
         if self.entrada_id is None:
             QMessageBox.warning(self, "Aviso", "Nenhuma entrada carregada.")
             return
@@ -264,6 +277,14 @@ class EntradaController(QWidget):
     # --- Itens ---
 
     def abrir_itens(self):
+        motivo_id = self.ui.cmb_Motivo.currentData()
+        if not motivo_id:
+            QMessageBox.warning(
+                self, "Aviso", "Selecione um motivo de entrada primeiro."
+            )
+            self.ui.cmb_Motivo.setFocus()
+            return
+
         self._estado_itens()
         self.ui.txt_Cod_Prod.setFocus()
         logger.debug("Seção de itens aberta")
@@ -279,7 +300,6 @@ class EntradaController(QWidget):
         logger.debug("Seção de itens fechada")
 
     def abrir_pesquisa_produto(self):
-        """Abre o dialog de pesquisa de produtos."""
         from app.controllers.pesquisa_produto_controller import (
             PesquisaProdutoController
         )
@@ -291,12 +311,14 @@ class EntradaController(QWidget):
                 self._produto_atual_id = produto.id
                 self.ui.txt_Cod_Prod.setText(produto.codigo or "")
                 self.ui.txt_Descricao_Prod.setText(produto.descricao or "")
+                self._peso_produto = getattr(produto, "peso", None)
+                custo = getattr(produto, "custo", 0) or 0
+                self.ui.txt_Custo.setText(f"{custo:.2f}".replace(".", ","))
                 self.ui.cmb_Un.setFocus()
                 logger.debug(
                     f"Produto selecionado do dialog: {produto.codigo}")
 
     def pesquisar_produto_direto(self):
-        """Busca produto pelo código digitado."""
         codigo = self.ui.txt_Cod_Prod.text().strip()
         if not codigo:
             return
@@ -306,12 +328,17 @@ class EntradaController(QWidget):
             if produto:
                 self._produto_atual_id = produto.id
                 self.ui.txt_Descricao_Prod.setText(produto.descricao or "")
+                self._peso_produto = getattr(produto, "peso", None)
+                custo = getattr(produto, "custo", 0) or 0
+                self.ui.txt_Custo.setText(f"{custo:.2f}".replace(".", ","))
                 self.ui.cmb_Un.setFocus()
                 logger.debug(f"Produto encontrado: {produto.codigo}")
             else:
                 QMessageBox.warning(self, "Aviso", "Produto não encontrado.")
                 self.ui.txt_Descricao_Prod.clear()
+                self.ui.txt_Custo.clear()
                 self._produto_atual_id = None
+                self._peso_produto = None
                 self.ui.txt_Cod_Prod.setFocus()
                 self.ui.txt_Cod_Prod.selectAll()
         except Exception as e:
@@ -334,8 +361,8 @@ class EntradaController(QWidget):
             return
 
         try:
-            qtde = float(qtde_text.replace(",", "."))
-            if qtde <= 0:
+            qtde_digitada = float(qtde_text.replace(",", "."))
+            if qtde_digitada <= 0:
                 raise ValueError("Quantidade deve ser maior que zero.")
         except ValueError:
             QMessageBox.warning(self, "Aviso", "Quantidade inválida.")
@@ -349,12 +376,27 @@ class EntradaController(QWidget):
             QMessageBox.warning(self, "Aviso", "Custo inválido.")
             return
 
+        # Conversão KG: divide pelo peso do produto
+        qtde_tabela = qtde_digitada
+        if unidade.strip().upper() == "KG":
+            if self._peso_produto is None or self._peso_produto <= 0:
+                QMessageBox.warning(
+                    self,
+                    "Aviso",
+                    "Produto sem peso cadastrado. Não é possível calcular por KG."
+                )
+                return
+            qtde_tabela = qtde_digitada / self._peso_produto
+            logger.debug(
+                f"Cálculo KG: {qtde_digitada} / {self._peso_produto} = {qtde_tabela:.3f}"
+            )
+
         item = {
             "produto_id": self._produto_atual_id,
             "codigo": codigo,
             "descricao": descricao,
             "unidade": unidade,
-            "quantidade": qtde,
+            "quantidade": qtde_tabela,
             "custo": custo,
         }
 
@@ -433,6 +475,7 @@ class EntradaController(QWidget):
         self.ui.txt_Qtde.clear()
         self.ui.txt_Custo.clear()
         self._produto_atual_id = None
+        self._peso_produto = None
 
     def _limpar_itens(self):
         self.item_model.limpar()
@@ -487,15 +530,15 @@ class EntradaController(QWidget):
     def _estado_itens(self):
         self.ui.txt_Sequencia.setEnabled(False)
         self.ui.bt_Pesquisa_Entrada.setEnabled(False)
-        self._habilitar_cabecalho(True)
+        self._habilitar_cabecalho(False)
         self._habilitar_itens(True)
         self.ui.tb_Itens.setEnabled(True)
 
         self.ui.bt_Novo.setEnabled(False)
-        self.ui.bt_Salvar.setEnabled(True)
+        self.ui.bt_Salvar.setEnabled(False)
         self.ui.bt_Editar.setEnabled(False)
         self.ui.bt_Limpar.setEnabled(True)
-        self.ui.bt_Excluir.setEnabled(self.entrada_id is not None)
+        self.ui.bt_Excluir.setEnabled(False)
 
     def _estado_carregado(self):
         self.ui.txt_Sequencia.setEnabled(True)
@@ -527,6 +570,7 @@ class EntradaController(QWidget):
         self.entrada_id = None
         self._item_edicao_row = None
         self._produto_atual_id = None
+        self._peso_produto = None
 
         self._limpar_campos()
         self._limpar_itens()

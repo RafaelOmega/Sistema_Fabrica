@@ -1,5 +1,4 @@
-from PySide6.QtCore import Qt, QTimer, QDateTime, QDate, QTime
-from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt, QTimer, QDateTime
 from PySide6.QtWidgets import QMainWindow, QMdiSubWindow, QMessageBox
 
 from app.utils.logger import get_logger
@@ -16,7 +15,6 @@ class MainWindowController(QMainWindow):
         self.ui.setupUi(self)
 
         self.setWindowTitle("Controle de Fábrica")
-        self.setWindowIcon(self.windowIcon())
 
         self._janelas_abertas = {}
 
@@ -44,13 +42,11 @@ class MainWindowController(QMainWindow):
         self.ui.dt_Hora_Atual.setTime(now.time())
 
     def on_database_ready(self):
-        """Chamado quando o banco terminou de carregar."""
         self._habilitar_menus(True)
         self.ui.lb_Comandos.setText("Sistema pronto para uso")
         logger.info("Banco pronto - menus liberados")
 
     def on_database_failed(self, error_message):
-        """Chamado quando falha a conexão com o banco."""
         self._habilitar_menus(False)
         self.ui.lb_Comandos.setText(f"Erro: {error_message}")
         logger.error(f"Banco falhou: {error_message}")
@@ -63,26 +59,32 @@ class MainWindowController(QMainWindow):
     # --- Abertura de janelas MDI ---
 
     def _abrir_janela_mdi(self, chave, titulo, criar_controller):
-        """Abre uma janela no MDI. Se já estiver aberta, traz para frente."""
+        """Abre uma janela no MDI. Se já estiver aberta e válida, traz para frente."""
         if chave in self._janelas_abertas:
             subwindow = self._janelas_abertas[chave]
-            if subwindow:
-                self.ui.mdiArea.setActiveSubWindow(subwindow)
-                subwindow.showNormal()
-                subwindow.setFocus()
-                logger.debug(
-                    f"Janela '{titulo}' já aberta - trazendo para frente")
-                return
+            if subwindow is not None:
+                widget = subwindow.widget()
+                if widget is not None and not widget.isHidden():
+                    self.ui.mdiArea.setActiveSubWindow(subwindow)
+                    subwindow.showNormal()
+                    subwindow.setFocus()
+                    logger.debug(
+                        f"Janela '{titulo}' já aberta - trazendo para frente")
+                    return
+            self._janelas_abertas.pop(chave, None)
 
         try:
             controller = criar_controller()
             subwindow = QMdiSubWindow()
             subwindow.setWindowTitle(titulo)
             subwindow.setWidget(controller)
-            subwindow.setAttribute(Qt.WA_DeleteOnClose, False)
 
             self.ui.mdiArea.addSubWindow(subwindow)
             subwindow.showMaximized()
+
+            subwindow.destroyed.connect(
+                lambda _, c=chave: self._janelas_abertas.pop(c, None)
+            )
 
             self._janelas_abertas[chave] = subwindow
 
@@ -91,41 +93,30 @@ class MainWindowController(QMainWindow):
         except Exception as e:
             logger.error(
                 f"Erro ao abrir janela '{titulo}': {e}", exc_info=True)
-            QMessageBox.critical(
-                self, "Erro", f"Erro ao abrir {titulo}:\n{e}"
-            )
+            QMessageBox.critical(self, "Erro", f"Erro ao abrir {titulo}:\n{e}")
 
     def abrir_produtos(self):
         from app.controllers.cad_produtos_controller import ProdutosController
 
         self._abrir_janela_mdi(
-            "produtos",
-            "Cadastro de Produtos",
-            ProdutosController,
-        )
+            "produtos", "Cadastro de Produtos", ProdutosController)
 
     def abrir_motivo_entrada(self):
         from app.controllers.cad_motivo_entrada_controller import MotivoEntradaController
 
         self._abrir_janela_mdi(
-            "motivo_entrada",
-            "Cadastro de Motivo de Entrada",
-            MotivoEntradaController,
+            "motivo_entrada", "Cadastro de Motivo de Entrada", MotivoEntradaController
         )
 
     def abrir_entrada(self):
         from app.controllers.cad_entrada_controller import EntradaController
 
         self._abrir_janela_mdi(
-            "entrada",
-            "Entrada de Mercadorias",
-            EntradaController,
-        )
+            "entrada", "Entrada de Mercadorias", EntradaController)
 
     def closeEvent(self, event):
-        """Fecha todas as janelas filhas ao sair."""
-        for subwindow in self._janelas_abertas.values():
-            if subwindow:
+        for subwindow in list(self._janelas_abertas.values()):
+            if subwindow is not None:
                 subwindow.close()
         self._janelas_abertas.clear()
         super().closeEvent(event)
