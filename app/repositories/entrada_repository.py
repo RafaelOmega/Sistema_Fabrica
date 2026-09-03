@@ -51,22 +51,26 @@ class EntradaRepository:
             return entrada
 
     def obter_proxima_sequencia(self):
+        """
+        Retorna o próximo código baseado no maior código numérico existente.
+        Previne colisão quando o último registro é deletado.
+        """
         with session_scope() as session:
-            ultimo = (
-                session.query(Entrada.sequencia)
-                .order_by(Entrada.id.desc())
-                .first()
-            )
-
-            if not ultimo:
+            sequencias = session.query(Entrada.sequencia).all()
+            if not sequencias:
                 return "1"
 
-            try:
-                proximo = int(ultimo[0]) + 1
-                return str(proximo)
-            except (ValueError, TypeError):
-                count = session.query(Entrada).count()
-                return str(count + 1)
+            numeros = []
+            for (seq,) in sequencias:
+                try:
+                    numeros.append(int(seq))
+                except (ValueError, TypeError):
+                    continue
+
+            if not numeros:
+                return "1"
+
+            return str(max(numeros) + 1)
 
     def buscar_com_itens(self, entrada_id):
         """Retorna a entrada e uma lista de dicts com dados dos itens
@@ -103,29 +107,71 @@ class EntradaRepository:
                 })
             return entrada, itens
 
-    def salvar_com_itens(self, entrada, itens_data):
-        """Salva a entrada e substitui todos os itens em uma transação."""
+    def salvar_com_itens(self, entrada, itens_data, session=None):
+        """
+        Salva a entrada e seus itens usando diff (inserir/atualizar/excluir).
+
+        itens_data: lista de dicts. Itens com 'id' são atualizados;
+        itens sem 'id' são inseridos; itens existentes não presentes
+        são excluídos.
+
+        Se `session` for passada, usa-a (para transação compartilhada).
+        Caso contrário, cria uma nova session_scope().
+        """
+        if session:
+            return self._salvar_com_itens_inner(session, entrada, itens_data)
         with session_scope() as session:
-            entrada_persistida = session.merge(entrada)
-            session.flush()
+            return self._salvar_com_itens_inner(session, entrada, itens_data)
 
-            session.query(ItemEntrada).filter_by(
-                entrada_id=entrada_persistida.id
-            ).delete()
+    def _salvar_com_itens_inner(self, session, entrada, itens_data):
+        """Lógica interna de diff de itens."""
+        entrada_persistida = session.merge(entrada)
+        session.flush()
 
-            for item_data in itens_data:
-                item = ItemEntrada(
+        # Buscar itens existentes
+        itens_existentes = (
+            session.query(ItemEntrada)
+            .filter_by(entrada_id=entrada_persistida.id)
+            .all()
+        )
+        itens_existentes_map = {item.id: item for item in itens_existentes}
+
+        # IDs dos itens novos que já têm ID (vêm de edição)
+        ids_novos = {
+            item["id"] for item in itens_data
+            if item.get("id") is not None
+        }
+
+        # 1. Excluir itens que não estão mais na lista
+        for item_id, item in itens_existentes_map.items():
+            if item_id not in ids_novos:
+                session.delete(item)
+
+        # 2. Atualizar existentes + inserir novos
+        for item_data in itens_data:
+            item_id = item_data.get("id")
+            if item_id and item_id in itens_existentes_map:
+                # Atualizar item existente
+                item = itens_existentes_map[item_id]
+                item.produto_id = item_data["produto_id"]
+                item.unidade = item_data["unidade"]
+                item.quantidade = item_data["quantidade"]
+                item.custo = item_data["custo"]
+            else:
+                # Inserir novo item
+                novo_item = ItemEntrada(
                     entrada_id=entrada_persistida.id,
                     produto_id=item_data["produto_id"],
                     unidade=item_data["unidade"],
                     quantidade=item_data["quantidade"],
                     custo=item_data["custo"],
                 )
-                session.add(item)
+                session.add(novo_item)
 
-            session.refresh(entrada_persistida)
-            session.expunge(entrada_persistida)
-            return entrada_persistida
+        session.flush()
+        session.refresh(entrada_persistida)
+        session.expunge(entrada_persistida)
+        return entrada_persistida
 
     def excluir_por_id(self, entrada_id):
         with session_scope() as session:

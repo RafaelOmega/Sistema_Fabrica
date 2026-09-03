@@ -7,7 +7,6 @@ class ProdutoFilterProxyModel(QSortFilterProxyModel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._texto_filtro = ""
-
         self.setDynamicSortFilter(True)
         self.setFilterCaseSensitivity(Qt.CaseInsensitive)
         self.setSortCaseSensitivity(Qt.CaseInsensitive)
@@ -34,9 +33,10 @@ class ProdutoFilterProxyModel(QSortFilterProxyModel):
                 "" if produto.descricao is None else str(produto.descricao),
                 self._normalizar_numero(produto.peso),
                 self._normalizar_numero(produto.custo),
+                "sim" if getattr(produto, "prod_acabado", False) else "não",
+                "sim" if getattr(produto, "mat_prima", False) else "não",
             ]
         ).lower()
-
         return self._texto_filtro in conteudo
 
     def lessThan(self, left, right):
@@ -50,6 +50,11 @@ class ProdutoFilterProxyModel(QSortFilterProxyModel):
             valor_esquerda = model.data(left, Qt.UserRole)
             valor_direita = model.data(right, Qt.UserRole)
             return self._para_decimal(valor_esquerda) < self._para_decimal(valor_direita)
+
+        if coluna in (4, 5):
+            valor_esquerda = model.data(left, Qt.UserRole)
+            valor_direita = model.data(right, Qt.UserRole)
+            return bool(valor_esquerda) < bool(valor_direita)
 
         valor_esquerda = model.data(left, Qt.DisplayRole)
         valor_direita = model.data(right, Qt.DisplayRole)
@@ -69,10 +74,8 @@ class ProdutoFilterProxyModel(QSortFilterProxyModel):
     def _para_decimal(valor):
         if valor is None or valor == "":
             return Decimal("0.00")
-
         if isinstance(valor, Decimal):
             return valor
-
         return Decimal(str(valor))
 
     @staticmethod

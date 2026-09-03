@@ -18,6 +18,10 @@ def init_db():
     from app.models.produto import Produto  # noqa: F401
     from app.models.motivo_entrada import Motivo_Entrada  # noqa: F401
     from app.models.entrada import Entrada, ItemEntrada  # noqa: F401
+    from app.models.alteracao_custo import AlteracaoCusto  # noqa: F401
+    from app.models.ficha_tecnica import (  # noqa: F401
+        FichaTecnica, ItemFichaTecnica,
+    )
 
     logger.info("Criando tabelas no banco (se não existirem)")
     try:

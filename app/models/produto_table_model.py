@@ -4,7 +4,8 @@ from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 
 class ProdutoTableModel(QAbstractTableModel):
-    HEADERS = ["Código", "Descrição", "Peso", "Custo"]
+    HEADERS = ["Código", "Descrição", "Peso",
+               "Custo", "Prod. Acabado", "Mat. Prima"]
 
     def __init__(self, produtos=None, parent=None):
         super().__init__(parent)
@@ -39,6 +40,10 @@ class ProdutoTableModel(QAbstractTableModel):
                 return self._formatar_peso(produto.peso)
             if coluna == 3:
                 return self._formatar_custo(produto.custo)
+            if coluna == 4:
+                return "Sim" if getattr(produto, "prod_acabado", False) else "Não"
+            if coluna == 5:
+                return "Sim" if getattr(produto, "mat_prima", False) else "Não"
 
         if role == Qt.UserRole:
             if coluna == 0:
@@ -49,10 +54,16 @@ class ProdutoTableModel(QAbstractTableModel):
                 return self._to_float(produto.peso)
             if coluna == 3:
                 return self._to_decimal(produto.custo)
+            if coluna == 4:
+                return bool(getattr(produto, "prod_acabado", False))
+            if coluna == 5:
+                return bool(getattr(produto, "mat_prima", False))
 
         if role == Qt.TextAlignmentRole:
             if coluna in (2, 3):
                 return Qt.AlignRight | Qt.AlignVCenter
+            if coluna in (4, 5):
+                return Qt.AlignCenter
             return Qt.AlignLeft | Qt.AlignVCenter
 
         return None
@@ -60,10 +71,8 @@ class ProdutoTableModel(QAbstractTableModel):
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role != Qt.DisplayRole:
             return None
-
         if orientation == Qt.Horizontal and 0 <= section < len(self.HEADERS):
             return self.HEADERS[section]
-
         return str(section + 1)
 
     def atualizar_dados(self, produtos):
@@ -86,10 +95,8 @@ class ProdutoTableModel(QAbstractTableModel):
     def _formatar_custo(valor):
         if valor is None:
             return "0,00"
-
         if isinstance(valor, Decimal):
             return format(valor, ".2f").replace(".", ",")
-
         return f"{float(valor):.2f}".replace(".", ",")
 
     @staticmethod
@@ -102,8 +109,6 @@ class ProdutoTableModel(QAbstractTableModel):
     def _to_decimal(valor):
         if valor is None:
             return Decimal("0.00")
-
         if isinstance(valor, Decimal):
             return valor
-
         return Decimal(str(valor))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'produtoshXnFKr.ui'
+## Form generated from reading UI file 'produtosJKTcGJ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDoubleSpinBox, QFrame, QHBoxLayout,
-    QHeaderView, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QSpacerItem, QTableView, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDoubleSpinBox, QFrame,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QPushButton, QSizePolicy, QSpacerItem, QTableView,
+    QVBoxLayout, QWidget)
 
 class Ui_Produtos(object):
     def setupUi(self, Produtos):
@@ -76,6 +76,16 @@ class Ui_Produtos(object):
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
+
+        self.ch_Prod_Acabado = QCheckBox(self.frm_Novo)
+        self.ch_Prod_Acabado.setObjectName(u"ch_Prod_Acabado")
+
+        self.horizontalLayout_4.addWidget(self.ch_Prod_Acabado)
+
+        self.ch_Mat_Prima = QCheckBox(self.frm_Novo)
+        self.ch_Mat_Prima.setObjectName(u"ch_Mat_Prima")
+
+        self.horizontalLayout_4.addWidget(self.ch_Mat_Prima)
 
 
         self.verticalLayout_2.addWidget(self.frm_Novo)
@@ -250,6 +260,8 @@ class Ui_Produtos(object):
         Produtos.setWindowTitle(QCoreApplication.translate("Produtos", u"Cadastro de Produtos", None))
         self.lb_Codigo.setText(QCoreApplication.translate("Produtos", u"C\u00f3digo:", None))
         self.bt_Novo.setText(QCoreApplication.translate("Produtos", u"+", None))
+        self.ch_Prod_Acabado.setText(QCoreApplication.translate("Produtos", u"Produto Acabado", None))
+        self.ch_Mat_Prima.setText(QCoreApplication.translate("Produtos", u"Mat\u00e9ria Prima", None))
         self.lb_Descricao.setText(QCoreApplication.translate("Produtos", u"Descri\u00e7\u00e3o:", None))
         self.lb_Peso.setText(QCoreApplication.translate("Produtos", u"Peso do Saco:", None))
         self.txt_Peso.setSuffix(QCoreApplication.translate("Produtos", u" Kg", None))

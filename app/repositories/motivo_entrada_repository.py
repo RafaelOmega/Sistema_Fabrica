@@ -1,4 +1,4 @@
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 from app.database.connection import session_scope
 from app.models.motivo_entrada import Motivo_Entrada
@@ -57,28 +57,26 @@ class MotivoEntradaRepository:
             return motivo
 
     def obter_proximo_codigo(self):
-        """Busca o último código e retorna o próximo valor numérico.
-        Se a tabela estiver vazia, retorna '1'.
-        Se o último código for numérico, incrementa.
-        Se não for numérico, retorna o total de registros + 1."""
+        """
+        Retorna o próximo código baseado no maior código numérico existente.
+        Previne colisão quando o último registro é deletado.
+        """
         with session_scope() as session:
-            from sqlalchemy import func
-
-            ultimo = (
-                session.query(Motivo_Entrada.codigo)
-                .order_by(Motivo_Entrada.id.desc())
-                .first()
-            )
-
-            if not ultimo:
+            codigos = session.query(Motivo_Entrada.codigo).all()
+            if not codigos:
                 return "1"
 
-            try:
-                proximo = int(ultimo[0]) + 1
-                return str(proximo)
-            except (ValueError, TypeError):
-                count = session.query(Motivo_Entrada).count()
-                return str(count + 1)
+            numeros = []
+            for (codigo,) in codigos:
+                try:
+                    numeros.append(int(codigo))
+                except (ValueError, TypeError):
+                    continue
+
+            if not numeros:
+                return "1"
+
+            return str(max(numeros) + 1)
 
     def salvar(self, motivo):
         with session_scope() as session:

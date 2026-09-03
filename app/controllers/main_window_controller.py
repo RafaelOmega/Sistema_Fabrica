@@ -28,6 +28,7 @@ class MainWindowController(QMainWindow):
         self.ui.actionMotivo_Entrada.triggered.connect(
             self.abrir_motivo_entrada)
         self.ui.actionEntrada.triggered.connect(self.abrir_entrada)
+        self.ui.actionFicha_Tecnica.triggered.connect(self.abrir_ficha_tecnica)
 
     def _iniciar_statusbar(self):
         self.ui.lb_Comandos.setText("Pronto")
@@ -55,7 +56,7 @@ class MainWindowController(QMainWindow):
         self.ui.actionProdutos.setEnabled(habilitar)
         self.ui.actionMotivo_Entrada.setEnabled(habilitar)
         self.ui.actionEntrada.setEnabled(habilitar)
-
+        self.ui.actionFicha_Tecnica.setEnabled(habilitar)
     # --- Abertura de janelas MDI ---
 
     def _abrir_janela_mdi(self, chave, titulo, criar_controller):
@@ -106,6 +107,13 @@ class MainWindowController(QMainWindow):
 
         self._abrir_janela_mdi(
             "motivo_entrada", "Cadastro de Motivo de Entrada", MotivoEntradaController
+        )
+
+    def abrir_ficha_tecnica(self):
+        from app.controllers.cad_ficha_tecnica_controller import FichaTecnicaController
+
+        self._abrir_janela_mdi(
+            "ficha_tecnica", "Cadastro de Ficha Técnica", FichaTecnicaController
         )
 
     def abrir_entrada(self):

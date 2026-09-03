@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, Numeric, String
+from sqlalchemy import Boolean, Column, Float, Integer, Numeric, String
 
 from app.database.base import Base
 
@@ -11,9 +11,12 @@ class Produto(Base):
     descricao = Column(String(255), nullable=False, index=True)
     peso = Column(Float, nullable=False, default=0.0)
     custo = Column(Numeric(10, 2), nullable=False, default=0)
+    prod_acabado = Column(Boolean, nullable=False, default=False)
+    mat_prima = Column(Boolean, nullable=False, default=False)
 
     def __repr__(self):
         return (
             f"Produto(id={self.id}, codigo='{self.codigo}', "
-            f"descricao='{self.descricao}', peso={self.peso}, custo={self.custo})"
+            f"descricao='{self.descricao}', peso={self.peso}, custo={self.custo}, "
+            f"prod_acabado={self.prod_acabado}, mat_prima={self.mat_prima})"
         )

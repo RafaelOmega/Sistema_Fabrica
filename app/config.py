@@ -6,4 +6,9 @@ DB_NAME = os.getenv("DB_NAME4")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 
+if not DB_NAME:
+    raise RuntimeError("Variável de ambiente DB_NAME4 não definida.")
+if not DB_PASSWORD:
+    raise RuntimeError("Variável de ambiente DB_PASSWORD não definida.")
+
 DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"

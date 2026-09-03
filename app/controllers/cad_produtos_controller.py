@@ -1,5 +1,4 @@
 from decimal import Decimal
-
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -7,7 +6,6 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QWidget,
 )
-
 from app.models.produto_filter_proxy_model import ProdutoFilterProxyModel
 from app.models.produto_table_model import ProdutoTableModel
 from app.services.produto_service import ProdutoService
@@ -20,26 +18,20 @@ logger = get_logger("produtos_controller")
 class ProdutosController(QWidget):
     def __init__(self):
         super().__init__()
-
         self.ui = Ui_Produtos()
         self.ui.setupUi(self)
-
         self.service = ProdutoService()
         self.model = ProdutoTableModel()
         self.proxy_model = ProdutoFilterProxyModel(self)
-
         self.produto_selecionado_id = None
-
         self._configurar_tabela()
         self._conectar_sinais()
         self._carregar_dados()
         self._estado_inicial()
-
         logger.info("Tela de produtos inicializada")
 
     def _configurar_tabela(self):
         self.proxy_model.setSourceModel(self.model)
-
         self.ui.tb_Produtos.setModel(self.proxy_model)
         self.ui.tb_Produtos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.ui.tb_Produtos.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -47,14 +39,12 @@ class ProdutosController(QWidget):
         self.ui.tb_Produtos.setAlternatingRowColors(True)
         self.ui.tb_Produtos.setSortingEnabled(True)
         self.ui.tb_Produtos.verticalHeader().setVisible(False)
-
         header = self.ui.tb_Produtos.horizontalHeader()
         header.setStretchLastSection(False)
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(1, QHeaderView.Stretch)
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
-
         self.ui.tb_Produtos.sortByColumn(1, Qt.AscendingOrder)
 
     def _conectar_sinais(self):
@@ -65,7 +55,6 @@ class ProdutosController(QWidget):
         self.ui.bt_Excluir.clicked.connect(self.excluir)
         self.ui.bt_Pesquisar.clicked.connect(self.aplicar_filtro)
         self.ui.txt_Pesquisar.textChanged.connect(self.aplicar_filtro)
-
         self.ui.tb_Produtos.selectionModel().selectionChanged.connect(
             self._ao_selecionar_linha
         )
@@ -84,7 +73,6 @@ class ProdutosController(QWidget):
     def aplicar_filtro(self):
         texto = self.ui.txt_Pesquisar.text().strip()
         self.proxy_model.definir_filtro(texto)
-
         self.produto_selecionado_id = None
         self._limpar_selecao_tabela()
         self._limpar_campos()
@@ -103,7 +91,8 @@ class ProdutosController(QWidget):
         descricao = self.ui.txt_Descricao.text().strip()
         peso = self.ui.txt_Peso.value()
         custo = Decimal(str(self.ui.txt_Custo.value()))
-
+        prod_acabado = self.ui.ch_Prod_Acabado.isChecked()   # ← ADICIONADO
+        mat_prima = self.ui.ch_Mat_Prima.isChecked()           # ← ADICIONADO
         try:
             self.service.salvar(
                 codigo=codigo,
@@ -111,20 +100,18 @@ class ProdutosController(QWidget):
                 peso=peso,
                 custo=custo,
                 produto_id=self.produto_selecionado_id,
+                prod_acabado=prod_acabado,   # ← ADICIONADO
+                mat_prima=mat_prima,           # ← ADICIONADO
             )
-
             logger.info(
                 f"Produto salvo com sucesso | id={self.produto_selecionado_id} | codigo={codigo}"
             )
-
             QMessageBox.information(
                 self, "Sucesso", "Produto salvo com sucesso.")
             self._resetar_tela()
-
         except ValueError as e:
             logger.warning(f"Falha de validação ao salvar produto: {e}")
             QMessageBox.warning(self, "Aviso", str(e))
-
         except Exception as e:
             logger.error(
                 f"Erro inesperado ao salvar produto: {e}", exc_info=True)
@@ -135,7 +122,6 @@ class ProdutosController(QWidget):
             QMessageBox.warning(
                 self, "Aviso", "Selecione um produto na tabela.")
             return
-
         self._estado_edicao()
         self.ui.txt_Codigo.setFocus()
         logger.debug(f"Modo edição ativado | id={self.produto_selecionado_id}")
@@ -148,31 +134,24 @@ class ProdutosController(QWidget):
             QMessageBox.warning(
                 self, "Aviso", "Selecione um produto na tabela.")
             return
-
         resposta = QMessageBox.question(
             self,
             "Confirmar exclusão",
             "Deseja realmente excluir este produto?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
-
         if resposta != QMessageBox.StandardButton.Yes:
             return
-
         try:
             self.service.excluir(self.produto_selecionado_id)
-
             logger.info(
                 f"Produto excluído com sucesso | id={self.produto_selecionado_id}")
-
             QMessageBox.information(
                 self, "Sucesso", "Produto excluído com sucesso.")
             self._resetar_tela()
-
         except ValueError as e:
             logger.warning(f"Falha ao excluir produto: {e}")
             QMessageBox.warning(self, "Aviso", str(e))
-
         except Exception as e:
             logger.error(
                 f"Erro inesperado ao excluir produto: {e}", exc_info=True)
@@ -180,21 +159,16 @@ class ProdutosController(QWidget):
 
     def _ao_selecionar_linha(self, selected, deselected):
         indexes_proxy = self.ui.tb_Produtos.selectionModel().selectedRows()
-
         if not indexes_proxy:
             return
-
         index_proxy = indexes_proxy[0]
         index_source = self.proxy_model.mapToSource(index_proxy)
-
         produto = self.model.obter_produto(index_source.row())
         if produto is None:
             return
-
         self.produto_selecionado_id = produto.id
         self._preencher_campos(produto)
         self._estado_linha_selecionada()
-
         logger.debug(
             f"Produto selecionado | id={produto.id} | row_proxy={index_proxy.row()} | row_source={index_source.row()}"
         )
@@ -208,12 +182,20 @@ class ProdutosController(QWidget):
             0.0 if produto.peso is None else float(produto.peso))
         self.ui.txt_Custo.setValue(
             0.0 if produto.custo is None else float(produto.custo))
+        # ← ADICIONADO: carrega checkboxes
+        self.ui.ch_Prod_Acabado.setChecked(
+            bool(getattr(produto, "prod_acabado", False)))
+        self.ui.ch_Mat_Prima.setChecked(
+            bool(getattr(produto, "mat_prima", False)))
 
     def _limpar_campos(self):
         self.ui.txt_Codigo.clear()
         self.ui.txt_Descricao.clear()
         self.ui.txt_Peso.setValue(0.0)
         self.ui.txt_Custo.setValue(0.0)
+        # ← ADICIONADO: limpa checkboxes
+        self.ui.ch_Prod_Acabado.setChecked(False)
+        self.ui.ch_Mat_Prima.setChecked(False)
 
     def _limpar_selecao_tabela(self):
         self.ui.tb_Produtos.clearSelection()
@@ -223,68 +205,55 @@ class ProdutosController(QWidget):
         self.ui.txt_Descricao.setEnabled(habilitar)
         self.ui.txt_Peso.setEnabled(habilitar)
         self.ui.txt_Custo.setEnabled(habilitar)
+        # ← ADICIONADO: habilita/desabilita checkboxes junto com os campos
+        self.ui.ch_Prod_Acabado.setEnabled(habilitar)
+        self.ui.ch_Mat_Prima.setEnabled(habilitar)
 
     def _estado_inicial(self):
-        """Tudo bloqueado, exceto bt_Novo e pesquisa.
-        Estado padrão ao abrir a tela, após salvar, excluir ou limpar."""
         self._habilitar_campos_produto(False)
-
         self.ui.bt_Novo.setEnabled(True)
         self.ui.bt_Salvar.setEnabled(False)
         self.ui.bt_Editar.setEnabled(False)
         self.ui.bt_Excluir.setEnabled(False)
         self.ui.bt_Limpar.setEnabled(False)
-
         self.ui.txt_Pesquisar.setEnabled(True)
         self.ui.bt_Pesquisar.setEnabled(True)
 
     def _estado_novo(self):
-        """Campos desbloqueados para cadastro de novo produto."""
         self._habilitar_campos_produto(True)
-
         self.ui.bt_Novo.setEnabled(False)
         self.ui.bt_Salvar.setEnabled(True)
         self.ui.bt_Editar.setEnabled(False)
         self.ui.bt_Excluir.setEnabled(False)
         self.ui.bt_Limpar.setEnabled(True)
-
         self.ui.txt_Pesquisar.setEnabled(True)
         self.ui.bt_Pesquisar.setEnabled(True)
 
     def _estado_linha_selecionada(self):
-        """Linha selecionada na tabela: campos bloqueados,
-        Editar e Excluir habilitados. Pesquisa e bt_Novo permanecem ativos."""
         self._habilitar_campos_produto(False)
-
         self.ui.bt_Novo.setEnabled(True)
         self.ui.bt_Salvar.setEnabled(False)
         self.ui.bt_Editar.setEnabled(True)
         self.ui.bt_Excluir.setEnabled(True)
         self.ui.bt_Limpar.setEnabled(True)
-
         self.ui.txt_Pesquisar.setEnabled(True)
         self.ui.bt_Pesquisar.setEnabled(True)
 
     def _estado_edicao(self):
-        """Campos desbloqueados para editar produto existente."""
         self._habilitar_campos_produto(True)
-
         self.ui.bt_Novo.setEnabled(False)
         self.ui.bt_Salvar.setEnabled(True)
         self.ui.bt_Editar.setEnabled(False)
         self.ui.bt_Excluir.setEnabled(True)
         self.ui.bt_Limpar.setEnabled(True)
-
         self.ui.txt_Pesquisar.setEnabled(True)
         self.ui.bt_Pesquisar.setEnabled(True)
 
     def _resetar_tela(self):
         self.produto_selecionado_id = None
-
         self._limpar_campos()
         self.ui.txt_Pesquisar.clear()
         self._limpar_selecao_tabela()
-
         self._carregar_dados()
         self.proxy_model.definir_filtro("")
         self._estado_inicial()

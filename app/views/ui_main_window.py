@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowrBmouo.ui'
+## Form generated from reading UI file 'main_windowGUheff.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -37,6 +37,8 @@ class Ui_MainWindow(object):
         self.actionMotivo_Entrada.setObjectName(u"actionMotivo_Entrada")
         self.actionEntrada = QAction(MainWindow)
         self.actionEntrada.setObjectName(u"actionEntrada")
+        self.actionFicha_Tecnica = QAction(MainWindow)
+        self.actionFicha_Tecnica.setObjectName(u"actionFicha_Tecnica")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -106,6 +108,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuLan_amentos.menuAction())
         self.menuCadastros.addAction(self.actionProdutos)
         self.menuCadastros.addAction(self.actionMotivo_Entrada)
+        self.menuCadastros.addAction(self.actionFicha_Tecnica)
         self.menuLan_amentos.addAction(self.actionEntrada)
 
         self.retranslateUi(MainWindow)
@@ -118,6 +121,7 @@ class Ui_MainWindow(object):
         self.actionProdutos.setText(QCoreApplication.translate("MainWindow", u"Produtos", None))
         self.actionMotivo_Entrada.setText(QCoreApplication.translate("MainWindow", u"Motivo Entrada", None))
         self.actionEntrada.setText(QCoreApplication.translate("MainWindow", u"Entrada", None))
+        self.actionFicha_Tecnica.setText(QCoreApplication.translate("MainWindow", u"Ficha T\u00e9cnica", None))
         self.lb_Comandos.setText("")
         self.menuCadastros.setTitle(QCoreApplication.translate("MainWindow", u"Cadastros", None))
         self.menuLan_amentos.setTitle(QCoreApplication.translate("MainWindow", u"Lan\u00e7amentos", None))

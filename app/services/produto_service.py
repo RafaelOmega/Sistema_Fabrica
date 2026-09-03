@@ -26,23 +26,19 @@ class ProdutoService:
     def _validar(self, codigo, descricao, peso, custo):
         if not codigo or not descricao:
             raise ValueError("Preencha código e descrição.")
-
         if len(codigo) > 50:
             raise ValueError("Código deve ter no máximo 50 caracteres.")
-
         if len(descricao) > 255:
             raise ValueError("Descrição deve ter no máximo 255 caracteres.")
-
         if peso < 0:
             raise ValueError("Peso não pode ser negativo.")
-
         if custo < 0:
             raise ValueError("Custo não pode ser negativo.")
 
-    def salvar(self, codigo, descricao, peso, custo, produto_id=None):
+    def salvar(self, codigo, descricao, peso, custo, produto_id=None,
+               prod_acabado=False, mat_prima=False):
         codigo = codigo.strip()
         descricao = descricao.strip()
-
         self._validar(codigo, descricao, peso, custo)
 
         if produto_id is None:
@@ -50,7 +46,6 @@ class ProdutoService:
             if existente:
                 logger.warning(f"Código duplicado ao salvar: {codigo}")
                 raise ValueError("Já existe um produto com este código.")
-
             produto = Produto()
         else:
             produto = self.repo.buscar_por_id(produto_id)
@@ -63,6 +58,8 @@ class ProdutoService:
         produto.descricao = descricao
         produto.peso = peso
         produto.custo = custo
+        produto.prod_acabado = prod_acabado
+        produto.mat_prima = mat_prima
 
         try:
             resultado = self.repo.salvar(produto)
@@ -78,11 +75,12 @@ class ProdutoService:
 
     def excluir(self, produto_id):
         sucesso = self.repo.excluir_por_id(produto_id)
-
         if not sucesso:
             logger.warning(
                 f"Tentativa de excluir produto inexistente: ID={produto_id}")
             raise ValueError("Produto não encontrado.")
-
         logger.info(f"Produto excluído: ID={produto_id}")
         return True
+
+    def atualizar_custo(self, produto_id, novo_custo):
+        return self.repo.atualizar_custo(produto_id, novo_custo)

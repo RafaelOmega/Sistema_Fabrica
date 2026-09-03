@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
 )
 
 from app.models.item_entrada_table_model import ItemEntradaTableModel
+from app.services.alteracao_custo_service import AlteracaoCustoService
 from app.services.entrada_service import EntradaService
 from app.services.motivo_entrada_service import MotivoEntradaService
 from app.services.produto_service import ProdutoService
@@ -15,8 +16,6 @@ from app.utils.logger import get_logger
 from app.views.ui_entrada import Ui_Entrada
 
 logger = get_logger("entrada_controller")
-
-CODIGO_MILHO = "116431"
 
 
 class EntradaController(QWidget):
@@ -29,6 +28,7 @@ class EntradaController(QWidget):
         self.entrada_service = EntradaService()
         self.motivo_service = MotivoEntradaService()
         self.produto_service = ProdutoService()
+        self.alteracao_custo_service = AlteracaoCustoService()
 
         self.item_model = ItemEntradaTableModel()
 
@@ -36,6 +36,9 @@ class EntradaController(QWidget):
         self._produto_atual_id = None
         self._item_edicao_row = None
         self._peso_produto = None
+        # ← NOVO: acumula alterações para commit transacional
+        self._alteracoes_custo = []
+        self._produtos_custo_detectado = set()  # ← NOVO: evita duplicação de detecção
 
         self._configurar_tabela()
         self._configurar_campos()
@@ -69,7 +72,7 @@ class EntradaController(QWidget):
         self.ui.txt_Total_Itens.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.ui.txt_Total_Itens.setText("R$ 0,00")
 
-        # Campos de milho — ocultos por padrão
+        # Campos especiais — ocultos por padrão
         self.ui.lb_Milho.setVisible(False)
         self.ui.txt_Milho.setVisible(False)
 
@@ -93,7 +96,8 @@ class EntradaController(QWidget):
         self.ui.bt_Pesquisa_Itens.clicked.connect(self.abrir_pesquisa_produto)
         self.ui.txt_Cod_Prod.returnPressed.connect(
             self.pesquisar_produto_direto)
-        self.ui.txt_Milho.editingFinished.connect(self._calcular_custo_milho)
+        self.ui.txt_Milho.editingFinished.connect(
+            self._calcular_custo_especial)
         self.ui.bt_Salvar_Itens.clicked.connect(self.salvar_item)
         self.ui.bt_Limpar_Itens.clicked.connect(self.limpar_item)
         self.ui.bt_Excluir_Itens.clicked.connect(self.excluir_item)
@@ -120,6 +124,8 @@ class EntradaController(QWidget):
 
     def novo(self):
         self.entrada_id = None
+        self._alteracoes_custo = []              # ← LIMPA alterações pendentes
+        self._produtos_custo_detectado = set()   # ← LIMPA controle de duplicação
         self._limpar_campos()
         self._limpar_itens()
         self._limpar_selecao_itens()
@@ -138,7 +144,7 @@ class EntradaController(QWidget):
 
     def abrir_pesquisa_entrada(self):
         from app.controllers.pesquisa_entrada_controller import (
-            PesquisaEntradaController
+            PesquisaEntradaController,
         )
 
         dialog = PesquisaEntradaController(self)
@@ -167,6 +173,8 @@ class EntradaController(QWidget):
             entrada, itens = self.entrada_service.buscar_com_itens(entrada_id)
 
             self.entrada_id = entrada.id
+            self._alteracoes_custo = []              # ← LIMPA ao carregar
+            self._produtos_custo_detectado = set()   # ← LIMPA ao carregar
             self.ui.txt_Sequencia.setText(entrada.sequencia or "")
             self.ui.dt_Entrada.setDate(
                 QDate(
@@ -193,7 +201,8 @@ class EntradaController(QWidget):
     def salvar(self):
         if self.ui.bt_Sair_Itens.isEnabled():
             QMessageBox.warning(
-                self, "Aviso", "Clique em Sair Itens antes de continuar.")
+                self, "Aviso", "Clique em Sair Itens antes de continuar."
+            )
             return
 
         sequencia = self.ui.txt_Sequencia.text().strip()
@@ -202,12 +211,14 @@ class EntradaController(QWidget):
         itens = self.item_model.obter_todos()
 
         try:
-            self.entrada_service.salvar(
+            # ← ALTERADO: usa salvar_com_alteracao_custo (transação única)
+            self.entrada_service.salvar_com_alteracao_custo(
                 sequencia=sequencia,
                 data_entrada=data_entrada,
                 motivo_id=motivo_id,
                 itens_data=itens,
                 entrada_id=self.entrada_id,
+                alteracoes_custo=self._alteracoes_custo or None,
             )
 
             logger.info(
@@ -216,7 +227,8 @@ class EntradaController(QWidget):
             )
 
             QMessageBox.information(
-                self, "Sucesso", "Entrada salva com sucesso.")
+                self, "Sucesso", "Entrada salva com sucesso."
+            )
             self._resetar_tela()
 
         except ValueError as e:
@@ -231,7 +243,8 @@ class EntradaController(QWidget):
     def editar(self):
         if self.ui.bt_Sair_Itens.isEnabled():
             QMessageBox.warning(
-                self, "Aviso", "Clique em Sair Itens antes de continuar.")
+                self, "Aviso", "Clique em Sair Itens antes de continuar."
+            )
             return
 
         if self.entrada_id is None:
@@ -248,7 +261,8 @@ class EntradaController(QWidget):
     def excluir(self):
         if self.ui.bt_Sair_Itens.isEnabled():
             QMessageBox.warning(
-                self, "Aviso", "Clique em Sair Itens antes de continuar.")
+                self, "Aviso", "Clique em Sair Itens antes de continuar."
+            )
             return
 
         if self.entrada_id is None:
@@ -269,7 +283,8 @@ class EntradaController(QWidget):
             self.entrada_service.excluir(self.entrada_id)
             logger.info(f"Entrada excluída | id={self.entrada_id}")
             QMessageBox.information(
-                self, "Sucesso", "Entrada excluída com sucesso.")
+                self, "Sucesso", "Entrada excluída com sucesso."
+            )
             self._resetar_tela()
 
         except ValueError as e:
@@ -308,7 +323,7 @@ class EntradaController(QWidget):
 
     def abrir_pesquisa_produto(self):
         from app.controllers.pesquisa_produto_controller import (
-            PesquisaProdutoController
+            PesquisaProdutoController,
         )
 
         dialog = PesquisaProdutoController(self)
@@ -319,13 +334,17 @@ class EntradaController(QWidget):
                 self.ui.txt_Cod_Prod.setText(produto.codigo or "")
                 self.ui.txt_Descricao_Prod.setText(produto.descricao or "")
                 self._peso_produto = getattr(produto, "peso", None)
-                self._verificar_produto_milho(produto.codigo or "")
-                if produto.codigo != CODIGO_MILHO:
+                self._verificar_regra_produto(produto.codigo or "")
+                # ← ALTERADO: usa regra do service em vez de CODIGO_MILHO
+                regra = self.entrada_service.obter_regra_produto(
+                    produto.codigo or "")
+                if not regra:
                     custo = getattr(produto, "custo", 0) or 0
                     self.ui.txt_Custo.setText(f"{custo:.2f}".replace(".", ","))
                 self.ui.cmb_Un.setFocus()
                 logger.debug(
-                    f"Produto selecionado do dialog: {produto.codigo}")
+                    f"Produto selecionado do dialog: {produto.codigo}"
+                )
 
     def pesquisar_produto_direto(self):
         codigo = self.ui.txt_Cod_Prod.text().strip()
@@ -338,8 +357,11 @@ class EntradaController(QWidget):
                 self._produto_atual_id = produto.id
                 self.ui.txt_Descricao_Prod.setText(produto.descricao or "")
                 self._peso_produto = getattr(produto, "peso", None)
-                self._verificar_produto_milho(produto.codigo or "")
-                if produto.codigo != CODIGO_MILHO:
+                self._verificar_regra_produto(produto.codigo or "")
+                # ← ALTERADO: usa regra do service em vez de CODIGO_MILHO
+                regra = self.entrada_service.obter_regra_produto(
+                    produto.codigo or "")
+                if not regra:
                     custo = getattr(produto, "custo", 0) or 0
                     self.ui.txt_Custo.setText(f"{custo:.2f}".replace(".", ","))
                 self.ui.cmb_Un.setFocus()
@@ -350,43 +372,93 @@ class EntradaController(QWidget):
                 self.ui.txt_Custo.clear()
                 self._produto_atual_id = None
                 self._peso_produto = None
-                self._ocultar_milho()
+                self._ocultar_campos_especiais()
                 self.ui.txt_Cod_Prod.setFocus()
                 self.ui.txt_Cod_Prod.selectAll()
         except Exception as e:
             logger.error(f"Erro ao pesquisar produto: {e}", exc_info=True)
             QMessageBox.critical(self, "Erro", f"Erro ao pesquisar: {e}")
 
-    def _verificar_produto_milho(self, codigo):
-        """Exibe campos de milho se o código for 116431."""
-        if codigo.strip() == CODIGO_MILHO:
+    # ← ALTERADO: _verificar_produto_milho → _verificar_regra_produto (usa service)
+    def _verificar_regra_produto(self, codigo):
+        """Exibe campos especiais se o produto tiver regra configurada no service."""
+        regra = self.entrada_service.obter_regra_produto(codigo.strip())
+        tem_regra = regra is not None
+
+        if tem_regra:
             self.ui.lb_Milho.setVisible(True)
             self.ui.txt_Milho.setVisible(True)
             self.ui.txt_Milho.clear()
             self.ui.txt_Custo.clear()
+            # Atualiza label com a descrição da regra
+            if "descricao" in regra:
+                self.ui.lb_Milho.setText(regra["descricao"])
             self.ui.txt_Milho.setFocus()
-            logger.debug("Produto milho detectado - campos exibidos")
+            logger.debug(f"Regra especial detectada: {codigo} - {regra}")
         else:
-            self._ocultar_milho()
+            self._ocultar_campos_especiais()
 
-    def _ocultar_milho(self):
+    # ← ALTERADO: _ocultar_milho → _ocultar_campos_especiais
+    def _ocultar_campos_especiais(self):
         self.ui.lb_Milho.setVisible(False)
         self.ui.txt_Milho.setVisible(False)
         self.ui.txt_Milho.clear()
 
-    def _calcular_custo_milho(self):
-        """Divide o valor de txt_Milho por 60 para obter o custo."""
+    # ← ALTERADO: _calcular_custo_milho → _calcular_custo_especial (usa divisor do service)
+    def _calcular_custo_especial(self):
+        """Calcula custo unitário dividindo o valor pelo divisor da regra."""
         valor_text = self.ui.txt_Milho.text().strip()
         if not valor_text:
             return
 
+        codigo = self.ui.txt_Cod_Prod.text().strip()
+        regra = self.entrada_service.obter_regra_produto(codigo)
+        if not regra or "divisor_custo" not in regra:
+            return
+
         try:
             valor = float(valor_text.replace(",", "."))
-            custo = valor / 60
+            divisor = float(regra["divisor_custo"])
+            custo = valor / divisor
             self.ui.txt_Custo.setText(f"{custo:.4f}".replace(".", ","))
-            logger.debug(f"Cálculo milho: {valor} / 60 = {custo:.4f}")
+            logger.debug(
+                f"Cálculo especial: {valor} / {divisor} = {custo:.4f}")
         except ValueError:
-            QMessageBox.warning(self, "Aviso", "Valor do milho inválido.")
+            QMessageBox.warning(self, "Aviso", "Valor inválido.")
+
+    # ← ALTERADO: _verificar_alteracao_custo → _detectar_alteracao_custo (não commita, apenas armazena)
+    def _detectar_alteracao_custo(self, codigo, custo_novo):
+        """Detecta alteração de custo e armazena para commit transacional posterior."""
+        if self._produto_atual_id in self._produtos_custo_detectado:
+            return  # Já detectado para este produto nesta sessão
+
+        try:
+            produto = self.produto_service.buscar_por_codigo(codigo)
+            if not produto:
+                return
+
+            custo_cadastrado = float(getattr(produto, "custo", 0) or 0)
+
+            if abs(custo_cadastrado - custo_novo) < 0.0001:
+                return
+
+            # Armazena para commit posterior na mesma transação do salvar()
+            self._alteracoes_custo.append({
+                "codigo_produto": codigo,
+                "produto_id": produto.id,
+                "custo_anterior": custo_cadastrado,
+                "custo_atual": custo_novo,
+            })
+            self._produtos_custo_detectado.add(self._produto_atual_id)
+
+            logger.info(
+                f"Alteração de custo detectada | produto={codigo} | "
+                f"de {custo_cadastrado:.4f} para {custo_novo:.4f}"
+            )
+        except Exception as e:
+            logger.error(
+                f"Erro ao detectar alteração de custo: {e}", exc_info=True
+            )
 
     def salvar_item(self):
         codigo = self.ui.txt_Cod_Prod.text().strip()
@@ -396,7 +468,9 @@ class EntradaController(QWidget):
         custo_text = self.ui.txt_Custo.text().strip()
 
         if not codigo or not descricao or self._produto_atual_id is None:
-            QMessageBox.warning(self, "Aviso", "Pesquise um produto primeiro.")
+            QMessageBox.warning(
+                self, "Aviso", "Pesquise um produto primeiro."
+            )
             return
 
         if not unidade:
@@ -420,19 +494,24 @@ class EntradaController(QWidget):
             return
 
         # Conversão KG: divide pelo peso do produto
+        # SOMENTE na tabela, não altera txt_Qtde
         qtde_tabela = qtde_digitada
         if unidade.strip().upper() == "KG":
             if self._peso_produto is None or self._peso_produto <= 0:
                 QMessageBox.warning(
                     self,
                     "Aviso",
-                    "Produto sem peso cadastrado. Não é possível calcular por KG."
+                    "Produto sem peso cadastrado. Não é possível calcular por KG.",
                 )
                 return
             qtde_tabela = qtde_digitada / self._peso_produto
             logger.debug(
-                f"Cálculo KG: {qtde_digitada} / {self._peso_produto} = {qtde_tabela:.3f}"
+                f"Cálculo KG: {qtde_digitada} / {self._peso_produto} "
+                f"= {qtde_tabela:.3f}"
             )
+
+        # ← ALTERADO: detecta alteração de custo (armazena, não commita)
+        self._detectar_alteracao_custo(codigo, custo)
 
         item = {
             "produto_id": self._produto_atual_id,
@@ -464,7 +543,9 @@ class EntradaController(QWidget):
     def excluir_item(self):
         indexes = self.ui.tb_Itens.selectionModel().selectedRows()
         if not indexes:
-            QMessageBox.warning(self, "Aviso", "Selecione um item na tabela.")
+            QMessageBox.warning(
+                self, "Aviso", "Selecione um item na tabela."
+            )
             return
 
         row = indexes[0].row()
@@ -497,10 +578,13 @@ class EntradaController(QWidget):
             self.ui.cmb_Un.setCurrentIndex(idx)
 
         self.ui.txt_Qtde.setText(
-            str(item.get("quantidade", "")).replace(".", ","))
-        self.ui.txt_Custo.setText(str(item.get("custo", "")).replace(".", ","))
+            str(item.get("quantidade", "")).replace(".", ",")
+        )
+        self.ui.txt_Custo.setText(
+            str(item.get("custo", "")).replace(".", ",")
+        )
 
-        self._verificar_produto_milho(item.get("codigo", ""))
+        self._verificar_regra_produto(item.get("codigo", ""))
 
         logger.debug(f"Item selecionado | row={row}")
 
@@ -521,7 +605,7 @@ class EntradaController(QWidget):
         self.ui.txt_Custo.clear()
         self._produto_atual_id = None
         self._peso_produto = None
-        self._ocultar_milho()
+        self._ocultar_campos_especiais()
 
     def _limpar_itens(self):
         self.item_model.limpar()
@@ -617,6 +701,8 @@ class EntradaController(QWidget):
         self._item_edicao_row = None
         self._produto_atual_id = None
         self._peso_produto = None
+        self._alteracoes_custo = []              # ← LIMPA alterações pendentes
+        self._produtos_custo_detectado = set()   # ← LIMPA controle de duplicação
 
         self._limpar_campos()
         self._limpar_itens()

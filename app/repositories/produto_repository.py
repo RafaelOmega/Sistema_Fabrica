@@ -65,3 +65,23 @@ class ProdutoRepository:
 
             session.delete(produto)
             return True
+
+    def atualizar_custo(self, produto_id, novo_custo, session=None):
+        """Atualiza o custo do produto.
+        Se `session` for passada, usa-a (transação compartilhada);
+        caso contrário, abre e commita uma sessão própria."""
+        if session:
+            return self._atualizar_custo_inner(session, produto_id, novo_custo)
+        with session_scope() as session:
+            return self._atualizar_custo_inner(session, produto_id, novo_custo)
+
+    def _atualizar_custo_inner(self, session, produto_id, novo_custo):
+        produto = session.query(Produto).filter_by(id=produto_id).first()
+        if not produto:
+            return None
+        custo_anterior = float(produto.custo) if produto.custo else 0.0
+        produto.custo = novo_custo
+        session.flush()
+        session.refresh(produto)
+        session.expunge(produto)
+        return custo_anterior
