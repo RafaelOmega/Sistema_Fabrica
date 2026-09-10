@@ -59,24 +59,21 @@ class MotivoEntradaRepository:
     def obter_proximo_codigo(self):
         """
         Retorna o próximo código baseado no maior código numérico existente.
+        Usa func.max no banco em vez de carregar todos os códigos.
         Previne colisão quando o último registro é deletado.
         """
+        from sqlalchemy import cast, func, Integer
+
         with session_scope() as session:
-            codigos = session.query(Motivo_Entrada.codigo).all()
-            if not codigos:
+            max_codigo = (
+                session.query(
+                    func.max(cast(Motivo_Entrada.codigo, Integer))
+                )
+                .scalar()
+            )
+            if max_codigo is None:
                 return "1"
-
-            numeros = []
-            for (codigo,) in codigos:
-                try:
-                    numeros.append(int(codigo))
-                except (ValueError, TypeError):
-                    continue
-
-            if not numeros:
-                return "1"
-
-            return str(max(numeros) + 1)
+            return str(max_codigo + 1)
 
     def salvar(self, motivo):
         with session_scope() as session:

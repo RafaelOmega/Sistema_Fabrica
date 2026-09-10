@@ -483,7 +483,74 @@
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
         </property>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item alignment="Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignVCenter">
+            <widget class="QLabel" name="lb_Batida">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Batida</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableView" name="tb_Itens_Batida"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item alignment="Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignVCenter">
+            <widget class="QLabel" name="lb_Saco">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Saco</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableView" name="tb_Itens_Unitario"/>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frm_Total">
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>5</number>
+         </property>
          <property name="leftMargin">
           <number>5</number>
          </property>
@@ -496,11 +563,8 @@
          <property name="bottomMargin">
           <number>5</number>
          </property>
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item row="1" column="1">
-          <widget class="QLabel" name="lb_Total">
+         <item>
+          <widget class="QLabel" name="lb_Total_Batida">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -518,23 +582,23 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QLineEdit" name="txt_Total_Itens">
+         <item>
+          <widget class="QLineEdit" name="txt_Total_Batida">
            <property name="minimumSize">
             <size>
-             <width>150</width>
+             <width>100</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>150</width>
+             <width>100</width>
              <height>30</height>
             </size>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item>
           <spacer name="horizontalSpacer_5">
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
@@ -547,8 +611,40 @@
            </property>
           </spacer>
          </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="QTableView" name="tb_Itens"/>
+         <item>
+          <widget class="QLabel" name="lb_Total_Saco">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Kg Saco:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_Total_Saco">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -686,8 +782,7 @@
   <tabstop>bt_Limpar_Itens</tabstop>
   <tabstop>bt_Excluir_Itens</tabstop>
   <tabstop>bt_Sair_Ficha</tabstop>
-  <tabstop>txt_Total_Itens</tabstop>
-  <tabstop>tb_Itens</tabstop>
+  <tabstop>tb_Itens_Batida</tabstop>
   <tabstop>bt_Salvar</tabstop>
   <tabstop>bt_Editar</tabstop>
   <tabstop>bt_Limpar</tabstop>

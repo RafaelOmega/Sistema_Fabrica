@@ -79,45 +79,10 @@ class EntradaService:
                 raise ValueError(f"Item {i + 1}: custo inválido.")
 
     def salvar(self, sequencia, data_entrada, motivo_id, itens_data,
-               entrada_id=None):
-        self._validar(sequencia, data_entrada, motivo_id, itens_data)
-
-        if entrada_id is None:
-            entrada = Entrada()
-            entrada.sequencia = sequencia
-        else:
-            entrada = self.repo.buscar_por_id(entrada_id)
-            if not entrada:
-                raise ValueError("Entrada não encontrada para edição.")
-
-        entrada.data_entrada = data_entrada
-        entrada.motivo_entrada_id = motivo_id
-
-        try:
-            resultado = self.repo.salvar_com_itens(entrada, itens_data)
-        except IntegrityError:
-            logger.warning(
-                f"Conflito de integridade ao salvar entrada "
-                f"(provável sequência duplicada concorrente): {sequencia}"
-            )
-            raise ValueError(
-                "Já existe uma entrada com esta sequência. "
-                "Tente novamente."
-            )
-
-        logger.info(
-            f"Entrada salva: ID={resultado.id}, "
-            f"sequencia={resultado.sequencia}, "
-            f"itens={len(itens_data)}"
-        )
-        return resultado
-
-    def salvar_com_alteracao_custo(self, sequencia, data_entrada, motivo_id,
-                                   itens_data, entrada_id=None,
-                                   alteracoes_custo=None):
+               entrada_id=None, alteracoes_custo=None):
         """
-        Salva entrada + itens + alterações de custo na MESMA transação.
-        Tudo commita ou tudo faz rollback.
+        Salva entrada + itens (+ alterações de custo se houver)
+        na MESMA transação. Tudo commita ou tudo faz rollback.
         """
         self._validar(sequencia, data_entrada, motivo_id, itens_data)
 
@@ -134,8 +99,7 @@ class EntradaService:
             with session_scope() as session:
                 # 1. Build/save entrada
                 if entrada_id:
-                    from app.models.entrada import Entrada as EntradaModel
-                    entrada = session.query(EntradaModel).get(entrada_id)
+                    entrada = session.get(Entrada, entrada_id)
                     if not entrada:
                         raise ValueError(
                             "Entrada não encontrada para edição."
@@ -194,6 +158,22 @@ class EntradaService:
             )
         # ValueError e outras exceções sobem naturalmente;
         # session_scope() já garante o rollback de tudo.
+
+    def salvar_com_alteracao_custo(self, sequencia, data_entrada, motivo_id,
+                                   itens_data, entrada_id=None,
+                                   alteracoes_custo=None):
+        """
+        Mantido por compatibilidade — delega para o método `salvar`
+        unificado, que já é transacional.
+        """
+        return self.salvar(
+            sequencia=sequencia,
+            data_entrada=data_entrada,
+            motivo_id=motivo_id,
+            itens_data=itens_data,
+            entrada_id=entrada_id,
+            alteracoes_custo=alteracoes_custo,
+        )
 
     def excluir(self, entrada_id):
         sucesso = self.repo.excluir_por_id(entrada_id)

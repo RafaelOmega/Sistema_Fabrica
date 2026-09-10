@@ -53,24 +53,21 @@ class EntradaRepository:
     def obter_proxima_sequencia(self):
         """
         Retorna o próximo código baseado no maior código numérico existente.
+        Usa func.max no banco em vez de carregar todas as sequências.
         Previne colisão quando o último registro é deletado.
         """
+        from sqlalchemy import cast, func, Integer
+
         with session_scope() as session:
-            sequencias = session.query(Entrada.sequencia).all()
-            if not sequencias:
+            max_seq = (
+                session.query(
+                    func.max(cast(Entrada.sequencia, Integer))
+                )
+                .scalar()
+            )
+            if max_seq is None:
                 return "1"
-
-            numeros = []
-            for (seq,) in sequencias:
-                try:
-                    numeros.append(int(seq))
-                except (ValueError, TypeError):
-                    continue
-
-            if not numeros:
-                return "1"
-
-            return str(max(numeros) + 1)
+            return str(max_seq + 1)
 
     def buscar_com_itens(self, entrada_id):
         """Retorna a entrada e uma lista de dicts com dados dos itens

@@ -4,6 +4,32 @@ from app.models.produto import Produto
 
 
 class FichaTecnicaRepository:
+    def listar_todos(self):
+        """Lista todas as fichas técnicas com dados do produto acabado."""
+        with session_scope() as session:
+            resultados = (
+                session.query(
+                    FichaTecnica,
+                    Produto.codigo,
+                    Produto.descricao,
+                )
+                .join(Produto, FichaTecnica.produto_id == Produto.id)
+                .order_by(FichaTecnica.id.desc())
+                .all()
+            )
+
+            fichas = []
+            for ficha, codigo, descricao in resultados:
+                session.expunge(ficha)
+                fichas.append({
+                    "id": ficha.id,
+                    "produto_id": ficha.produto_id,
+                    "codigo": codigo,
+                    "descricao": descricao,
+                    "sacos_batida": ficha.sacos_batida,
+                })
+            return fichas
+
     def buscar_por_id(self, ficha_id):
         with session_scope() as session:
             ficha = (
@@ -15,11 +41,11 @@ class FichaTecnicaRepository:
                 session.expunge(ficha)
             return ficha
 
-    def buscar_por_produto_acabado_id(self, produto_acabado_id):
+    def buscar_por_produto(self, produto_id):
         with session_scope() as session:
             ficha = (
                 session.query(FichaTecnica)
-                .filter_by(produto_acabado_id=produto_acabado_id)
+                .filter_by(produto_id=produto_id)
                 .first()
             )
             if ficha:
@@ -27,10 +53,14 @@ class FichaTecnicaRepository:
             return ficha
 
     def buscar_com_itens(self, ficha_id):
-        """Retorna a ficha e uma lista de dicts com os itens já
-        join com produto (código, descrição) da matéria-prima."""
+        """Retorna a ficha e uma lista de dicts com dados dos itens
+        já join com produto (codigo, descricao)."""
         with session_scope() as session:
-            ficha = session.query(FichaTecnica).filter_by(id=ficha_id).first()
+            ficha = (
+                session.query(FichaTecnica)
+                .filter_by(id=ficha_id)
+                .first()
+            )
             if not ficha:
                 return None, []
 
@@ -40,8 +70,11 @@ class FichaTecnicaRepository:
                     Produto.codigo,
                     Produto.descricao,
                 )
-                .join(Produto, ItemFichaTecnica.materia_prima_id == Produto.id)
-                .filter(ItemFichaTecnica.ficha_tecnica_id == ficha_id)
+                .join(
+                    Produto,
+                    ItemFichaTecnica.produto_id == Produto.id,
+                )
+                .filter(ItemFichaTecnica.ficha_id == ficha_id)
                 .all()
             )
 
@@ -51,44 +84,44 @@ class FichaTecnicaRepository:
                 session.expunge(item)
                 itens.append({
                     "id": item.id,
-                    "materia_prima_id": item.materia_prima_id,
+                    "produto_id": item.produto_id,
                     "codigo": codigo,
+                    "codigo_produto": item.codigo_produto,  # ← ADICIONADO
                     "descricao": descricao,
-                    "quantidade": float(item.quantidade)
-                    if item.quantidade else 0.0,
+                    "quantidade_kg": float(item.quantidade_kg)
+                    if item.quantidade_kg
+                    else 0.0,
                 })
             return ficha, itens
 
     def salvar_com_itens(self, ficha, itens_data, session=None):
         """
-        Salva a ficha técnica e seus itens usando diff
-        (inserir/atualizar/excluir).
-
-        itens_data: lista de dicts. Itens com 'id' são atualizados;
-        itens sem 'id' são inseridos; itens existentes não presentes
-        são excluídos.
-
-        Se `session` for passada, usa-a (para transação compartilhada).
-        Caso contrário, cria uma nova session_scope().
+        Salva a ficha e seus itens usando diff (inserir/atualizar/excluir).
         """
         if session:
             return self._salvar_com_itens_inner(session, ficha, itens_data)
         with session_scope() as session:
-            return self._salvar_com_itens_inner(session, ficha, itens_data)
+            return self._salvar_com_itens_inner(
+                session, ficha, itens_data
+            )
 
     def _salvar_com_itens_inner(self, session, ficha, itens_data):
+        """Lógica interna de diff de itens."""
         ficha_persistida = session.merge(ficha)
         session.flush()
 
         itens_existentes = (
             session.query(ItemFichaTecnica)
-            .filter_by(ficha_tecnica_id=ficha_persistida.id)
+            .filter_by(ficha_id=ficha_persistida.id)
             .all()
         )
-        itens_existentes_map = {item.id: item for item in itens_existentes}
+        itens_existentes_map = {
+            item.id: item for item in itens_existentes
+        }
 
         ids_novos = {
-            item["id"] for item in itens_data
+            item["id"]
+            for item in itens_data
             if item.get("id") is not None
         }
 
@@ -102,13 +135,17 @@ class FichaTecnicaRepository:
             item_id = item_data.get("id")
             if item_id and item_id in itens_existentes_map:
                 item = itens_existentes_map[item_id]
-                item.materia_prima_id = item_data["materia_prima_id"]
-                item.quantidade = item_data["quantidade"]
+                item.produto_id = item_data["produto_id"]
+                item.codigo_produto = item_data.get(
+                    "codigo_produto", "")  # ← ADICIONADO
+                item.quantidade_kg = item_data["quantidade_kg"]
             else:
                 novo_item = ItemFichaTecnica(
-                    ficha_tecnica_id=ficha_persistida.id,
-                    materia_prima_id=item_data["materia_prima_id"],
-                    quantidade=item_data["quantidade"],
+                    ficha_id=ficha_persistida.id,
+                    produto_id=item_data["produto_id"],
+                    codigo_produto=item_data.get(
+                        "codigo_produto", ""),  # ← ADICIONADO
+                    quantidade_kg=item_data["quantidade_kg"],
                 )
                 session.add(novo_item)
 
@@ -119,7 +156,11 @@ class FichaTecnicaRepository:
 
     def excluir_por_id(self, ficha_id):
         with session_scope() as session:
-            ficha = session.query(FichaTecnica).filter_by(id=ficha_id).first()
+            ficha = (
+                session.query(FichaTecnica)
+                .filter_by(id=ficha_id)
+                .first()
+            )
             if not ficha:
                 return False
             session.delete(ficha)

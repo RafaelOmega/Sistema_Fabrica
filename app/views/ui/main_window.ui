@@ -172,6 +172,7 @@
     </property>
     <addaction name="actionProdutos"/>
     <addaction name="actionMotivo_Entrada"/>
+    <addaction name="actionFicha_Tecnica"/>
    </widget>
    <widget class="QMenu" name="menuLan_amentos">
     <property name="title">
@@ -195,6 +196,11 @@
   <action name="actionEntrada">
    <property name="text">
     <string>Entrada</string>
+   </property>
+  </action>
+  <action name="actionFicha_Tecnica">
+   <property name="text">
+    <string>Ficha Técnica</string>
    </property>
   </action>
  </widget>

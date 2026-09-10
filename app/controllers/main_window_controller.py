@@ -110,7 +110,7 @@ class MainWindowController(QMainWindow):
         )
 
     def abrir_ficha_tecnica(self):
-        from app.controllers.cad_ficha_tecnica_controller import FichaTecnicaController
+        from app.controllers.ficha_tecnica_controller import FichaTecnicaController
 
         self._abrir_janela_mdi(
             "ficha_tecnica", "Cadastro de Ficha Técnica", FichaTecnicaController

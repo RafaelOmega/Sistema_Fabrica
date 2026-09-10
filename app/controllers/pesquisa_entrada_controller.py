@@ -1,11 +1,11 @@
-from PySide6.QtCore import Qt, QSortFilterProxyModel
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QDialog,
     QHeaderView,
     QMessageBox,
 )
-
+from app.models.entrada_filter_proxy_model import EntradaFilterProxyModel
 from app.models.entrada_table_model import EntradaTableModel
 from app.services.entrada_service import EntradaService
 from app.utils.logger import get_logger
@@ -22,10 +22,8 @@ class PesquisaEntradaController(QDialog):
 
         self.service = EntradaService()
         self.model = EntradaTableModel()
-        self.proxy_model = QSortFilterProxyModel(self)
+        self.proxy_model = EntradaFilterProxyModel(self)
         self.proxy_model.setSourceModel(self.model)
-        self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)
-        self.proxy_model.setFilterKeyColumn(-1)
 
         self.entrada_selecionada = None
 
@@ -35,9 +33,15 @@ class PesquisaEntradaController(QDialog):
 
     def _configurar_tabela(self):
         self.ui.tb_Entradas.setModel(self.proxy_model)
-        self.ui.tb_Entradas.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.ui.tb_Entradas.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.ui.tb_Entradas.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.tb_Entradas.setSelectionBehavior(
+            QAbstractItemView.SelectRows
+        )
+        self.ui.tb_Entradas.setSelectionMode(
+            QAbstractItemView.SingleSelection
+        )
+        self.ui.tb_Entradas.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
+        )
         self.ui.tb_Entradas.setAlternatingRowColors(True)
         self.ui.tb_Entradas.setSortingEnabled(True)
         self.ui.tb_Entradas.verticalHeader().setVisible(False)
@@ -63,7 +67,7 @@ class PesquisaEntradaController(QDialog):
 
     def _aplicar_filtro(self):
         texto = self.ui.txt_Pesquisa.text().strip()
-        self.proxy_model.setFilterFixedString(texto)
+        self.proxy_model.definir_filtro(texto)
 
     def confirmar(self):
         indexes = self.ui.tb_Entradas.selectionModel().selectedRows()
@@ -73,10 +77,13 @@ class PesquisaEntradaController(QDialog):
 
         index_proxy = indexes[0]
         index_source = self.proxy_model.mapToSource(index_proxy)
-        self.entrada_selecionada = self.model.obter_entrada(index_source.row())
+        self.entrada_selecionada = self.model.obter_entrada(
+            index_source.row()
+        )
 
         if self.entrada_selecionada:
             logger.debug(
-                f"Entrada selecionada: {self.entrada_selecionada.get('sequencia')}"
+                f"Entrada selecionada: "
+                f"{self.entrada_selecionada.get('sequencia')}"
             )
             self.accept()
