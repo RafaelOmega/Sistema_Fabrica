@@ -117,8 +117,10 @@ class EntradaService:
 
                 session.flush()
 
-                # 2. Salvar itens com diff (mesma sessão)
-                self.repo.salvar_com_itens(
+                # 2. Salvar itens com diff (mesma sessão).
+                # salvar_com_itens já faz merge + flush + refresh + expunge
+                # e retorna a instância persistida (desanexada).
+                entrada_salva = self.repo.salvar_com_itens(
                     entrada, itens_data, session=session
                 )
 
@@ -137,16 +139,13 @@ class EntradaService:
                             session=session,
                         )
 
-                session.flush()
-                session.refresh(entrada)
-                session.expunge(entrada)
-
                 logger.info(
-                    f"Entrada salva (transação única): ID={entrada.id}, "
-                    f"sequencia={entrada.sequencia}, "
+                    f"Entrada salva (transação única): "
+                    f"ID={entrada_salva.id}, "
+                    f"sequencia={entrada_salva.sequencia}, "
                     f"itens={len(itens_data)}"
                 )
-                return entrada
+                return entrada_salva
         except IntegrityError:
             logger.warning(
                 f"Conflito de integridade ao salvar entrada "
@@ -156,8 +155,6 @@ class EntradaService:
                 "Já existe uma entrada com esta sequência. "
                 "Tente novamente."
             )
-        # ValueError e outras exceções sobem naturalmente;
-        # session_scope() já garante o rollback de tudo.
 
     def salvar_com_alteracao_custo(self, sequencia, data_entrada, motivo_id,
                                    itens_data, entrada_id=None,

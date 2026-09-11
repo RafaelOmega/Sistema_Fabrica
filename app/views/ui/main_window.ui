@@ -179,6 +179,7 @@
      <string>Lançamentos</string>
     </property>
     <addaction name="actionEntrada"/>
+    <addaction name="actionSaida"/>
    </widget>
    <addaction name="menuCadastros"/>
    <addaction name="menuLan_amentos"/>
@@ -201,6 +202,11 @@
   <action name="actionFicha_Tecnica">
    <property name="text">
     <string>Ficha Técnica</string>
+   </property>
+  </action>
+  <action name="actionSaida">
+   <property name="text">
+    <string>Saida</string>
    </property>
   </action>
  </widget>

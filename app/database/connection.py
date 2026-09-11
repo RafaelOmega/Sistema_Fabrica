@@ -22,6 +22,7 @@ def init_db():
     from app.models.ficha_tecnica import (  # noqa: F401
         FichaTecnica, ItemFichaTecnica,
     )
+    from app.models.saida import Saida, ItemSaida  # noqa: F401
 
     logger.info("Criando tabelas no banco (se não existirem)")
     try:
