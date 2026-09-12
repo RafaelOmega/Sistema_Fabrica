@@ -1,4 +1,5 @@
 from sqlalchemy import or_, func
+from sqlalchemy.exc import DataError
 
 from app.database.connection import session_scope
 from app.models.motivo_entrada import Motivo_Entrada
@@ -64,16 +65,25 @@ class MotivoEntradaRepository:
         """
         from sqlalchemy import cast, func, Integer
 
-        with session_scope() as session:
-            max_codigo = (
-                session.query(
-                    func.max(cast(Motivo_Entrada.codigo, Integer))
+        try:
+            with session_scope() as session:
+                max_codigo = (
+                    session.query(
+                        func.max(cast(Motivo_Entrada.codigo, Integer))
+                    )
+                    .scalar()
                 )
-                .scalar()
+                if max_codigo is None:
+                    return "1"
+                return str(max_codigo + 1)
+        except DataError:
+            # Algum código existente no banco não é puramente numérico.
+            # Convertemos o erro de SQL em mensagem compreensível.
+            raise ValueError(
+                "Não foi possível calcular o próximo código: existe um "
+                "motivo de entrada cadastrado com código não numérico. "
+                "Corrija o cadastro antes de continuar."
             )
-            if max_codigo is None:
-                return "1"
-            return str(max_codigo + 1)
 
     def salvar(self, motivo):
         with session_scope() as session:

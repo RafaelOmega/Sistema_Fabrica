@@ -1,3 +1,5 @@
+import re
+
 from sqlalchemy.exc import IntegrityError
 
 from app.models.saida import Saida
@@ -30,6 +32,15 @@ class SaidaService:
         if not sequencia:
             raise ValueError("Sequência não gerada.")
 
+        # A sequência é gerada automaticamente, mas o campo é editável
+        # na tela (usuário pode digitar manualmente para pesquisar ou
+        # forçar um valor). obter_proxima_sequencia() depende de
+        # cast(sequencia, Integer) no banco, então um valor não numérico
+        # quebraria a geração de sequência para todas as saídas
+        # seguintes. Bloqueamos isso aqui.
+        if not re.fullmatch(r"\d+", str(sequencia)):
+            raise ValueError("Sequência deve conter apenas números.")
+
         if not data_saida:
             raise ValueError("Informe a data de saída.")
 
@@ -41,27 +52,32 @@ class SaidaService:
                 raise ValueError(
                     f"Item {i + 1}: produto não informado."
                 )
+
+            # Conversão e checagem de faixa em passos separados (não
+            # dentro do mesmo try) para que a mensagem específica não
+            # seja engolida pelo except.
             try:
                 qtde = float(item.get("quantidade", 0))
-                if qtde <= 0:
-                    raise ValueError(
-                        f"Item {i + 1}: quantidade deve ser maior que zero."
-                    )
             except (ValueError, TypeError):
                 raise ValueError(f"Item {i + 1}: quantidade inválida.")
+            if qtde <= 0:
+                raise ValueError(
+                    f"Item {i + 1}: quantidade deve ser maior que zero."
+                )
+
             try:
                 custo = float(item.get("custo", 0))
-                if custo < 0:
-                    raise ValueError(
-                        f"Item {i + 1}: custo não pode ser negativo."
-                    )
             except (ValueError, TypeError):
                 raise ValueError(f"Item {i + 1}: custo inválido.")
+            if custo < 0:
+                raise ValueError(
+                    f"Item {i + 1}: custo não pode ser negativo."
+                )
 
     def salvar(self, sequencia, data_saida, itens_data, saida_id=None):
         """
-        Salva saída + itens em transação única.
-        Tudo commita ou tudo faz rollback.
+        Salva saída + itens na MESMA transação. Tudo commita ou tudo
+        faz rollback.
         """
         self._validar(sequencia, data_saida, itens_data)
 
@@ -86,18 +102,25 @@ class SaidaService:
 
                 session.flush()
 
-                # salvar_com_itens já faz merge + flush + refresh + expunge
-                # e retorna a instância persistida (desanexada)
-                saida_salva = self.repo.salvar_com_itens(
+                # Salvar itens com diff (mesma sessão). Reatribuímos
+                # `saida` ao valor retornado (em vez de continuar
+                # usando a referência antiga) para não depender de
+                # detalhe interno do SQLAlchemy sobre session.merge()
+                # retornar ou não a mesma instância.
+                saida = self.repo.salvar_com_itens(
                     saida, itens_data, session=session
                 )
 
+                session.flush()
+                session.refresh(saida)
+                session.expunge(saida)
+
                 logger.info(
-                    f"Saída salva (transação única): ID={saida_salva.id}, "
-                    f"sequencia={saida_salva.sequencia}, "
+                    f"Saída salva (transação única): ID={saida.id}, "
+                    f"sequencia={saida.sequencia}, "
                     f"itens={len(itens_data)}"
                 )
-                return saida_salva
+                return saida
         except IntegrityError:
             logger.warning(
                 f"Conflito de integridade ao salvar saída "
@@ -107,6 +130,8 @@ class SaidaService:
                 "Já existe uma saída com esta sequência. "
                 "Tente novamente."
             )
+        # ValueError e outras exceções sobem naturalmente;
+        # session_scope() já garante o rollback de tudo.
 
     def excluir(self, saida_id):
         sucesso = self.repo.excluir_por_id(saida_id)

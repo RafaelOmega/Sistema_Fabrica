@@ -6,18 +6,22 @@ class AlteracaoCustoRepository:
     def registrar(self, codigo_produto, custo_anterior, custo_atual,
                   session=None):
         """Registra alteração de custo.
-        Se session passada, usa-a (transação compartilhada)."""
+        Se session passada, usa-a (transação compartilhada) e NÃO
+        desanexa o registro ao final — a transação segue em
+        andamento. Caso contrário, abre/é dona da sessão e desanexa."""
         if session:
             return self._registrar_inner(
-                session, codigo_produto, custo_anterior, custo_atual
+                session, codigo_produto, custo_anterior, custo_atual,
+                expunge=False,
             )
         with session_scope() as session:
             return self._registrar_inner(
-                session, codigo_produto, custo_anterior, custo_atual
+                session, codigo_produto, custo_anterior, custo_atual,
+                expunge=True,
             )
 
     def _registrar_inner(self, session, codigo_produto, custo_anterior,
-                         custo_atual):
+                         custo_atual, expunge=True):
         if custo_anterior == custo_atual:
             return None
         registro = AlteracaoCusto(
@@ -28,7 +32,8 @@ class AlteracaoCustoRepository:
         session.add(registro)
         session.flush()
         session.refresh(registro)
-        session.expunge(registro)
+        if expunge:
+            session.expunge(registro)
         return registro
 
     def listar_por_produto(self, codigo_produto):

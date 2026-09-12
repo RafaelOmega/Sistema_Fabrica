@@ -1,3 +1,5 @@
+from sqlalchemy.exc import DataError
+
 from app.database.connection import session_scope
 from app.models.entrada import Entrada, ItemEntrada
 from app.models.motivo_entrada import Motivo_Entrada
@@ -58,16 +60,28 @@ class EntradaRepository:
         """
         from sqlalchemy import cast, func, Integer
 
-        with session_scope() as session:
-            max_seq = (
-                session.query(
-                    func.max(cast(Entrada.sequencia, Integer))
+        try:
+            with session_scope() as session:
+                max_seq = (
+                    session.query(
+                        func.max(cast(Entrada.sequencia, Integer))
+                    )
+                    .scalar()
                 )
-                .scalar()
+                if max_seq is None:
+                    return "1"
+                return str(max_seq + 1)
+        except DataError:
+            # Alguma sequência existente no banco não é puramente
+            # numérica (não deveria acontecer com a validação do
+            # service, mas pode ocorrer com dados antigos/importados).
+            # Convertemos o erro de SQL em uma mensagem compreensível
+            # em vez de deixar a exceção crua do driver subir à UI.
+            raise ValueError(
+                "Não foi possível calcular a próxima sequência: existe "
+                "uma sequência cadastrada com valor não numérico. "
+                "Corrija o cadastro antes de continuar."
             )
-            if max_seq is None:
-                return "1"
-            return str(max_seq + 1)
 
     def buscar_com_itens(self, entrada_id):
         """Retorna a entrada e uma lista de dicts com dados dos itens
@@ -112,15 +126,25 @@ class EntradaRepository:
         itens sem 'id' são inseridos; itens existentes não presentes
         são excluídos.
 
-        Se `session` for passada, usa-a (para transação compartilhada).
-        Caso contrário, cria uma nova session_scope().
+        Se `session` for passada, usa-a (para transação compartilhada)
+        e NÃO desanexa (expunge) a entrada ao final — a transação
+        ainda está em andamento e o chamador (quem passou a session)
+        é responsável por isso quando terminar seu próprio trabalho.
+        Caso contrário, cria e é dona de uma nova session_scope(), e aí
+        sim desanexa a entrada antes de retornar, pois o "with" está
+        prestes a fechar a sessão.
         """
         if session:
-            return self._salvar_com_itens_inner(session, entrada, itens_data)
+            return self._salvar_com_itens_inner(
+                session, entrada, itens_data, expunge=False
+            )
         with session_scope() as session:
-            return self._salvar_com_itens_inner(session, entrada, itens_data)
+            return self._salvar_com_itens_inner(
+                session, entrada, itens_data, expunge=True
+            )
 
-    def _salvar_com_itens_inner(self, session, entrada, itens_data):
+    def _salvar_com_itens_inner(self, session, entrada, itens_data,
+                                 expunge=True):
         """Lógica interna de diff de itens."""
         entrada_persistida = session.merge(entrada)
         session.flush()
@@ -167,7 +191,8 @@ class EntradaRepository:
 
         session.flush()
         session.refresh(entrada_persistida)
-        session.expunge(entrada_persistida)
+        if expunge:
+            session.expunge(entrada_persistida)
         return entrada_persistida
 
     def excluir_por_id(self, entrada_id):

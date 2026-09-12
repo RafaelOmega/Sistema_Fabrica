@@ -125,7 +125,7 @@ class MainWindowController(QMainWindow):
             "entrada", "Entrada de Mercadorias", EntradaController)
 
     def abrir_saida(self):
-        from app.controllers.saida_controller import SaidaController
+        from app.controllers.cad_saida_controller import SaidaController
 
         self._abrir_janela_mdi(
             "saida", "Saída de Mercadorias", SaidaController)

@@ -31,12 +31,15 @@ class FichaTecnicaService:
         if not sacos_batida:
             raise ValueError("Informe a quantidade de sacos por batida.")
 
+        # Conversão e checagem de faixa em passos separados (ver
+        # explicação equivalente em EntradaService._validar) para que
+        # a mensagem específica não seja engolida pelo except.
         try:
             sacos = int(sacos_batida)
-            if sacos <= 0:
-                raise ValueError("Sacos por batida deve ser maior que zero.")
         except (ValueError, TypeError):
             raise ValueError("Sacos por batida inválido.")
+        if sacos <= 0:
+            raise ValueError("Sacos por batida deve ser maior que zero.")
 
         if not itens:
             raise ValueError(
@@ -54,12 +57,12 @@ class FichaTecnicaService:
                 )
             try:
                 qtde = float(item.get("quantidade_kg", 0))
-                if qtde <= 0:
-                    raise ValueError(
-                        f"Item {i + 1}: quantidade deve ser maior que zero."
-                    )
             except (ValueError, TypeError):
                 raise ValueError(f"Item {i + 1}: quantidade inválida.")
+            if qtde <= 0:
+                raise ValueError(
+                    f"Item {i + 1}: quantidade deve ser maior que zero."
+                )
 
     def salvar(self, produto_id, codigo_produto, sacos_batida, itens_data,
                ficha_id=None):

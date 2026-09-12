@@ -22,6 +22,9 @@ def init_db():
     from app.models.ficha_tecnica import (  # noqa: F401
         FichaTecnica, ItemFichaTecnica,
     )
+    from app.models.regra_produto_especial import (  # noqa: F401
+        RegraProdutoEspecial,
+    )
     from app.models.saida import Saida, ItemSaida  # noqa: F401
 
     logger.info("Criando tabelas no banco (se não existirem)")
@@ -31,6 +34,36 @@ def init_db():
     except Exception as e:
         logger.error(f"Erro ao criar tabelas: {e}", exc_info=True)
         raise
+
+    _migrar_regras_produtos_especiais_padrao()
+
+
+def _migrar_regras_produtos_especiais_padrao():
+    """Semente única: garante que a regra que antes vivia fixa no código
+    (REGRAS_PRODUTOS_ESPECIAIS em entrada_service.py) continue existindo
+    depois da migração para a tabela regras_produtos_especiais.
+
+    Só insere se a tabela estiver vazia, então não sobrescreve edições
+    feitas pelo usuário depois da migração inicial.
+    """
+    from app.models.regra_produto_especial import RegraProdutoEspecial
+
+    with session_scope() as session:
+        existe_alguma = session.query(RegraProdutoEspecial).first()
+        if existe_alguma:
+            return
+
+        logger.info(
+            "Semeando regra padrão de produto especial (Milho 60KG) "
+            "na tabela regras_produtos_especiais"
+        )
+        session.add(
+            RegraProdutoEspecial(
+                codigo_produto="116431",
+                descricao="Milho 60KG",
+                divisor_custo=60,
+            )
+        )
 
 
 def get_session():

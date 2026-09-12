@@ -130,10 +130,18 @@ class FichaTecnicaController(QWidget):
     # --- Totais e cálculo unitário ---
 
     def _get_sacos_batida(self):
-        """Retorna sacos_batida como float, ou 0 se inválido."""
+        """Retorna sacos_batida como int (positivo), ou 0 se inválido.
+
+        Sacos por batida é sempre um número inteiro — não existe meio
+        saco — e a coluna no banco (fichas_tecnicas.sacos_batida) é
+        Integer. Antes este método aceitava valores decimais (via
+        float + replace(",", ".")) para o cálculo em tempo real, o que
+        divergia da validação feita ao abrir os itens/salvar (que exige
+        inteiro). Agora o parsing é único e consistente em toda a tela.
+        """
         text = self.ui.txt_Sacos_Batida.text().strip()
         try:
-            valor = float(text.replace(",", "."))
+            valor = int(text)
             return valor if valor > 0 else 0
         except (ValueError, TypeError):
             return 0
@@ -329,11 +337,11 @@ class FichaTecnicaController(QWidget):
             self.ui.txt_Sacos_Batida.setFocus()
             return
 
-        try:
-            sacos = int(sacos_text.replace(",", "."))
-            if sacos <= 0:
-                raise ValueError()
-        except (ValueError, TypeError):
+        # Reaproveita o mesmo parser usado no cálculo em tempo real
+        # (_get_sacos_batida), garantindo que "abrir itens" e o
+        # recálculo de totais concordem sobre o que é um valor válido.
+        sacos = self._get_sacos_batida()
+        if sacos <= 0:
             QMessageBox.warning(
                 self, "Aviso", "Quantidade de sacos inválida."
             )

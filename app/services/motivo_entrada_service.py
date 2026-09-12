@@ -1,3 +1,5 @@
+import re
+
 from sqlalchemy.exc import IntegrityError
 
 from app.models.motivo_entrada import Motivo_Entrada
@@ -29,6 +31,14 @@ class MotivoEntradaService:
 
         if len(codigo) > 50:
             raise ValueError("Código deve ter no máximo 50 caracteres.")
+
+        # O código é gerado automaticamente (obter_proximo_codigo) usando
+        # func.max(cast(codigo, Integer)) no banco. Se um código não
+        # numérico entrasse aqui, a geração do próximo código passaria
+        # a falhar para todos os registros seguintes. Validamos na
+        # entrada para que isso nunca aconteça.
+        if not re.fullmatch(r"\d+", codigo):
+            raise ValueError("Código deve conter apenas números.")
 
         if len(descricao) > 255:
             raise ValueError("Descrição deve ter no máximo 255 caracteres.")

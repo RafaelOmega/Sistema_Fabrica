@@ -97,15 +97,23 @@ class FichaTecnicaRepository:
     def salvar_com_itens(self, ficha, itens_data, session=None):
         """
         Salva a ficha e seus itens usando diff (inserir/atualizar/excluir).
+
+        Se `session` for passada (transação compartilhada com outra
+        operação), NÃO desanexa a ficha ao final — quem passou a
+        sessão decide quando desanexar. Caso contrário, é dona da
+        própria sessão e desanexa antes de retornar.
         """
         if session:
-            return self._salvar_com_itens_inner(session, ficha, itens_data)
+            return self._salvar_com_itens_inner(
+                session, ficha, itens_data, expunge=False
+            )
         with session_scope() as session:
             return self._salvar_com_itens_inner(
-                session, ficha, itens_data
+                session, ficha, itens_data, expunge=True
             )
 
-    def _salvar_com_itens_inner(self, session, ficha, itens_data):
+    def _salvar_com_itens_inner(self, session, ficha, itens_data,
+                                 expunge=True):
         """Lógica interna de diff de itens."""
         ficha_persistida = session.merge(ficha)
         session.flush()
@@ -151,7 +159,8 @@ class FichaTecnicaRepository:
 
         session.flush()
         session.refresh(ficha_persistida)
-        session.expunge(ficha_persistida)
+        if expunge:
+            session.expunge(ficha_persistida)
         return ficha_persistida
 
     def excluir_por_id(self, ficha_id):

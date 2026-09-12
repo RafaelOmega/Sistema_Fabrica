@@ -1,18 +1,20 @@
-from sqlalchemy import cast, func, Integer
+from sqlalchemy.exc import DataError
 
 from app.database.connection import session_scope
+from app.models.saida import Saida, ItemSaida
 from app.models.produto import Produto
-from app.models.saida import ItemSaida, Saida
 
 
 class SaidaRepository:
     def listar_todos(self):
+        """Lista todas as saídas."""
         with session_scope() as session:
             saidas = (
                 session.query(Saida)
                 .order_by(Saida.id.desc())
                 .all()
             )
+
             resultado = []
             for saida in saidas:
                 session.expunge(saida)
@@ -45,21 +47,35 @@ class SaidaRepository:
         """
         Retorna o próximo código baseado no maior código numérico existente.
         Usa func.max no banco em vez de carregar todas as sequências.
+        Previne colisão quando o último registro é deletado.
         """
-        with session_scope() as session:
-            max_seq = (
-                session.query(
-                    func.max(cast(Saida.sequencia, Integer))
+        from sqlalchemy import cast, func, Integer
+
+        try:
+            with session_scope() as session:
+                max_seq = (
+                    session.query(
+                        func.max(cast(Saida.sequencia, Integer))
+                    )
+                    .scalar()
                 )
-                .scalar()
+                if max_seq is None:
+                    return "1"
+                return str(max_seq + 1)
+        except DataError:
+            # Alguma sequência existente no banco não é puramente
+            # numérica. Convertemos o erro de SQL em uma mensagem
+            # compreensível em vez de deixar a exceção crua do driver
+            # subir à UI.
+            raise ValueError(
+                "Não foi possível calcular a próxima sequência: existe "
+                "uma sequência de saída cadastrada com valor não "
+                "numérico. Corrija o cadastro antes de continuar."
             )
-            if max_seq is None:
-                return "1"
-            return str(max_seq + 1)
 
     def buscar_com_itens(self, saida_id):
         """Retorna a saída e uma lista de dicts com dados dos itens
-        já join com produto (codigo, descricao)."""
+        já com join com produto (codigo, descricao)."""
         with session_scope() as session:
             saida = session.query(Saida).filter_by(id=saida_id).first()
             if not saida:
@@ -98,13 +114,31 @@ class SaidaRepository:
         itens_data: lista de dicts. Itens com 'id' são atualizados;
         itens sem 'id' são inseridos; itens existentes não presentes
         são excluídos.
+
+        Se `session` for passada, usa-a (para transação compartilhada)
+        e NÃO desanexa (expunge) a saída ao final — a transação ainda
+        está em andamento e o chamador (quem passou a session) é
+        responsável por isso quando terminar seu próprio trabalho.
+        Caso contrário, cria e é dona de uma nova session_scope(), e aí
+        sim desanexa a saída antes de retornar, pois o "with" está
+        prestes a fechar a sessão.
+
+        (Esse cuidado com expunge/sessão compartilhada é o mesmo
+        corrigido em EntradaRepository após um bug em produção —
+        aqui já nasce certo.)
         """
         if session:
-            return self._salvar_com_itens_inner(session, saida, itens_data)
+            return self._salvar_com_itens_inner(
+                session, saida, itens_data, expunge=False
+            )
         with session_scope() as session:
-            return self._salvar_com_itens_inner(session, saida, itens_data)
+            return self._salvar_com_itens_inner(
+                session, saida, itens_data, expunge=True
+            )
 
-    def _salvar_com_itens_inner(self, session, saida, itens_data):
+    def _salvar_com_itens_inner(self, session, saida, itens_data,
+                                 expunge=True):
+        """Lógica interna de diff de itens."""
         saida_persistida = session.merge(saida)
         session.flush()
 
@@ -144,7 +178,8 @@ class SaidaRepository:
 
         session.flush()
         session.refresh(saida_persistida)
-        session.expunge(saida_persistida)
+        if expunge:
+            session.expunge(saida_persistida)
         return saida_persistida
 
     def excluir_por_id(self, saida_id):

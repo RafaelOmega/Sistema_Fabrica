@@ -91,6 +91,10 @@ if not "%ICON_FILE%"=="" (
 )
 
 REM ----- build -----
+REM Observacao: usamos --collect-submodules=app em vez de listar cada
+REM app.models.*/app.services.*/app.repositories.* manualmente. Isso garante
+REM que novas telas, services ou repositories criados dentro de "app" sejam
+REM sempre incluidos no build sem precisar editar este script.
 echo Iniciando build...
 pyinstaller ^
   --noconfirm ^
@@ -105,15 +109,8 @@ pyinstaller ^
   --hidden-import="psycopg2.extensions" ^
   --hidden-import="psycopg2.extras" ^
   --hidden-import="sqlalchemy.dialects.postgresql" ^
-  --hidden-import="app.models.produto" ^
-  --hidden-import="app.models.produto_table_model" ^
-  --hidden-import="app.models.produto_filter_proxy_model" ^
-  --hidden-import="app.models.motivo_entrada" ^
-  --hidden-import="app.models.motivo_entrada_table_model" ^
-  --hidden-import="app.models.motivo_entrada_filter_proxy_model" ^
-  --hidden-import="app.models.entrada" ^
-  --hidden-import="app.models.item_entrada_table_model" ^
-  --hidden-import="app.models.entrada_table_model" ^
+  --hidden-import="sqlalchemy.dialects.postgresql.psycopg2" ^
+  --collect-submodules="app" ^
   "%ENTRY_POINT%"
 
 if errorlevel 1 (

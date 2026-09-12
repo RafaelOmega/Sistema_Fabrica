@@ -1,0 +1,5 @@
+# Dependências apenas para desenvolvimento/testes.
+# Não instalar no ambiente de build do .exe (build.bat usa só
+# requirements.txt) para não engordar o pacote final do PyInstaller.
+-r requirements.txt
+pytest==8.3.4
