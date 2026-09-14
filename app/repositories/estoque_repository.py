@@ -9,9 +9,15 @@ from app.models.saida import Saida, ItemSaida
 class EstoqueRepository:
     def listar_saldo(self, data_limite, ocultar_zerados=False):
         """
-        Calcula, para cada produto, o saldo em estoque até `data_limite`
-        (inclusive): soma de quantidades entradas menos soma de
-        quantidades saídas, ambas filtradas pela data do lançamento.
+        Calcula, para cada produto com controla_estoque=True, o saldo
+        em estoque até `data_limite` (inclusive): soma de quantidades
+        entradas menos soma de quantidades saídas, ambas filtradas
+        pela data do lançamento.
+
+        Produtos com controla_estoque=False (ex.: mão de obra, ou
+        qualquer item que não faça sentido ter saldo físico) NÃO
+        aparecem neste relatório, mesmo que tenham lançamentos de
+        entrada/saída registrados.
 
         Retorna uma lista de dicts, um por produto:
             {
@@ -60,6 +66,7 @@ class EstoqueRepository:
                     entradas_sub.c.qtd_entradas,
                     saidas_sub.c.qtd_saidas,
                 )
+                .filter(Produto.controla_estoque.is_(True))
                 .outerjoin(
                     entradas_sub,
                     entradas_sub.c.produto_id == Produto.id,
