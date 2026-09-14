@@ -181,8 +181,15 @@
     <addaction name="actionEntrada"/>
     <addaction name="actionSaida"/>
    </widget>
+   <widget class="QMenu" name="menuRelatorios">
+    <property name="title">
+     <string>Relatórios</string>
+    </property>
+    <addaction name="actionEstoque"/>
+   </widget>
    <addaction name="menuCadastros"/>
    <addaction name="menuLan_amentos"/>
+   <addaction name="menuRelatorios"/>
   </widget>
   <action name="actionProdutos">
    <property name="text">
@@ -207,6 +214,11 @@
   <action name="actionSaida">
    <property name="text">
     <string>Saida</string>
+   </property>
+  </action>
+  <action name="actionEstoque">
+   <property name="text">
+    <string>Estoque</string>
    </property>
   </action>
  </widget>

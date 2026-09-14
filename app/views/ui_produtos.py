@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'produtosJKTcGJ.ui'
+## Form generated from reading UI file 'produtosgTDeDN.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -16,15 +16,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QDoubleSpinBox, QFrame,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QPushButton, QSizePolicy, QSpacerItem, QTableView,
-    QVBoxLayout, QWidget)
+    QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
+    QTableView, QVBoxLayout, QWidget)
 
 class Ui_Produtos(object):
     def setupUi(self, Produtos):
         if not Produtos.objectName():
             Produtos.setObjectName(u"Produtos")
-        Produtos.resize(998, 400)
+        Produtos.resize(998, 518)
         font = QFont()
         font.setFamilies([u"Segoe UI Semibold"])
         font.setPointSize(10)
@@ -40,10 +40,10 @@ class Ui_Produtos(object):
         self.frm_Cadastro.setMaximumSize(QSize(500, 16777215))
         self.frm_Cadastro.setFrameShape(QFrame.Shape.StyledPanel)
         self.frm_Cadastro.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_2 = QVBoxLayout(self.frm_Cadastro)
-        self.verticalLayout_2.setSpacing(0)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout = QVBoxLayout(self.frm_Cadastro)
+        self.verticalLayout.setSpacing(5)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(5, 5, 5, 5)
         self.frm_Novo = QFrame(self.frm_Cadastro)
         self.frm_Novo.setObjectName(u"frm_Novo")
         self.frm_Novo.setFrameShape(QFrame.Shape.StyledPanel)
@@ -77,18 +77,46 @@ class Ui_Produtos(object):
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
 
-        self.ch_Prod_Acabado = QCheckBox(self.frm_Novo)
+
+        self.verticalLayout.addWidget(self.frm_Novo)
+
+        self.frm_Opcoes = QFrame(self.frm_Cadastro)
+        self.frm_Opcoes.setObjectName(u"frm_Opcoes")
+        self.frm_Opcoes.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frm_Opcoes.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout = QGridLayout(self.frm_Opcoes)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setContentsMargins(5, 5, 5, 5)
+        self.ch_Prod_Acabado = QCheckBox(self.frm_Opcoes)
         self.ch_Prod_Acabado.setObjectName(u"ch_Prod_Acabado")
 
-        self.horizontalLayout_4.addWidget(self.ch_Prod_Acabado)
+        self.gridLayout.addWidget(self.ch_Prod_Acabado, 0, 0, 1, 1)
 
-        self.ch_Mat_Prima = QCheckBox(self.frm_Novo)
+        self.ch_Controla_Estoque = QCheckBox(self.frm_Opcoes)
+        self.ch_Controla_Estoque.setObjectName(u"ch_Controla_Estoque")
+
+        self.gridLayout.addWidget(self.ch_Controla_Estoque, 1, 2, 1, 1)
+
+        self.ch_Mat_Prima = QCheckBox(self.frm_Opcoes)
         self.ch_Mat_Prima.setObjectName(u"ch_Mat_Prima")
 
-        self.horizontalLayout_4.addWidget(self.ch_Mat_Prima)
+        self.gridLayout.addWidget(self.ch_Mat_Prima, 1, 0, 1, 1)
+
+        self.ch_Mao_Obra = QCheckBox(self.frm_Opcoes)
+        self.ch_Mao_Obra.setObjectName(u"ch_Mao_Obra")
+
+        self.gridLayout.addWidget(self.ch_Mao_Obra, 0, 2, 1, 1)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout.addItem(self.horizontalSpacer_2, 0, 1, 1, 1)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout.addItem(self.horizontalSpacer_3, 1, 1, 1, 1)
 
 
-        self.verticalLayout_2.addWidget(self.frm_Novo)
+        self.verticalLayout.addWidget(self.frm_Opcoes)
 
         self.frm_Descricao = QFrame(self.frm_Cadastro)
         self.frm_Descricao.setObjectName(u"frm_Descricao")
@@ -113,7 +141,7 @@ class Ui_Produtos(object):
         self.horizontalLayout_5.addWidget(self.txt_Descricao)
 
 
-        self.verticalLayout_2.addWidget(self.frm_Descricao)
+        self.verticalLayout.addWidget(self.frm_Descricao)
 
         self.frm_Custo = QFrame(self.frm_Cadastro)
         self.frm_Custo.setObjectName(u"frm_Custo")
@@ -154,7 +182,7 @@ class Ui_Produtos(object):
         self.horizontalLayout_6.addWidget(self.txt_Custo)
 
 
-        self.verticalLayout_2.addWidget(self.frm_Custo)
+        self.verticalLayout.addWidget(self.frm_Custo)
 
         self.frm_Crud = QFrame(self.frm_Cadastro)
         self.frm_Crud.setObjectName(u"frm_Crud")
@@ -193,11 +221,11 @@ class Ui_Produtos(object):
         self.horizontalLayout_2.addWidget(self.bt_Excluir)
 
 
-        self.verticalLayout_2.addWidget(self.frm_Crud)
+        self.verticalLayout.addWidget(self.frm_Crud)
 
         self.verticalSpacer = QSpacerItem(20, 273, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.verticalLayout_2.addItem(self.verticalSpacer)
+        self.verticalLayout.addItem(self.verticalSpacer)
 
 
         self.horizontalLayout.addWidget(self.frm_Cadastro)
@@ -261,7 +289,9 @@ class Ui_Produtos(object):
         self.lb_Codigo.setText(QCoreApplication.translate("Produtos", u"C\u00f3digo:", None))
         self.bt_Novo.setText(QCoreApplication.translate("Produtos", u"+", None))
         self.ch_Prod_Acabado.setText(QCoreApplication.translate("Produtos", u"Produto Acabado", None))
+        self.ch_Controla_Estoque.setText(QCoreApplication.translate("Produtos", u"Controla Estoque?", None))
         self.ch_Mat_Prima.setText(QCoreApplication.translate("Produtos", u"Mat\u00e9ria Prima", None))
+        self.ch_Mao_Obra.setText(QCoreApplication.translate("Produtos", u"M\u00e3o de obra", None))
         self.lb_Descricao.setText(QCoreApplication.translate("Produtos", u"Descri\u00e7\u00e3o:", None))
         self.lb_Peso.setText(QCoreApplication.translate("Produtos", u"Peso do Saco:", None))
         self.txt_Peso.setSuffix(QCoreApplication.translate("Produtos", u" Kg", None))

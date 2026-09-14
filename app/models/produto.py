@@ -13,10 +13,13 @@ class Produto(Base):
     custo = Column(Numeric(10, 2), nullable=False, default=0)
     prod_acabado = Column(Boolean, nullable=False, default=False)
     mat_prima = Column(Boolean, nullable=False, default=False)
+    mao_obra = Column(Boolean, nullable=False, default=False)
+    controla_estoque = Column(Boolean, nullable=False, default=False)
 
     def __repr__(self):
         return (
             f"Produto(id={self.id}, codigo='{self.codigo}', "
             f"descricao='{self.descricao}', peso={self.peso}, custo={self.custo}, "
-            f"prod_acabado={self.prod_acabado}, mat_prima={self.mat_prima})"
+            f"prod_acabado={self.prod_acabado}, mat_prima={self.mat_prima}, "
+            f"mao_obra={self.mao_obra}, controla_estoque={self.controla_estoque})"
         )

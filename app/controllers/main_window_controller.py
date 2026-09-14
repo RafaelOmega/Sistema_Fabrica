@@ -30,6 +30,7 @@ class MainWindowController(QMainWindow):
         self.ui.actionEntrada.triggered.connect(self.abrir_entrada)
         self.ui.actionFicha_Tecnica.triggered.connect(self.abrir_ficha_tecnica)
         self.ui.actionSaida.triggered.connect(self.abrir_saida)
+        self.ui.actionEstoque.triggered.connect(self.abrir_estoque)
 
     def _iniciar_statusbar(self):
         self.ui.lb_Comandos.setText("Pronto")
@@ -59,6 +60,7 @@ class MainWindowController(QMainWindow):
         self.ui.actionEntrada.setEnabled(habilitar)
         self.ui.actionFicha_Tecnica.setEnabled(habilitar)
         self.ui.actionSaida.setEnabled(habilitar)
+        self.ui.actionEstoque.setEnabled(habilitar)
     # --- Abertura de janelas MDI ---
 
     def _abrir_janela_mdi(self, chave, titulo, criar_controller):
@@ -129,6 +131,12 @@ class MainWindowController(QMainWindow):
 
         self._abrir_janela_mdi(
             "saida", "Saída de Mercadorias", SaidaController)
+
+    def abrir_estoque(self):
+        from app.controllers.estoque_controller import EstoqueController
+
+        self._abrir_janela_mdi(
+            "estoque", "Estoque", EstoqueController)
 
     def closeEvent(self, event):
         for subwindow in list(self._janelas_abertas.values()):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowptHBDG.ui'
+## Form generated from reading UI file 'main_windowIXKcUD.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -41,6 +41,8 @@ class Ui_MainWindow(object):
         self.actionFicha_Tecnica.setObjectName(u"actionFicha_Tecnica")
         self.actionSaida = QAction(MainWindow)
         self.actionSaida.setObjectName(u"actionSaida")
+        self.actionEstoque = QAction(MainWindow)
+        self.actionEstoque.setObjectName(u"actionEstoque")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -104,15 +106,19 @@ class Ui_MainWindow(object):
         self.menuCadastros.setObjectName(u"menuCadastros")
         self.menuLan_amentos = QMenu(self.menubar)
         self.menuLan_amentos.setObjectName(u"menuLan_amentos")
+        self.menuRelatorios = QMenu(self.menubar)
+        self.menuRelatorios.setObjectName(u"menuRelatorios")
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.menuCadastros.menuAction())
         self.menubar.addAction(self.menuLan_amentos.menuAction())
+        self.menubar.addAction(self.menuRelatorios.menuAction())
         self.menuCadastros.addAction(self.actionProdutos)
         self.menuCadastros.addAction(self.actionMotivo_Entrada)
         self.menuCadastros.addAction(self.actionFicha_Tecnica)
         self.menuLan_amentos.addAction(self.actionEntrada)
         self.menuLan_amentos.addAction(self.actionSaida)
+        self.menuRelatorios.addAction(self.actionEstoque)
 
         self.retranslateUi(MainWindow)
 
@@ -126,8 +132,10 @@ class Ui_MainWindow(object):
         self.actionEntrada.setText(QCoreApplication.translate("MainWindow", u"Entrada", None))
         self.actionFicha_Tecnica.setText(QCoreApplication.translate("MainWindow", u"Ficha T\u00e9cnica", None))
         self.actionSaida.setText(QCoreApplication.translate("MainWindow", u"Saida", None))
+        self.actionEstoque.setText(QCoreApplication.translate("MainWindow", u"Estoque", None))
         self.lb_Comandos.setText("")
         self.menuCadastros.setTitle(QCoreApplication.translate("MainWindow", u"Cadastros", None))
         self.menuLan_amentos.setTitle(QCoreApplication.translate("MainWindow", u"Lan\u00e7amentos", None))
+        self.menuRelatorios.setTitle(QCoreApplication.translate("MainWindow", u"Relat\u00f3rios", None))
     # retranslateUi
 

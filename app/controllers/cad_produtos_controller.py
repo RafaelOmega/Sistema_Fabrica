@@ -45,6 +45,10 @@ class ProdutosController(QWidget):
         header.setSectionResizeMode(1, QHeaderView.Stretch)
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(6, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(7, QHeaderView.ResizeToContents)
         self.ui.tb_Produtos.sortByColumn(1, Qt.AscendingOrder)
 
     def _conectar_sinais(self):
@@ -91,8 +95,10 @@ class ProdutosController(QWidget):
         descricao = self.ui.txt_Descricao.text().strip()
         peso = self.ui.txt_Peso.value()
         custo = Decimal(str(self.ui.txt_Custo.value()))
-        prod_acabado = self.ui.ch_Prod_Acabado.isChecked()   # ← ADICIONADO
-        mat_prima = self.ui.ch_Mat_Prima.isChecked()           # ← ADICIONADO
+        prod_acabado = self.ui.ch_Prod_Acabado.isChecked()
+        mat_prima = self.ui.ch_Mat_Prima.isChecked()
+        mao_obra = self.ui.ch_Mao_Obra.isChecked()
+        controla_estoque = self.ui.ch_Controla_Estoque.isChecked()
         try:
             self.service.salvar(
                 codigo=codigo,
@@ -100,8 +106,10 @@ class ProdutosController(QWidget):
                 peso=peso,
                 custo=custo,
                 produto_id=self.produto_selecionado_id,
-                prod_acabado=prod_acabado,   # ← ADICIONADO
-                mat_prima=mat_prima,           # ← ADICIONADO
+                prod_acabado=prod_acabado,
+                mat_prima=mat_prima,
+                mao_obra=mao_obra,
+                controla_estoque=controla_estoque,
             )
             logger.info(
                 f"Produto salvo com sucesso | id={self.produto_selecionado_id} | codigo={codigo}"
@@ -182,20 +190,26 @@ class ProdutosController(QWidget):
             0.0 if produto.peso is None else float(produto.peso))
         self.ui.txt_Custo.setValue(
             0.0 if produto.custo is None else float(produto.custo))
-        # ← ADICIONADO: carrega checkboxes
+        # Carrega checkboxes
         self.ui.ch_Prod_Acabado.setChecked(
             bool(getattr(produto, "prod_acabado", False)))
         self.ui.ch_Mat_Prima.setChecked(
             bool(getattr(produto, "mat_prima", False)))
+        self.ui.ch_Mao_Obra.setChecked(
+            bool(getattr(produto, "mao_obra", False)))
+        self.ui.ch_Controla_Estoque.setChecked(
+            bool(getattr(produto, "controla_estoque", False)))
 
     def _limpar_campos(self):
         self.ui.txt_Codigo.clear()
         self.ui.txt_Descricao.clear()
         self.ui.txt_Peso.setValue(0.0)
         self.ui.txt_Custo.setValue(0.0)
-        # ← ADICIONADO: limpa checkboxes
+        # Limpa checkboxes
         self.ui.ch_Prod_Acabado.setChecked(False)
         self.ui.ch_Mat_Prima.setChecked(False)
+        self.ui.ch_Mao_Obra.setChecked(False)
+        self.ui.ch_Controla_Estoque.setChecked(False)
 
     def _limpar_selecao_tabela(self):
         self.ui.tb_Produtos.clearSelection()
@@ -205,9 +219,11 @@ class ProdutosController(QWidget):
         self.ui.txt_Descricao.setEnabled(habilitar)
         self.ui.txt_Peso.setEnabled(habilitar)
         self.ui.txt_Custo.setEnabled(habilitar)
-        # ← ADICIONADO: habilita/desabilita checkboxes junto com os campos
+        # Habilita/desabilita checkboxes junto com os campos
         self.ui.ch_Prod_Acabado.setEnabled(habilitar)
         self.ui.ch_Mat_Prima.setEnabled(habilitar)
+        self.ui.ch_Mao_Obra.setEnabled(habilitar)
+        self.ui.ch_Controla_Estoque.setEnabled(habilitar)
 
     def _estado_inicial(self):
         self._habilitar_campos_produto(False)

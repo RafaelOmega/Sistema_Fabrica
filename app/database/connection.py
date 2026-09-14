@@ -36,6 +36,42 @@ def init_db():
         raise
 
     _migrar_regras_produtos_especiais_padrao()
+    _migrar_colunas_produto()
+
+
+def _migrar_colunas_produto():
+    """Adiciona colunas novas na tabela produtos para instalações que
+    já existiam antes desta versão.
+
+    Base.metadata.create_all() só CRIA tabelas que não existem — não
+    altera tabelas já existentes para adicionar colunas novas. Como
+    `mao_obra` e `controla_estoque` foram adicionadas ao modelo
+    Produto depois que o sistema já estava em produção, precisamos
+    dessa migração leve para não quebrar bancos já existentes.
+    """
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+    colunas_existentes = {
+        col["name"] for col in inspector.get_columns("produtos")
+    }
+
+    colunas_novas = {
+        "mao_obra": (
+            "ALTER TABLE produtos ADD COLUMN mao_obra "
+            "BOOLEAN NOT NULL DEFAULT false"
+        ),
+        "controla_estoque": (
+            "ALTER TABLE produtos ADD COLUMN controla_estoque "
+            "BOOLEAN NOT NULL DEFAULT false"
+        ),
+    }
+
+    for coluna, ddl in colunas_novas.items():
+        if coluna not in colunas_existentes:
+            logger.info(f"Adicionando coluna produtos.{coluna}")
+            with engine.begin() as conn:
+                conn.execute(text(ddl))
 
 
 def _migrar_regras_produtos_especiais_padrao():

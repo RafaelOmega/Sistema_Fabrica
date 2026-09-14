@@ -36,7 +36,8 @@ class ProdutoService:
             raise ValueError("Custo não pode ser negativo.")
 
     def salvar(self, codigo, descricao, peso, custo, produto_id=None,
-               prod_acabado=False, mat_prima=False):
+               prod_acabado=False, mat_prima=False, mao_obra=False,
+               controla_estoque=False):
         codigo = codigo.strip()
         descricao = descricao.strip()
         self._validar(codigo, descricao, peso, custo)
@@ -60,6 +61,8 @@ class ProdutoService:
         produto.custo = custo
         produto.prod_acabado = prod_acabado
         produto.mat_prima = mat_prima
+        produto.mao_obra = mao_obra
+        produto.controla_estoque = controla_estoque
 
         try:
             resultado = self.repo.salvar(produto)

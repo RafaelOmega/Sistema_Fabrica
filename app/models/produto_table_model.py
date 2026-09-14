@@ -5,7 +5,8 @@ from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 class ProdutoTableModel(QAbstractTableModel):
     HEADERS = ["Código", "Descrição", "Peso",
-               "Custo", "Prod. Acabado", "Mat. Prima"]
+               "Custo", "Prod. Acabado", "Mat. Prima",
+               "Mão de Obra", "Controla Estoque"]
 
     def __init__(self, produtos=None, parent=None):
         super().__init__(parent)
@@ -44,6 +45,10 @@ class ProdutoTableModel(QAbstractTableModel):
                 return "Sim" if getattr(produto, "prod_acabado", False) else "Não"
             if coluna == 5:
                 return "Sim" if getattr(produto, "mat_prima", False) else "Não"
+            if coluna == 6:
+                return "Sim" if getattr(produto, "mao_obra", False) else "Não"
+            if coluna == 7:
+                return "Sim" if getattr(produto, "controla_estoque", False) else "Não"
 
         if role == Qt.UserRole:
             if coluna == 0:
@@ -58,11 +63,15 @@ class ProdutoTableModel(QAbstractTableModel):
                 return bool(getattr(produto, "prod_acabado", False))
             if coluna == 5:
                 return bool(getattr(produto, "mat_prima", False))
+            if coluna == 6:
+                return bool(getattr(produto, "mao_obra", False))
+            if coluna == 7:
+                return bool(getattr(produto, "controla_estoque", False))
 
         if role == Qt.TextAlignmentRole:
             if coluna in (2, 3):
                 return Qt.AlignRight | Qt.AlignVCenter
-            if coluna in (4, 5):
+            if coluna in (4, 5, 6, 7):
                 return Qt.AlignCenter
             return Qt.AlignLeft | Qt.AlignVCenter
 
