@@ -32,8 +32,10 @@ class FichaTecnicaController(QWidget):
         self.item_unitario_model = FichaTecnicaUnitarioTableModel()
 
         self.ficha_id = None
-        self._produto_atual_id = None
+        self._produto_acabado_id = None
+        self._produto_item_id = None
         self._item_edicao_row = None
+        self._item_edicao_id = None
 
         self._configurar_tabelas()
         self._configurar_campos()
@@ -172,8 +174,9 @@ class FichaTecnicaController(QWidget):
 
     def novo(self):
         self.ficha_id = None
-        self._produto_atual_id = None
+        self._produto_acabado_id = None
         self._item_edicao_row = None
+        self._item_edicao_id = None
         self._limpar_campos()
         self._limpar_itens()
         self._limpar_selecao_itens()
@@ -198,7 +201,7 @@ class FichaTecnicaController(QWidget):
                         "Este produto não é um produto acabado.",
                     )
                     return
-                self._produto_atual_id = produto.id
+                self._produto_acabado_id = produto.id
                 self.ui.txt_Prod_Acabado.setText(produto.codigo or "")
                 self.ui.txt_Sacos_Batida.setFocus()
                 logger.debug(
@@ -220,7 +223,7 @@ class FichaTecnicaController(QWidget):
                         "Este produto não é um produto acabado.",
                     )
                     return
-                self._produto_atual_id = produto.id
+                self._produto_acabado_id = produto.id
 
                 # Tenta carregar ficha existente
                 ficha = self.ficha_service.buscar_por_produto(
@@ -239,7 +242,7 @@ class FichaTecnicaController(QWidget):
                 QMessageBox.warning(
                     self, "Aviso", "Produto não encontrado."
                 )
-                self._produto_atual_id = None
+                self._produto_acabado_id = None
                 self.ui.txt_Prod_Acabado.setFocus()
                 self.ui.txt_Prod_Acabado.selectAll()
         except Exception as e:
@@ -253,7 +256,7 @@ class FichaTecnicaController(QWidget):
     def abrir_ficha(self):
         """No estado inicial/carregado: carrega ficha existente.
         No estado novo/edição: abre seção de itens."""
-        if self._produto_atual_id is None:
+        if self._produto_acabado_id is None:
             codigo = self.ui.txt_Prod_Acabado.text().strip()
             if not codigo:
                 QMessageBox.warning(
@@ -277,7 +280,7 @@ class FichaTecnicaController(QWidget):
                         "Este produto não é um produto acabado.",
                     )
                     return
-                self._produto_atual_id = produto.id
+                self._produto_acabado_id = produto.id
             except Exception as e:
                 QMessageBox.critical(
                     self, "Erro", f"Erro ao pesquisar: {e}"
@@ -287,7 +290,7 @@ class FichaTecnicaController(QWidget):
         # Estado inicial ou carregado → buscar ficha existente
         if self.ui.bt_Novo.isEnabled() and not self.ui.bt_Salvar.isEnabled():
             ficha = self.ficha_service.buscar_por_produto(
-                self._produto_atual_id
+                self._produto_acabado_id
             )
             if ficha:
                 self._carregar_ficha(ficha.id)
@@ -332,7 +335,7 @@ class FichaTecnicaController(QWidget):
             )
 
             self.ficha_id = ficha.id
-            self._produto_atual_id = ficha.produto_id
+            self._produto_acabado_id = ficha.produto_id
 
             # Carregar código do produto acabado
             produto = self.produto_service.buscar_por_id(
@@ -372,7 +375,7 @@ class FichaTecnicaController(QWidget):
             )
             return
 
-        produto_id = self._produto_atual_id
+        produto_id = self._produto_acabado_id
         codigo_produto = self.ui.txt_Prod_Acabado.text().strip()
         sacos_batida = self.ui.txt_Sacos_Batida.text().strip()
         itens = self.item_model.obter_todos()
@@ -488,6 +491,7 @@ class FichaTecnicaController(QWidget):
         self._limpar_campos_item()
         self._limpar_selecao_itens()
         self._item_edicao_row = None
+        self._item_edicao_id = None
         if self.ficha_id is None:
             self._estado_novo()
         else:
@@ -510,7 +514,7 @@ class FichaTecnicaController(QWidget):
                         "Este produto não é uma matéria prima.",
                     )
                     return
-                self._produto_atual_id = produto.id
+                self._produto_item_id = produto.id
                 self.ui.txt_Cod_Mat_Prima.setText(produto.codigo or "")
                 self.ui.txt_Descricao_Prod.setText(
                     produto.descricao or ""
@@ -535,7 +539,7 @@ class FichaTecnicaController(QWidget):
                         "Este produto não é uma matéria prima.",
                     )
                     return
-                self._produto_atual_id = produto.id
+                self._produto_item_id = produto.id
                 self.ui.txt_Descricao_Prod.setText(
                     produto.descricao or ""
                 )
@@ -548,7 +552,7 @@ class FichaTecnicaController(QWidget):
                     self, "Aviso", "Produto não encontrado."
                 )
                 self.ui.txt_Descricao_Prod.clear()
-                self._produto_atual_id = None
+                self._produto_item_id = None
                 self.ui.txt_Cod_Mat_Prima.setFocus()
                 self.ui.txt_Cod_Mat_Prima.selectAll()
         except Exception as e:
@@ -565,7 +569,7 @@ class FichaTecnicaController(QWidget):
         descricao = self.ui.txt_Descricao_Prod.text().strip()
         qtde_text = self.ui.txt_Qtde.text().strip()
 
-        if not codigo or not descricao or self._produto_atual_id is None:
+        if not codigo or not descricao or self._produto_item_id is None:
             QMessageBox.warning(
                 self, "Aviso", "Pesquise uma matéria prima primeiro."
             )
@@ -580,7 +584,7 @@ class FichaTecnicaController(QWidget):
             return
 
         item = {
-            "produto_id": self._produto_atual_id,
+            "produto_id": self._produto_item_id,
             "codigo_produto": codigo,
             "codigo": codigo,
             "descricao": descricao,
@@ -588,11 +592,19 @@ class FichaTecnicaController(QWidget):
         }
 
         if self._item_edicao_row is not None:
+            # Preserva o id original do item (quando ele já existe no
+            # banco). Sem isso, o item editado perde seu id e o
+            # FichaTecnicaRepository._salvar_com_itens_inner trata a
+            # edição como "excluir o item antigo + inserir um novo",
+            # em vez de fazer um update in-place.
+            if self._item_edicao_id is not None:
+                item["id"] = self._item_edicao_id
             self.item_model.atualizar_item(
                 self._item_edicao_row, item
             )
             logger.debug(
-                f"Item atualizado | row={self._item_edicao_row}"
+                f"Item atualizado | row={self._item_edicao_row} | "
+                f"id={self._item_edicao_id}"
             )
         else:
             self.item_model.adicionar_item(item)
@@ -601,6 +613,7 @@ class FichaTecnicaController(QWidget):
         self._limpar_campos_item()
         self._limpar_selecao_itens()
         self._item_edicao_row = None
+        self._item_edicao_id = None
         self._atualizar_totais()
         self.ui.txt_Cod_Mat_Prima.setFocus()
 
@@ -608,6 +621,7 @@ class FichaTecnicaController(QWidget):
         self._limpar_campos_item()
         self._limpar_selecao_itens()
         self._item_edicao_row = None
+        self._item_edicao_id = None
 
     def excluir_item(self):
         indexes = self.ui.tb_Itens_Batida.selectionModel().selectedRows()
@@ -622,6 +636,7 @@ class FichaTecnicaController(QWidget):
         self._limpar_campos_item()
         self._limpar_selecao_itens()
         self._item_edicao_row = None
+        self._item_edicao_id = None
         self._atualizar_totais()
         logger.debug(f"Item removido | row={row}")
 
@@ -629,6 +644,7 @@ class FichaTecnicaController(QWidget):
         indexes = self.ui.tb_Itens_Batida.selectionModel().selectedRows()
         if not indexes:
             self._item_edicao_row = None
+            self._item_edicao_id = None
             return
 
         row = indexes[0].row()
@@ -637,7 +653,8 @@ class FichaTecnicaController(QWidget):
             return
 
         self._item_edicao_row = row
-        self._produto_atual_id = item.get("produto_id")
+        self._item_edicao_id = item.get("id")
+        self._produto_item_id = item.get("produto_id")
         self.ui.txt_Cod_Mat_Prima.setText(item.get("codigo", ""))
         self.ui.txt_Descricao_Prod.setText(item.get("descricao", ""))
         self.ui.txt_Qtde.setText(
@@ -657,7 +674,7 @@ class FichaTecnicaController(QWidget):
         self.ui.txt_Cod_Mat_Prima.clear()
         self.ui.txt_Descricao_Prod.clear()
         self.ui.txt_Qtde.clear()
-        self._produto_atual_id = None
+        self._produto_item_id = None
 
     def _limpar_itens(self):
         self.item_model.limpar()
@@ -755,7 +772,8 @@ class FichaTecnicaController(QWidget):
     def _resetar_tela(self):
         self.ficha_id = None
         self._item_edicao_row = None
-        self._produto_atual_id = None
+        self._item_edicao_id = None
+        self._produto_acabado_id = None
 
         self._limpar_campos()
         self._limpar_itens()

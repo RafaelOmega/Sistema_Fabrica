@@ -83,6 +83,14 @@ class FichaTecnicaService:
                 raise ValueError(
                     "Ficha técnica não encontrada para edição."
                 )
+            # produto_id também precisa ser atualizado aqui: antes só
+            # codigo_produto era reatribuído, então, se o usuário
+            # trocasse o produto acabado durante a edição (o campo de
+            # busca continua habilitado nesse estado), o texto exibido
+            # mudava mas o vínculo real (produto_id) ficava apontando
+            # para o produto antigo — ficha e código ficavam
+            # dessincronizados.
+            ficha.produto_id = produto_id
             ficha.codigo_produto = codigo_produto  # ← ADICIONADO (atualiza)
 
         ficha.sacos_batida = int(sacos_batida)
