@@ -1,8 +1,6 @@
 from PySide6.QtCore import QDate, Qt
 from PySide6.QtWidgets import (
-    QAbstractItemView,
     QDialog,
-    QHeaderView,
     QMessageBox,
     QWidget,
 )
@@ -11,6 +9,7 @@ from app.models.item_saida_table_model import ItemSaidaTableModel
 from app.services.produto_service import ProdutoService
 from app.services.saida_service import SaidaService
 from app.utils.logger import get_logger
+from app.utils.table_utils import configurar_tabela
 from app.views.ui_saida import Ui_Saida
 
 logger = get_logger("saida_controller")
@@ -41,18 +40,7 @@ class SaidaController(QWidget):
 
     def _configurar_tabela(self):
         self.ui.tb_Itens.setModel(self.item_model)
-        self.ui.tb_Itens.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.ui.tb_Itens.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.ui.tb_Itens.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.ui.tb_Itens.setAlternatingRowColors(True)
-        self.ui.tb_Itens.verticalHeader().setVisible(False)
-
-        header = self.ui.tb_Itens.horizontalHeader()
-        header.setStretchLastSection(False)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        configurar_tabela(self.ui.tb_Itens, coluna_stretch=1)
 
     def _configurar_campos(self):
         self.ui.dt_Saida.setCalendarPopup(True)

@@ -1,8 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QAbstractItemView,
     QDialog,
-    QHeaderView,
     QMessageBox,
 )
 
@@ -10,6 +8,7 @@ from app.models.produto_filter_proxy_model import ProdutoFilterProxyModel
 from app.models.produto_table_model import ProdutoTableModel
 from app.services.produto_service import ProdutoService
 from app.utils.logger import get_logger
+from app.utils.table_utils import configurar_tabela
 from app.views.ui_pesquisa_Produto import Ui_Pesquisa_Prod
 
 logger = get_logger("pesquisa_produto_controller")
@@ -34,17 +33,8 @@ class PesquisaProdutoController(QDialog):
     def _configurar_tabela(self):
         self.proxy_model.setSourceModel(self.model)
         self.ui.tb_Produtos.setModel(self.proxy_model)
-        self.ui.tb_Produtos.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.ui.tb_Produtos.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.ui.tb_Produtos.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.ui.tb_Produtos.setAlternatingRowColors(True)
-        self.ui.tb_Produtos.setSortingEnabled(True)
-        self.ui.tb_Produtos.verticalHeader().setVisible(False)
-
-        header = self.ui.tb_Produtos.horizontalHeader()
-        header.setStretchLastSection(False)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        configurar_tabela(self.ui.tb_Produtos,
+                          coluna_stretch=1, ordenavel=True)
 
     def _conectar_sinais(self):
         self.ui.txt_Pesquisa.textChanged.connect(self._aplicar_filtro)

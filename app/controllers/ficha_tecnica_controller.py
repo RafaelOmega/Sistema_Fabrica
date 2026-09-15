@@ -1,8 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QAbstractItemView,
     QDialog,
-    QHeaderView,
     QMessageBox,
     QWidget,
 )
@@ -14,6 +12,7 @@ from app.models.ficha_tecnica_table_model import (
 from app.services.ficha_tecnica_service import FichaTecnicaService
 from app.services.produto_service import ProdutoService
 from app.utils.logger import get_logger
+from app.utils.table_utils import configurar_tabela
 from app.views.ui_ficha_tecnica import Ui_Ficha_Tecnica
 
 logger = get_logger("ficha_tecnica_controller")
@@ -48,40 +47,15 @@ class FichaTecnicaController(QWidget):
     def _configurar_tabelas(self):
         # Tabela Batida (editável via seleção)
         self.ui.tb_Itens_Batida.setModel(self.item_model)
-        self.ui.tb_Itens_Batida.setSelectionBehavior(
-            QAbstractItemView.SelectRows
-        )
-        self.ui.tb_Itens_Batida.setSelectionMode(
-            QAbstractItemView.SingleSelection
-        )
-        self.ui.tb_Itens_Batida.setEditTriggers(
-            QAbstractItemView.NoEditTriggers
-        )
-        self.ui.tb_Itens_Batida.setAlternatingRowColors(True)
-        self.ui.tb_Itens_Batida.verticalHeader().setVisible(False)
-
-        header = self.ui.tb_Itens_Batida.horizontalHeader()
-        header.setStretchLastSection(False)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        configurar_tabela(self.ui.tb_Itens_Batida, coluna_stretch=1)
 
         # Tabela Unitário (read-only, sem seleção)
         self.ui.tb_Itens_Unitario.setModel(self.item_unitario_model)
-        self.ui.tb_Itens_Unitario.setSelectionMode(
-            QAbstractItemView.NoSelection
+        configurar_tabela(
+            self.ui.tb_Itens_Unitario,
+            coluna_stretch=1,
+            selecionavel=False,
         )
-        self.ui.tb_Itens_Unitario.setEditTriggers(
-            QAbstractItemView.NoEditTriggers
-        )
-        self.ui.tb_Itens_Unitario.setAlternatingRowColors(True)
-        self.ui.tb_Itens_Unitario.verticalHeader().setVisible(False)
-
-        header_u = self.ui.tb_Itens_Unitario.horizontalHeader()
-        header_u.setStretchLastSection(False)
-        header_u.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header_u.setSectionResizeMode(1, QHeaderView.Stretch)
-        header_u.setSectionResizeMode(2, QHeaderView.ResizeToContents)
 
     def _configurar_campos(self):
         self.ui.txt_Descricao_Prod.setReadOnly(True)

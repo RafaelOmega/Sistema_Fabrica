@@ -1,13 +1,12 @@
 from PySide6.QtWidgets import (
-    QAbstractItemView,
     QDialog,
-    QHeaderView,
     QMessageBox,
 )
 from app.models.saida_filter_proxy_model import SaidaFilterProxyModel
 from app.models.saida_table_model import SaidaTableModel
 from app.services.saida_service import SaidaService
 from app.utils.logger import get_logger
+from app.utils.table_utils import configurar_tabela
 from app.views.ui_pesquisa_Saida import Ui_Pesquisa_Prod as Ui_Pesquisa_Saida
 
 logger = get_logger("pesquisa_saida_controller")
@@ -32,23 +31,9 @@ class PesquisaSaidaController(QDialog):
 
     def _configurar_tabela(self):
         self.ui.tb_Saidas.setModel(self.proxy_model)
-        self.ui.tb_Saidas.setSelectionBehavior(
-            QAbstractItemView.SelectRows
+        configurar_tabela(
+            self.ui.tb_Saidas, coluna_stretch=1, ordenavel=True
         )
-        self.ui.tb_Saidas.setSelectionMode(
-            QAbstractItemView.SingleSelection
-        )
-        self.ui.tb_Saidas.setEditTriggers(
-            QAbstractItemView.NoEditTriggers
-        )
-        self.ui.tb_Saidas.setAlternatingRowColors(True)
-        self.ui.tb_Saidas.setSortingEnabled(True)
-        self.ui.tb_Saidas.verticalHeader().setVisible(False)
-
-        header = self.ui.tb_Saidas.horizontalHeader()
-        header.setStretchLastSection(False)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
 
     def _conectar_sinais(self):
         self.ui.txt_Pesquisa.textChanged.connect(self._aplicar_filtro)

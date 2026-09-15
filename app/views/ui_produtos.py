@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'produtosgTDeDN.ui'
+## Form generated from reading UI file 'produtosorKIla.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -180,6 +180,10 @@ class Ui_Produtos(object):
         self.txt_Custo.setMaximum(9999999999.989999771118164)
 
         self.horizontalLayout_6.addWidget(self.txt_Custo)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_6.addItem(self.horizontalSpacer_4)
 
 
         self.verticalLayout.addWidget(self.frm_Custo)

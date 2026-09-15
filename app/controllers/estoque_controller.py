@@ -2,9 +2,7 @@ from datetime import date
 
 from PySide6.QtCore import QDate
 from PySide6.QtWidgets import (
-    QAbstractItemView,
     QFileDialog,
-    QHeaderView,
     QMessageBox,
     QWidget,
 )
@@ -12,6 +10,7 @@ from PySide6.QtWidgets import (
 from app.models.estoque_table_model import EstoqueTableModel
 from app.services.estoque_service import EstoqueService
 from app.utils.logger import get_logger
+from app.utils.table_utils import configurar_tabela
 from app.views.ui_estoque import Ui_Estoque_Tab
 
 logger = get_logger("estoque_controller")
@@ -36,28 +35,7 @@ class EstoqueController(QWidget):
 
     def _configurar_tabela(self):
         self.ui.tb_Estoque.setModel(self.model)
-        self.ui.tb_Estoque.setSelectionBehavior(
-            QAbstractItemView.SelectRows
-        )
-        self.ui.tb_Estoque.setSelectionMode(
-            QAbstractItemView.SingleSelection
-        )
-        self.ui.tb_Estoque.setEditTriggers(
-            QAbstractItemView.NoEditTriggers
-        )
-        self.ui.tb_Estoque.setAlternatingRowColors(True)
-        self.ui.tb_Estoque.setSortingEnabled(True)
-        self.ui.tb_Estoque.verticalHeader().setVisible(False)
-
-        header = self.ui.tb_Estoque.horizontalHeader()
-        header.setStretchLastSection(False)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(6, QHeaderView.ResizeToContents)
+        configurar_tabela(self.ui.tb_Estoque, coluna_stretch=1, ordenavel=True)
 
     def _configurar_campos(self):
         self.ui.dt_Filtro.setCalendarPopup(True)

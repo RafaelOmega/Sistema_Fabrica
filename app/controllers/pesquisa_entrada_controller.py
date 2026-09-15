@@ -1,14 +1,13 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QAbstractItemView,
     QDialog,
-    QHeaderView,
     QMessageBox,
 )
 from app.models.entrada_filter_proxy_model import EntradaFilterProxyModel
 from app.models.entrada_table_model import EntradaTableModel
 from app.services.entrada_service import EntradaService
 from app.utils.logger import get_logger
+from app.utils.table_utils import configurar_tabela
 from app.views.ui_pesquisa_Entrada import Ui_Pesquisa_Prod as Ui_Pesquisa_Entrada
 
 logger = get_logger("pesquisa_entrada_controller")
@@ -33,24 +32,8 @@ class PesquisaEntradaController(QDialog):
 
     def _configurar_tabela(self):
         self.ui.tb_Entradas.setModel(self.proxy_model)
-        self.ui.tb_Entradas.setSelectionBehavior(
-            QAbstractItemView.SelectRows
-        )
-        self.ui.tb_Entradas.setSelectionMode(
-            QAbstractItemView.SingleSelection
-        )
-        self.ui.tb_Entradas.setEditTriggers(
-            QAbstractItemView.NoEditTriggers
-        )
-        self.ui.tb_Entradas.setAlternatingRowColors(True)
-        self.ui.tb_Entradas.setSortingEnabled(True)
-        self.ui.tb_Entradas.verticalHeader().setVisible(False)
-
-        header = self.ui.tb_Entradas.horizontalHeader()
-        header.setStretchLastSection(False)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QHeaderView.Stretch)
+        configurar_tabela(self.ui.tb_Entradas,
+                          coluna_stretch=2, ordenavel=True)
 
     def _conectar_sinais(self):
         self.ui.txt_Pesquisa.textChanged.connect(self._aplicar_filtro)
