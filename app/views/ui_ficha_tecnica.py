@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-# Form generated from reading UI file 'ficha_tecnicaTfcLGD.ui'
+## Form generated from reading UI file 'ficha_tecnicaWfuvJx.ui'
 ##
-# Created by: Qt User Interface Compiler version 6.11.2
+## Created by: Qt User Interface Compiler version 6.11.2
 ##
-# WARNING! All changes made in this file will be lost when recompiling UI file!
+## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
-                               QLabel, QLineEdit, QPushButton, QSizePolicy,
-                               QSpacerItem, QTableView, QVBoxLayout, QWidget)
-
+    QLabel, QLineEdit, QPushButton, QSizePolicy,
+    QSpacerItem, QTableView, QVBoxLayout, QWidget)
 
 class Ui_Ficha_Tecnica(object):
     def setupUi(self, Ficha_Tecnica):
@@ -65,8 +64,7 @@ class Ui_Ficha_Tecnica(object):
         self.horizontalLayout_2.addWidget(self.txt_Prod_Acabado)
 
         self.bt_Pesquisa_Prod_Acabado = QPushButton(self.frm_Cod_Acabado)
-        self.bt_Pesquisa_Prod_Acabado.setObjectName(
-            u"bt_Pesquisa_Prod_Acabado")
+        self.bt_Pesquisa_Prod_Acabado.setObjectName(u"bt_Pesquisa_Prod_Acabado")
         self.bt_Pesquisa_Prod_Acabado.setMinimumSize(QSize(40, 30))
         self.bt_Pesquisa_Prod_Acabado.setMaximumSize(QSize(40, 30))
 
@@ -79,10 +77,13 @@ class Ui_Ficha_Tecnica(object):
 
         self.horizontalLayout_2.addWidget(self.bt_Novo)
 
-        self.horizontalSpacer = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.txt_Descricao_Prod_Acabado = QLineEdit(self.frm_Cod_Acabado)
+        self.txt_Descricao_Prod_Acabado.setObjectName(u"txt_Descricao_Prod_Acabado")
+        self.txt_Descricao_Prod_Acabado.setMinimumSize(QSize(0, 30))
+        self.txt_Descricao_Prod_Acabado.setMaximumSize(QSize(16777215, 30))
+        self.txt_Descricao_Prod_Acabado.setReadOnly(True)
 
-        self.horizontalLayout_2.addItem(self.horizontalSpacer)
+        self.horizontalLayout_2.addWidget(self.txt_Descricao_Prod_Acabado)
 
         self.lb_Sacos_Batida = QLabel(self.frm_Cod_Acabado)
         self.lb_Sacos_Batida.setObjectName(u"lb_Sacos_Batida")
@@ -104,6 +105,7 @@ class Ui_Ficha_Tecnica(object):
         self.bt_Abrir_Ficha.setMaximumSize(QSize(16777215, 30))
 
         self.horizontalLayout_2.addWidget(self.bt_Abrir_Ficha)
+
 
         self.verticalLayout.addWidget(self.frm_Cod_Acabado)
 
@@ -142,6 +144,7 @@ class Ui_Ficha_Tecnica(object):
         self.txt_Descricao_Prod.setMaximumSize(QSize(16777215, 30))
 
         self.horizontalLayout_7.addWidget(self.txt_Descricao_Prod)
+
 
         self.verticalLayout.addWidget(self.frm_Cod_Materia_Prima)
 
@@ -188,8 +191,7 @@ class Ui_Ficha_Tecnica(object):
 
         self.horizontalLayout_8.addWidget(self.bt_Excluir_Itens)
 
-        self.horizontalSpacer_3 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_3)
 
@@ -199,6 +201,7 @@ class Ui_Ficha_Tecnica(object):
         self.bt_Sair_Ficha.setMaximumSize(QSize(16777215, 30))
 
         self.horizontalLayout_8.addWidget(self.bt_Sair_Ficha)
+
 
         self.verticalLayout.addWidget(self.frm_Qtde)
 
@@ -215,13 +218,13 @@ class Ui_Ficha_Tecnica(object):
         self.lb_Batida.setMinimumSize(QSize(0, 30))
         self.lb_Batida.setMaximumSize(QSize(16777215, 30))
 
-        self.verticalLayout_2.addWidget(
-            self.lb_Batida, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        self.verticalLayout_2.addWidget(self.lb_Batida, 0, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
 
         self.tb_Itens_Batida = QTableView(self.frm_Itens)
         self.tb_Itens_Batida.setObjectName(u"tb_Itens_Batida")
 
         self.verticalLayout_2.addWidget(self.tb_Itens_Batida)
+
 
         self.horizontalLayout_5.addLayout(self.verticalLayout_2)
 
@@ -232,15 +235,16 @@ class Ui_Ficha_Tecnica(object):
         self.lb_Saco.setMinimumSize(QSize(0, 30))
         self.lb_Saco.setMaximumSize(QSize(16777215, 30))
 
-        self.verticalLayout_3.addWidget(
-            self.lb_Saco, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        self.verticalLayout_3.addWidget(self.lb_Saco, 0, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
 
         self.tb_Itens_Unitario = QTableView(self.frm_Itens)
         self.tb_Itens_Unitario.setObjectName(u"tb_Itens_Unitario")
 
         self.verticalLayout_3.addWidget(self.tb_Itens_Unitario)
 
+
         self.horizontalLayout_5.addLayout(self.verticalLayout_3)
+
 
         self.verticalLayout.addWidget(self.frm_Itens)
 
@@ -266,8 +270,7 @@ class Ui_Ficha_Tecnica(object):
 
         self.horizontalLayout_3.addWidget(self.txt_Total_Batida)
 
-        self.horizontalSpacer_5 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_5)
 
@@ -284,6 +287,7 @@ class Ui_Ficha_Tecnica(object):
         self.txt_Total_Saco.setMaximumSize(QSize(100, 30))
 
         self.horizontalLayout_3.addWidget(self.txt_Total_Saco)
+
 
         self.verticalLayout.addWidget(self.frm_Total)
 
@@ -309,8 +313,7 @@ class Ui_Ficha_Tecnica(object):
 
         self.horizontalLayout_4.addWidget(self.bt_Editar)
 
-        self.horizontalSpacer_4 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
 
@@ -328,19 +331,19 @@ class Ui_Ficha_Tecnica(object):
 
         self.horizontalLayout_4.addWidget(self.bt_Excluir)
 
+
         self.verticalLayout.addWidget(self.frm_Crud)
+
 
         self.horizontalLayout.addWidget(self.frm_Entrada)
 
         QWidget.setTabOrder(self.txt_Prod_Acabado, self.txt_Cod_Mat_Prima)
         QWidget.setTabOrder(self.txt_Cod_Mat_Prima, self.txt_Qtde)
         QWidget.setTabOrder(self.txt_Qtde, self.bt_Salvar_Itens)
-        QWidget.setTabOrder(self.bt_Salvar_Itens,
-                            self.bt_Pesquisa_Prod_Acabado)
+        QWidget.setTabOrder(self.bt_Salvar_Itens, self.bt_Pesquisa_Prod_Acabado)
         QWidget.setTabOrder(self.bt_Pesquisa_Prod_Acabado, self.bt_Novo)
         QWidget.setTabOrder(self.bt_Novo, self.bt_Pesquisa_Mat_Prima)
-        QWidget.setTabOrder(self.bt_Pesquisa_Mat_Prima,
-                            self.txt_Descricao_Prod)
+        QWidget.setTabOrder(self.bt_Pesquisa_Mat_Prima, self.txt_Descricao_Prod)
         QWidget.setTabOrder(self.txt_Descricao_Prod, self.bt_Limpar_Itens)
         QWidget.setTabOrder(self.bt_Limpar_Itens, self.bt_Excluir_Itens)
         QWidget.setTabOrder(self.bt_Excluir_Itens, self.bt_Sair_Ficha)
@@ -356,46 +359,26 @@ class Ui_Ficha_Tecnica(object):
     # setupUi
 
     def retranslateUi(self, Ficha_Tecnica):
-        Ficha_Tecnica.setWindowTitle(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Ficha Tecnica", None))
-        self.lb_Prod_Acabado.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"C\u00f3digo Produto Acabado:", None))
-        self.bt_Pesquisa_Prod_Acabado.setText(
-            QCoreApplication.translate("Ficha_Tecnica", u"...", None))
-        self.bt_Novo.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"+", None))
-        self.lb_Sacos_Batida.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Qtde Sacos por batida:", None))
-        self.bt_Abrir_Ficha.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Abrir Ficha", None))
-        self.lb_Cod_Mat_Prima.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"C\u00f3digo Mat\u00e9ria Prima:", None))
-        self.bt_Pesquisa_Mat_Prima.setText(
-            QCoreApplication.translate("Ficha_Tecnica", u"...", None))
-        self.lb_Qtde.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Qtde Kg:", None))
-        self.bt_Salvar_Itens.setText(
-            QCoreApplication.translate("Ficha_Tecnica", u"Salvar", None))
-        self.bt_Limpar_Itens.setText(
-            QCoreApplication.translate("Ficha_Tecnica", u"Limpar", None))
-        self.bt_Excluir_Itens.setText(
-            QCoreApplication.translate("Ficha_Tecnica", u"Excluir", None))
-        self.bt_Sair_Ficha.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Sair Ficha", None))
-        self.lb_Batida.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Batida", None))
-        self.lb_Saco.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Saco", None))
-        self.lb_Total_Batida.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Kg Total:", None))
-        self.lb_Total_Saco.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Kg Saco:", None))
-        self.bt_Salvar.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Salvar", None))
-        self.bt_Editar.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Editar", None))
-        self.bt_Limpar.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Limpar", None))
-        self.bt_Excluir.setText(QCoreApplication.translate(
-            "Ficha_Tecnica", u"Excluir", None))
+        Ficha_Tecnica.setWindowTitle(QCoreApplication.translate("Ficha_Tecnica", u"Ficha Tecnica", None))
+        self.lb_Prod_Acabado.setText(QCoreApplication.translate("Ficha_Tecnica", u"C\u00f3digo Produto Acabado:", None))
+        self.bt_Pesquisa_Prod_Acabado.setText(QCoreApplication.translate("Ficha_Tecnica", u"...", None))
+        self.bt_Novo.setText(QCoreApplication.translate("Ficha_Tecnica", u"+", None))
+        self.lb_Sacos_Batida.setText(QCoreApplication.translate("Ficha_Tecnica", u"Qtde Sacos por batida:", None))
+        self.bt_Abrir_Ficha.setText(QCoreApplication.translate("Ficha_Tecnica", u"Abrir Ficha", None))
+        self.lb_Cod_Mat_Prima.setText(QCoreApplication.translate("Ficha_Tecnica", u"C\u00f3digo Mat\u00e9ria Prima:", None))
+        self.bt_Pesquisa_Mat_Prima.setText(QCoreApplication.translate("Ficha_Tecnica", u"...", None))
+        self.lb_Qtde.setText(QCoreApplication.translate("Ficha_Tecnica", u"Qtde Kg:", None))
+        self.bt_Salvar_Itens.setText(QCoreApplication.translate("Ficha_Tecnica", u"Salvar", None))
+        self.bt_Limpar_Itens.setText(QCoreApplication.translate("Ficha_Tecnica", u"Limpar", None))
+        self.bt_Excluir_Itens.setText(QCoreApplication.translate("Ficha_Tecnica", u"Excluir", None))
+        self.bt_Sair_Ficha.setText(QCoreApplication.translate("Ficha_Tecnica", u"Sair Ficha", None))
+        self.lb_Batida.setText(QCoreApplication.translate("Ficha_Tecnica", u"Batida", None))
+        self.lb_Saco.setText(QCoreApplication.translate("Ficha_Tecnica", u"Saco", None))
+        self.lb_Total_Batida.setText(QCoreApplication.translate("Ficha_Tecnica", u"Kg Total:", None))
+        self.lb_Total_Saco.setText(QCoreApplication.translate("Ficha_Tecnica", u"Kg Saco:", None))
+        self.bt_Salvar.setText(QCoreApplication.translate("Ficha_Tecnica", u"Salvar", None))
+        self.bt_Editar.setText(QCoreApplication.translate("Ficha_Tecnica", u"Editar", None))
+        self.bt_Limpar.setText(QCoreApplication.translate("Ficha_Tecnica", u"Limpar", None))
+        self.bt_Excluir.setText(QCoreApplication.translate("Ficha_Tecnica", u"Excluir", None))
     # retranslateUi
+
