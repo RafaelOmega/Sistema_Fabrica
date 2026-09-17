@@ -203,6 +203,8 @@ class FichaTecnicaController(QWidget):
                     return
                 self._produto_acabado_id = produto.id
                 self.ui.txt_Prod_Acabado.setText(produto.codigo or "")
+                self.ui.txt_Descricao_Prod_Acabado.setText(
+                    produto.descricao or "")
                 self.ui.txt_Sacos_Batida.setFocus()
                 logger.debug(
                     f"Produto acabado selecionado: {produto.codigo}"
@@ -224,7 +226,8 @@ class FichaTecnicaController(QWidget):
                     )
                     return
                 self._produto_acabado_id = produto.id
-
+                self.ui.txt_Descricao_Prod_Acabado.setText(
+                    produto.descricao or "")
                 # Tenta carregar ficha existente
                 ficha = self.ficha_service.buscar_por_produto(
                     produto.id
@@ -243,6 +246,7 @@ class FichaTecnicaController(QWidget):
                     self, "Aviso", "Produto não encontrado."
                 )
                 self._produto_acabado_id = None
+                self.ui.txt_Descricao_Prod_Acabado.clear()
                 self.ui.txt_Prod_Acabado.setFocus()
                 self.ui.txt_Prod_Acabado.selectAll()
         except Exception as e:
@@ -343,6 +347,8 @@ class FichaTecnicaController(QWidget):
             )
             if produto:
                 self.ui.txt_Prod_Acabado.setText(produto.codigo or "")
+                self.ui.txt_Descricao_Prod_Acabado.setText(
+                    produto.descricao or "")
 
             # Carregar itens na tabela batida PRIMEIRO
             self.item_model.atualizar_dados(itens)
@@ -667,6 +673,7 @@ class FichaTecnicaController(QWidget):
 
     def _limpar_campos(self):
         self.ui.txt_Prod_Acabado.clear()
+        self.ui.txt_Descricao_Prod_Acabado.clear()
         self.ui.txt_Sacos_Batida.clear()
         self._limpar_campos_item()
 
