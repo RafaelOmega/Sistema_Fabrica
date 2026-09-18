@@ -122,8 +122,20 @@ class FichaTecnicaController(QWidget):
         except (ValueError, TypeError):
             return 0
 
+    def _itens_para_soma(self):
+        """Itens que entram no total de KG da batida/saco.
+        Saco de Rafia e Mão de obra são lançados como item da ficha
+        (para aparecer na lista), mas não representam peso de matéria
+        prima — não podem somar no Kg Total/Kg Saco."""
+        prefixos_excluidos = ("saco de rafia", "mão de obra", "mao de obra")
+        return [
+            item for item in self.item_model.obter_todos()
+            if not str(item.get("descricao", "")).strip().lower()
+            .startswith(prefixos_excluidos)
+        ]
+
     def _atualizar_total_batida(self):
-        itens = self.item_model.obter_todos()
+        itens = self._itens_para_soma()
         total = sum(
             float(item.get("quantidade_kg", 0) or 0) for item in itens
         )
@@ -132,7 +144,7 @@ class FichaTecnicaController(QWidget):
         )
 
     def _atualizar_total_saco(self):
-        itens = self.item_model.obter_todos()
+        itens = self._itens_para_soma()
         total_batida = sum(
             float(item.get("quantidade_kg", 0) or 0) for item in itens
         )
@@ -513,11 +525,11 @@ class FichaTecnicaController(QWidget):
         if dialog.exec() == QDialog.Accepted:
             produto = dialog.produto_selecionado
             if produto:
-                if not getattr(produto, "mat_prima", False):
+                if not (getattr(produto, "mat_prima", False) or getattr(produto, "mao_obra", False)):
                     QMessageBox.warning(
                         self,
                         "Aviso",
-                        "Este produto não é uma matéria prima.",
+                        "Este produto não é matéria prima nem mão de obra.",
                     )
                     return
                 self._produto_item_id = produto.id
@@ -538,11 +550,11 @@ class FichaTecnicaController(QWidget):
         try:
             produto = self.produto_service.buscar_por_codigo(codigo)
             if produto:
-                if not getattr(produto, "mat_prima", False):
+                if not (getattr(produto, "mat_prima", False) or getattr(produto, "mao_obra", False)):
                     QMessageBox.warning(
                         self,
                         "Aviso",
-                        "Este produto não é uma matéria prima.",
+                        "Este produto não é matéria prima nem mão de obra.",
                     )
                     return
                 self._produto_item_id = produto.id
