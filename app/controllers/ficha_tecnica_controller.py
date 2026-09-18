@@ -60,7 +60,7 @@ class FichaTecnicaController(QWidget):
         )
 
     def _configurar_campos(self):
-        self.ui.txt_Descricao_Prod.setReadOnly(True)
+        self.ui.txt_Descricao_Prod_Acabado.setReadOnly(True)
         self.ui.txt_Total_Batida.setReadOnly(True)
         self.ui.txt_Total_Saco.setReadOnly(True)
         self.ui.txt_Total_Batida.setAlignment(
@@ -73,6 +73,7 @@ class FichaTecnicaController(QWidget):
         self.ui.txt_Total_Saco.setText("0,000000")
 
     def _conectar_sinais(self):
+        self.ui.txt_Ficha.returnPressed.connect(self.pesquisar_ficha_direto)
         self.ui.bt_Pesquisa_Ficha_Tecnica.clicked.connect(
             self.abrir_pesquisa_ficha)
         self.ui.bt_Novo.clicked.connect(self.novo)
@@ -112,11 +113,7 @@ class FichaTecnicaController(QWidget):
 
         Sacos por batida é sempre um número inteiro — não existe meio
         saco — e a coluna no banco (fichas_tecnicas.sacos_batida) é
-        Integer. Antes este método aceitava valores decimais (via
-        float + replace(",", ".")) para o cálculo em tempo real, o que
-        divergia da validação feita ao abrir os itens/salvar (que exige
-        inteiro). Agora o parsing é único e consistente em toda a tela.
-        """
+        Integer."""
         text = self.ui.txt_Sacos_Batida.text().strip()
         try:
             valor = int(text)
@@ -214,6 +211,36 @@ class FichaTecnicaController(QWidget):
                     f"id={ficha.get('id')}"
                 )
 
+    def pesquisar_ficha_direto(self):
+        """Busca direta pelo id da ficha (Enter em txt_Ficha).
+        A ficha não tem mais código próprio digitável — o
+        identificador é o id gerado automaticamente pelo banco."""
+        texto = self.ui.txt_Ficha.text().strip()
+        if not texto:
+            return
+
+        try:
+            ficha_id = int(texto)
+        except ValueError:
+            QMessageBox.warning(
+                self, "Aviso", "Informe um número de ficha válido."
+            )
+            return
+
+        try:
+            ficha = self.ficha_service.buscar_por_id(ficha_id)
+            if not ficha:
+                QMessageBox.warning(
+                    self, "Aviso", "Ficha técnica não encontrada."
+                )
+                return
+            self._carregar_ficha(ficha.id)
+        except Exception as e:
+            logger.error(
+                f"Erro ao pesquisar ficha técnica: {e}", exc_info=True
+            )
+            QMessageBox.critical(self, "Erro", f"Erro ao pesquisar: {e}")
+
     def abrir_pesquisa_produto_acabado(self):
         from app.controllers.pesquisa_produto_controller import (
             PesquisaProdutoController,
@@ -240,6 +267,9 @@ class FichaTecnicaController(QWidget):
                 )
 
     def pesquisar_produto_acabado_direto(self):
+        """Seleciona o produto acabado da ficha (não busca mais uma
+        ficha existente a partir dele — isso agora é feito por
+        txt_Ficha / pesquisar_ficha_direto)."""
         codigo = self.ui.txt_Prod_Acabado.text().strip()
         if not codigo:
             return
@@ -257,19 +287,8 @@ class FichaTecnicaController(QWidget):
                 self._produto_acabado_id = produto.id
                 self.ui.txt_Descricao_Prod_Acabado.setText(
                     produto.descricao or "")
-                # Tenta carregar ficha existente
-                ficha = self.ficha_service.buscar_por_produto(
-                    produto.id
-                )
-                if ficha:
-                    self._carregar_ficha(ficha.id)
-                else:
-                    QMessageBox.information(
-                        self,
-                        "Aviso",
-                        "Nenhuma ficha técnica encontrada para "
-                        "este produto.",
-                    )
+                self.ui.txt_Sacos_Batida.setFocus()
+                logger.debug(f"Produto acabado encontrado: {produto.codigo}")
             else:
                 QMessageBox.warning(
                     self, "Aviso", "Produto não encontrado."
@@ -287,56 +306,17 @@ class FichaTecnicaController(QWidget):
             )
 
     def abrir_ficha(self):
-        """No estado inicial/carregado: carrega ficha existente.
-        No estado novo/edição: abre seção de itens."""
+        """Abre a seção de itens (matérias primas) para a ficha em
+        edição — equivalente ao 'Abrir Itens' das outras telas.
+        Não busca mais ficha existente por produto acabado."""
         if self._produto_acabado_id is None:
-            codigo = self.ui.txt_Prod_Acabado.text().strip()
-            if not codigo:
-                QMessageBox.warning(
-                    self,
-                    "Aviso",
-                    "Selecione um produto acabado primeiro.",
-                )
-                return
-
-            try:
-                produto = self.produto_service.buscar_por_codigo(codigo)
-                if not produto:
-                    QMessageBox.warning(
-                        self, "Aviso", "Produto não encontrado."
-                    )
-                    return
-                if not getattr(produto, "prod_acabado", False):
-                    QMessageBox.warning(
-                        self,
-                        "Aviso",
-                        "Este produto não é um produto acabado.",
-                    )
-                    return
-                self._produto_acabado_id = produto.id
-            except Exception as e:
-                QMessageBox.critical(
-                    self, "Erro", f"Erro ao pesquisar: {e}"
-                )
-                return
-
-        # Estado inicial ou carregado → buscar ficha existente
-        if self.ui.bt_Novo.isEnabled() and not self.ui.bt_Salvar.isEnabled():
-            ficha = self.ficha_service.buscar_por_produto(
-                self._produto_acabado_id
+            QMessageBox.warning(
+                self,
+                "Aviso",
+                "Selecione um produto acabado primeiro.",
             )
-            if ficha:
-                self._carregar_ficha(ficha.id)
-            else:
-                QMessageBox.information(
-                    self,
-                    "Aviso",
-                    "Nenhuma ficha técnica encontrada para "
-                    "este produto.",
-                )
             return
 
-        # Estado novo ou edição → valida sacos antes de abrir itens
         sacos_text = self.ui.txt_Sacos_Batida.text().strip()
         if not sacos_text:
             QMessageBox.warning(
@@ -347,9 +327,6 @@ class FichaTecnicaController(QWidget):
             self.ui.txt_Sacos_Batida.setFocus()
             return
 
-        # Reaproveita o mesmo parser usado no cálculo em tempo real
-        # (_get_sacos_batida), garantindo que "abrir itens" e o
-        # recálculo de totais concordem sobre o que é um valor válido.
         sacos = self._get_sacos_batida()
         if sacos <= 0:
             QMessageBox.warning(
@@ -369,6 +346,8 @@ class FichaTecnicaController(QWidget):
 
             self.ficha_id = ficha.id
             self._produto_acabado_id = ficha.produto_id
+
+            self.ui.txt_Ficha.setText(str(ficha.id))
 
             # Carregar código do produto acabado
             produto = self.produto_service.buscar_por_id(
@@ -416,7 +395,7 @@ class FichaTecnicaController(QWidget):
         itens = self.item_model.obter_todos()
 
         try:
-            self.ficha_service.salvar(
+            resultado = self.ficha_service.salvar(
                 produto_id=produto_id,
                 codigo_produto=codigo_produto,
                 sacos_batida=sacos_batida,
@@ -425,13 +404,14 @@ class FichaTecnicaController(QWidget):
             )
 
             logger.info(
-                f"Ficha técnica salva | id={self.ficha_id} | "
+                f"Ficha técnica salva | id={resultado.id} | "
                 f"produto_id={produto_id} | codigo={codigo_produto} | "
                 f"itens={len(itens)}"
             )
 
             QMessageBox.information(
-                self, "Sucesso", "Ficha técnica salva com sucesso."
+                self, "Sucesso",
+                f"Ficha técnica salva com sucesso (Ficha nº {resultado.id})."
             )
             self._resetar_tela()
 
@@ -701,6 +681,7 @@ class FichaTecnicaController(QWidget):
     # --- Limpeza ---
 
     def _limpar_campos(self):
+        self.ui.txt_Ficha.clear()
         self.ui.txt_Prod_Acabado.clear()
         self.ui.txt_Descricao_Prod_Acabado.clear()
         self.ui.txt_Sacos_Batida.clear()
@@ -721,8 +702,8 @@ class FichaTecnicaController(QWidget):
 
     # --- Estados ---
 
-    def _habilitar_busca_ficha(self, habilitar):
-        """Campos de busca/carregamento de ficha."""
+    def _habilitar_busca_produto_acabado(self, habilitar):
+        """Campos de seleção do produto acabado + abrir itens."""
         self.ui.txt_Prod_Acabado.setEnabled(habilitar)
         self.ui.bt_Pesquisa_Prod_Acabado.setEnabled(habilitar)
         self.ui.bt_Abrir_Ficha.setEnabled(habilitar)
@@ -741,7 +722,9 @@ class FichaTecnicaController(QWidget):
         self.ui.bt_Sair_Ficha.setEnabled(habilitar)
 
     def _estado_inicial(self):
-        self._habilitar_busca_ficha(True)
+        self.ui.txt_Ficha.setEnabled(True)
+        self.ui.bt_Pesquisa_Ficha_Tecnica.setEnabled(True)
+        self._habilitar_busca_produto_acabado(True)
         self._habilitar_cabecalho(False)
         self._habilitar_itens(False)
         self.ui.tb_Itens_Batida.setEnabled(False)
@@ -754,7 +737,9 @@ class FichaTecnicaController(QWidget):
         self.ui.bt_Excluir.setEnabled(False)
 
     def _estado_novo(self):
-        self._habilitar_busca_ficha(True)
+        self.ui.txt_Ficha.setEnabled(False)
+        self.ui.bt_Pesquisa_Ficha_Tecnica.setEnabled(False)
+        self._habilitar_busca_produto_acabado(True)
         self._habilitar_cabecalho(True)
         self._habilitar_itens(False)
         self.ui.tb_Itens_Batida.setEnabled(True)
@@ -767,7 +752,9 @@ class FichaTecnicaController(QWidget):
         self.ui.bt_Excluir.setEnabled(False)
 
     def _estado_ficha_aberta(self):
-        self._habilitar_busca_ficha(False)
+        self.ui.txt_Ficha.setEnabled(False)
+        self.ui.bt_Pesquisa_Ficha_Tecnica.setEnabled(False)
+        self._habilitar_busca_produto_acabado(False)
         self._habilitar_cabecalho(False)
         self._habilitar_itens(True)
         self.ui.tb_Itens_Batida.setEnabled(True)
@@ -780,7 +767,9 @@ class FichaTecnicaController(QWidget):
         self.ui.bt_Excluir.setEnabled(False)
 
     def _estado_carregado(self):
-        self._habilitar_busca_ficha(True)
+        self.ui.txt_Ficha.setEnabled(True)
+        self.ui.bt_Pesquisa_Ficha_Tecnica.setEnabled(True)
+        self._habilitar_busca_produto_acabado(True)
         self._habilitar_cabecalho(False)
         self._habilitar_itens(False)
         self.ui.tb_Itens_Batida.setEnabled(True)
@@ -793,7 +782,9 @@ class FichaTecnicaController(QWidget):
         self.ui.bt_Excluir.setEnabled(True)
 
     def _estado_edicao(self):
-        self._habilitar_busca_ficha(True)
+        self.ui.txt_Ficha.setEnabled(False)
+        self.ui.bt_Pesquisa_Ficha_Tecnica.setEnabled(False)
+        self._habilitar_busca_produto_acabado(True)
         self._habilitar_cabecalho(True)
         self._habilitar_itens(False)
         self.ui.tb_Itens_Batida.setEnabled(True)

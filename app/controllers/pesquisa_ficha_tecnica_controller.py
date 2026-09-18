@@ -1,6 +1,11 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QMessageBox
+from PySide6.QtWidgets import (
+    QDialog,
+    QMessageBox,
+)
 
+from app.models.ficha_tecnica_filter_proxy_model import (
+    FichaTecnicaFilterProxyModel,
+)
 from app.models.pesquisa_ficha_tecnica_table_model import (
     PesquisaFichaTecnicaTableModel,
 )
@@ -15,91 +20,69 @@ logger = get_logger("pesquisa_ficha_tecnica_controller")
 class PesquisaFichaTecnicaController(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-
         self.ui = Ui_Pesquisa_Fichas_Tecnicas()
         self.ui.setupUi(self)
 
-        self.ficha_service = FichaTecnicaService()
+        self.service = FichaTecnicaService()
         self.model = PesquisaFichaTecnicaTableModel()
+        self.proxy_model = FichaTecnicaFilterProxyModel(self)
+        self.proxy_model.setSourceModel(self.model)
 
         self.ficha_selecionada = None
-        self._todas_fichas = []
 
-        self.ui.tb_Fichas_Tecnicas.setModel(self.model)
-        configurar_tabela(self.ui.tb_Fichas_Tecnicas, coluna_stretch=1)
-
-        self.ui.bt_Pesquisa.clicked.connect(self.confirmar)
-        self.ui.txt_Pesquisa.returnPressed.connect(self._filtrar)
-        self.ui.tb_Fichas_Tecnicas.doubleClicked.connect(
-            self._confirmar_por_duplo_clique
-        )
-        self.ui.tb_Fichas_Tecnicas.selectionModel().currentRowChanged.connect(
-            self._ao_selecionar
-        )
-
-        self._carregar_fichas()
+        self._configurar_tabela()
+        self._conectar_sinais()
+        self._carregar_dados()
 
         logger.info("Tela de pesquisa de fichas técnicas inicializada")
 
-    # --- Dados ---
+    def _configurar_tabela(self):
+        self.ui.tb_Fichas_Tecnicas.setModel(self.proxy_model)
+        configurar_tabela(
+            self.ui.tb_Fichas_Tecnicas, coluna_stretch=2, ordenavel=True
+        )
 
-    def _carregar_fichas(self):
+    def _conectar_sinais(self):
+        self.ui.txt_Pesquisa.textChanged.connect(self._aplicar_filtro)
+        self.ui.bt_Pesquisa.clicked.connect(self.confirmar)
+        self.ui.tb_Fichas_Tecnicas.doubleClicked.connect(self.confirmar)
+
+    def _carregar_dados(self):
         try:
-            self._todas_fichas = self.ficha_service.listar_todos()
-            self.model.atualizar_dados(self._todas_fichas)
+            fichas = self.service.listar_todos()
+            self.model.atualizar_dados(fichas)
 
-            if not self._todas_fichas:
+            if not fichas:
                 QMessageBox.information(
                     self, "Aviso", "Nenhuma ficha técnica cadastrada."
                 )
-            logger.debug(
-                f"{len(self._todas_fichas)} fichas técnicas carregadas"
-            )
+            logger.debug(f"{len(fichas)} fichas técnicas carregadas")
         except Exception as e:
             logger.error(
                 f"Erro ao carregar fichas técnicas: {e}", exc_info=True
             )
             QMessageBox.critical(self, "Erro", f"Erro ao carregar: {e}")
 
-    def _filtrar(self):
-        """Filtra em memória por código ou descrição (ignora acentos
-        na prática via casefold)."""
-        filtro = self.ui.txt_Pesquisa.text().strip().lower()
-        if not filtro:
-            self.model.atualizar_dados(self._todas_fichas)
-            return
-
-        fichas = [
-            f for f in self._todas_fichas
-            if filtro in str(f.get("codigo", "")).lower()
-            or filtro in str(f.get("descricao", "")).lower()
-        ]
-        self.model.atualizar_dados(fichas)
-
-    # --- Seleção / confirmação ---
-
-    def _ao_selecionar(self, current, previous):
-        if current.isValid():
-            self.ficha_selecionada = self.model.obter_ficha(
-                current.row()
-            )
-        else:
-            self.ficha_selecionada = None
-
-    def _confirmar_por_duplo_clique(self, index):
-        ficha = self.model.obter_ficha(index.row())
-        if ficha:
-            self.ficha_selecionada = ficha
-        self.confirmar()
+    def _aplicar_filtro(self):
+        texto = self.ui.txt_Pesquisa.text().strip()
+        self.proxy_model.definir_filtro(texto)
 
     def confirmar(self):
-        if self.ficha_selecionada is None:
+        indexes = self.ui.tb_Fichas_Tecnicas.selectionModel().selectedRows()
+        if not indexes:
             QMessageBox.warning(
                 self, "Aviso", "Selecione uma ficha técnica."
             )
             return
 
-        logger.debug(
-            f"Ficha selecionada | id={self.ficha_selecionada.get('id')}"
+        index_proxy = indexes[0]
+        index_source = self.proxy_model.mapToSource(index_proxy)
+        self.ficha_selecionada = self.model.obter_ficha(
+            index_source.row()
         )
-        self.accept()
+
+        if self.ficha_selecionada:
+            logger.debug(
+                f"Ficha selecionada: {self.ficha_selecionada.get('id')}"
+            )
+            self.accept()

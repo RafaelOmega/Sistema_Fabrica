@@ -2,8 +2,13 @@ from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
 
 
 class PesquisaFichaTecnicaTableModel(QAbstractTableModel):
-    """Model para tb_Fichas_Tecnicas — listagem de fichas técnicas."""
-    _HEADERS = ["Código", "Descrição", "Sacos/Batida"]
+    """Model para tb_Fichas_Tecnicas — listagem de fichas técnicas.
+
+    A ficha técnica não tem mais um código próprio digitado pelo
+    usuário: ela é identificada pelo seu id no banco (autoincrement),
+    exibido na coluna "Ficha". Código/descrição seguem mostrados como
+    referência do produto acabado ao qual a ficha pertence."""
+    _HEADERS = ["Ficha", "Cód. Prod. Acabado", "Descrição", "Sacos/Batida"]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -24,10 +29,12 @@ class PesquisaFichaTecnicaTableModel(QAbstractTableModel):
 
         if role == Qt.DisplayRole:
             if col == 0:
-                return ficha.get("codigo", "")
+                return str(ficha.get("id", ""))
             elif col == 1:
-                return ficha.get("descricao", "")
+                return ficha.get("codigo", "")
             elif col == 2:
+                return ficha.get("descricao", "")
+            elif col == 3:
                 return str(ficha.get("sacos_batida", 0))
         elif role == Qt.UserRole:
             return ficha
