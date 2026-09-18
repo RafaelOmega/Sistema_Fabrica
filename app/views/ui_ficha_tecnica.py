@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ficha_tecnicaWfuvJx.ui'
+## Form generated from reading UI file 'ficha_tecnicazOAwpP.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -41,6 +41,70 @@ class Ui_Ficha_Tecnica(object):
         self.verticalLayout.setSpacing(5)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(5, 5, 5, 5)
+        self.frm_Ficha = QFrame(self.frm_Entrada)
+        self.frm_Ficha.setObjectName(u"frm_Ficha")
+        self.frm_Ficha.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frm_Ficha.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_6 = QHBoxLayout(self.frm_Ficha)
+        self.horizontalLayout_6.setSpacing(5)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_6.setContentsMargins(5, 5, 5, 5)
+        self.lb_Ficha = QLabel(self.frm_Ficha)
+        self.lb_Ficha.setObjectName(u"lb_Ficha")
+        self.lb_Ficha.setMinimumSize(QSize(0, 30))
+        self.lb_Ficha.setMaximumSize(QSize(16777215, 30))
+
+        self.horizontalLayout_6.addWidget(self.lb_Ficha)
+
+        self.txt_Ficha = QLineEdit(self.frm_Ficha)
+        self.txt_Ficha.setObjectName(u"txt_Ficha")
+        self.txt_Ficha.setMinimumSize(QSize(80, 30))
+        self.txt_Ficha.setMaximumSize(QSize(80, 30))
+
+        self.horizontalLayout_6.addWidget(self.txt_Ficha)
+
+        self.bt_Pesquisa_Ficha_Tecnica = QPushButton(self.frm_Ficha)
+        self.bt_Pesquisa_Ficha_Tecnica.setObjectName(u"bt_Pesquisa_Ficha_Tecnica")
+        self.bt_Pesquisa_Ficha_Tecnica.setMinimumSize(QSize(40, 30))
+        self.bt_Pesquisa_Ficha_Tecnica.setMaximumSize(QSize(40, 30))
+
+        self.horizontalLayout_6.addWidget(self.bt_Pesquisa_Ficha_Tecnica)
+
+        self.bt_Novo = QPushButton(self.frm_Ficha)
+        self.bt_Novo.setObjectName(u"bt_Novo")
+        self.bt_Novo.setMinimumSize(QSize(40, 30))
+        self.bt_Novo.setMaximumSize(QSize(40, 30))
+
+        self.horizontalLayout_6.addWidget(self.bt_Novo)
+
+        self.lb_Sacos_Batida = QLabel(self.frm_Ficha)
+        self.lb_Sacos_Batida.setObjectName(u"lb_Sacos_Batida")
+        self.lb_Sacos_Batida.setMinimumSize(QSize(0, 30))
+        self.lb_Sacos_Batida.setMaximumSize(QSize(16777215, 30))
+
+        self.horizontalLayout_6.addWidget(self.lb_Sacos_Batida)
+
+        self.txt_Sacos_Batida = QLineEdit(self.frm_Ficha)
+        self.txt_Sacos_Batida.setObjectName(u"txt_Sacos_Batida")
+        self.txt_Sacos_Batida.setMinimumSize(QSize(50, 30))
+        self.txt_Sacos_Batida.setMaximumSize(QSize(50, 30))
+
+        self.horizontalLayout_6.addWidget(self.txt_Sacos_Batida)
+
+        self.bt_Abrir_Ficha = QPushButton(self.frm_Ficha)
+        self.bt_Abrir_Ficha.setObjectName(u"bt_Abrir_Ficha")
+        self.bt_Abrir_Ficha.setMinimumSize(QSize(0, 30))
+        self.bt_Abrir_Ficha.setMaximumSize(QSize(16777215, 30))
+
+        self.horizontalLayout_6.addWidget(self.bt_Abrir_Ficha)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_6.addItem(self.horizontalSpacer)
+
+
+        self.verticalLayout.addWidget(self.frm_Ficha)
+
         self.frm_Cod_Acabado = QFrame(self.frm_Entrada)
         self.frm_Cod_Acabado.setObjectName(u"frm_Cod_Acabado")
         self.frm_Cod_Acabado.setFrameShape(QFrame.Shape.StyledPanel)
@@ -70,13 +134,6 @@ class Ui_Ficha_Tecnica(object):
 
         self.horizontalLayout_2.addWidget(self.bt_Pesquisa_Prod_Acabado)
 
-        self.bt_Novo = QPushButton(self.frm_Cod_Acabado)
-        self.bt_Novo.setObjectName(u"bt_Novo")
-        self.bt_Novo.setMinimumSize(QSize(40, 30))
-        self.bt_Novo.setMaximumSize(QSize(40, 30))
-
-        self.horizontalLayout_2.addWidget(self.bt_Novo)
-
         self.txt_Descricao_Prod_Acabado = QLineEdit(self.frm_Cod_Acabado)
         self.txt_Descricao_Prod_Acabado.setObjectName(u"txt_Descricao_Prod_Acabado")
         self.txt_Descricao_Prod_Acabado.setMinimumSize(QSize(0, 30))
@@ -84,27 +141,6 @@ class Ui_Ficha_Tecnica(object):
         self.txt_Descricao_Prod_Acabado.setReadOnly(True)
 
         self.horizontalLayout_2.addWidget(self.txt_Descricao_Prod_Acabado)
-
-        self.lb_Sacos_Batida = QLabel(self.frm_Cod_Acabado)
-        self.lb_Sacos_Batida.setObjectName(u"lb_Sacos_Batida")
-        self.lb_Sacos_Batida.setMinimumSize(QSize(0, 30))
-        self.lb_Sacos_Batida.setMaximumSize(QSize(16777215, 30))
-
-        self.horizontalLayout_2.addWidget(self.lb_Sacos_Batida)
-
-        self.txt_Sacos_Batida = QLineEdit(self.frm_Cod_Acabado)
-        self.txt_Sacos_Batida.setObjectName(u"txt_Sacos_Batida")
-        self.txt_Sacos_Batida.setMinimumSize(QSize(50, 30))
-        self.txt_Sacos_Batida.setMaximumSize(QSize(50, 30))
-
-        self.horizontalLayout_2.addWidget(self.txt_Sacos_Batida)
-
-        self.bt_Abrir_Ficha = QPushButton(self.frm_Cod_Acabado)
-        self.bt_Abrir_Ficha.setObjectName(u"bt_Abrir_Ficha")
-        self.bt_Abrir_Ficha.setMinimumSize(QSize(0, 30))
-        self.bt_Abrir_Ficha.setMaximumSize(QSize(16777215, 30))
-
-        self.horizontalLayout_2.addWidget(self.bt_Abrir_Ficha)
 
 
         self.verticalLayout.addWidget(self.frm_Cod_Acabado)
@@ -210,8 +246,11 @@ class Ui_Ficha_Tecnica(object):
         self.frm_Itens.setFrameShape(QFrame.Shape.StyledPanel)
         self.frm_Itens.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_5 = QHBoxLayout(self.frm_Itens)
+        self.horizontalLayout_5.setSpacing(5)
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(5, 5, 5, 5)
         self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setSpacing(5)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.lb_Batida = QLabel(self.frm_Itens)
         self.lb_Batida.setObjectName(u"lb_Batida")
@@ -229,6 +268,7 @@ class Ui_Ficha_Tecnica(object):
         self.horizontalLayout_5.addLayout(self.verticalLayout_2)
 
         self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setSpacing(5)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.lb_Saco = QLabel(self.frm_Itens)
         self.lb_Saco.setObjectName(u"lb_Saco")
@@ -341,8 +381,7 @@ class Ui_Ficha_Tecnica(object):
         QWidget.setTabOrder(self.txt_Cod_Mat_Prima, self.txt_Qtde)
         QWidget.setTabOrder(self.txt_Qtde, self.bt_Salvar_Itens)
         QWidget.setTabOrder(self.bt_Salvar_Itens, self.bt_Pesquisa_Prod_Acabado)
-        QWidget.setTabOrder(self.bt_Pesquisa_Prod_Acabado, self.bt_Novo)
-        QWidget.setTabOrder(self.bt_Novo, self.bt_Pesquisa_Mat_Prima)
+        QWidget.setTabOrder(self.bt_Pesquisa_Prod_Acabado, self.bt_Pesquisa_Mat_Prima)
         QWidget.setTabOrder(self.bt_Pesquisa_Mat_Prima, self.txt_Descricao_Prod)
         QWidget.setTabOrder(self.txt_Descricao_Prod, self.bt_Limpar_Itens)
         QWidget.setTabOrder(self.bt_Limpar_Itens, self.bt_Excluir_Itens)
@@ -360,11 +399,13 @@ class Ui_Ficha_Tecnica(object):
 
     def retranslateUi(self, Ficha_Tecnica):
         Ficha_Tecnica.setWindowTitle(QCoreApplication.translate("Ficha_Tecnica", u"Ficha Tecnica", None))
-        self.lb_Prod_Acabado.setText(QCoreApplication.translate("Ficha_Tecnica", u"C\u00f3digo Produto Acabado:", None))
-        self.bt_Pesquisa_Prod_Acabado.setText(QCoreApplication.translate("Ficha_Tecnica", u"...", None))
+        self.lb_Ficha.setText(QCoreApplication.translate("Ficha_Tecnica", u"Ficha T\u00e9cnica", None))
+        self.bt_Pesquisa_Ficha_Tecnica.setText(QCoreApplication.translate("Ficha_Tecnica", u"...", None))
         self.bt_Novo.setText(QCoreApplication.translate("Ficha_Tecnica", u"+", None))
         self.lb_Sacos_Batida.setText(QCoreApplication.translate("Ficha_Tecnica", u"Qtde Sacos por batida:", None))
         self.bt_Abrir_Ficha.setText(QCoreApplication.translate("Ficha_Tecnica", u"Abrir Ficha", None))
+        self.lb_Prod_Acabado.setText(QCoreApplication.translate("Ficha_Tecnica", u"C\u00f3digo Produto Acabado:", None))
+        self.bt_Pesquisa_Prod_Acabado.setText(QCoreApplication.translate("Ficha_Tecnica", u"...", None))
         self.lb_Cod_Mat_Prima.setText(QCoreApplication.translate("Ficha_Tecnica", u"C\u00f3digo Mat\u00e9ria Prima:", None))
         self.bt_Pesquisa_Mat_Prima.setText(QCoreApplication.translate("Ficha_Tecnica", u"...", None))
         self.lb_Qtde.setText(QCoreApplication.translate("Ficha_Tecnica", u"Qtde Kg:", None))
