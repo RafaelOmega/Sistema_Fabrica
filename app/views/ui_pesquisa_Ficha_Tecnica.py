@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'pesquisa_Ficha_TecnicaRoRtQW.ui'
+# Form generated from reading UI file 'pesquisa_Ficha_TecnicaRoRtQW.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.2
+# Created by: Qt User Interface Compiler version 6.11.2
 ##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
+# WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
+                            QMetaObject, QObject, QPoint, QRect,
+                            QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
+                           QFont, QFontDatabase, QGradient, QIcon,
+                           QImage, QKeySequence, QLinearGradient, QPainter,
+                           QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDialog, QFrame, QHBoxLayout,
-    QHeaderView, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QTableView, QVBoxLayout, QWidget)
+                               QHeaderView, QLabel, QLineEdit, QPushButton,
+                               QSizePolicy, QTableView, QVBoxLayout, QWidget)
+
 
 class Ui_Pesquisa_Fichas_Tecnicas(object):
     def setupUi(self, Pesquisa_Fichas_Tecnicas):
@@ -62,7 +63,6 @@ class Ui_Pesquisa_Fichas_Tecnicas(object):
 
         self.horizontalLayout.addWidget(self.bt_Pesquisa)
 
-
         self.verticalLayout.addWidget(self.frm_Filtro)
 
         self.frm_Lista = QFrame(Pesquisa_Fichas_Tecnicas)
@@ -78,9 +78,7 @@ class Ui_Pesquisa_Fichas_Tecnicas(object):
 
         self.verticalLayout_2.addWidget(self.tb_Fichas_Tecnicas)
 
-
         self.verticalLayout.addWidget(self.frm_Lista)
-
 
         self.retranslateUi(Pesquisa_Fichas_Tecnicas)
 
@@ -88,8 +86,10 @@ class Ui_Pesquisa_Fichas_Tecnicas(object):
     # setupUi
 
     def retranslateUi(self, Pesquisa_Fichas_Tecnicas):
-        Pesquisa_Fichas_Tecnicas.setWindowTitle(QCoreApplication.translate("Pesquisa_Fichas_Tecnicas", u"Pesquisa Fichas Tecnicas", None))
-        self.lb_Pesquisa.setText(QCoreApplication.translate("Pesquisa_Fichas_Tecnicas", u"Pesquisar:", None))
-        self.bt_Pesquisa.setText(QCoreApplication.translate("Pesquisa_Fichas_Tecnicas", u"Confirmar", None))
+        Pesquisa_Fichas_Tecnicas.setWindowTitle(QCoreApplication.translate(
+            "Pesquisa_Fichas_Tecnicas", u"Pesquisa Fichas Tecnicas", None))
+        self.lb_Pesquisa.setText(QCoreApplication.translate(
+            "Pesquisa_Fichas_Tecnicas", u"Pesquisar:", None))
+        self.bt_Pesquisa.setText(QCoreApplication.translate(
+            "Pesquisa_Fichas_Tecnicas", u"Confirmar", None))
     # retranslateUi
-

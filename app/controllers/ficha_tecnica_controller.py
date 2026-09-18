@@ -73,6 +73,8 @@ class FichaTecnicaController(QWidget):
         self.ui.txt_Total_Saco.setText("0,000000")
 
     def _conectar_sinais(self):
+        self.ui.bt_Pesquisa_Ficha_Tecnica.clicked.connect(
+            self.abrir_pesquisa_ficha)
         self.ui.bt_Novo.clicked.connect(self.novo)
         self.ui.bt_Pesquisa_Prod_Acabado.clicked.connect(
             self.abrir_pesquisa_produto_acabado
@@ -196,6 +198,21 @@ class FichaTecnicaController(QWidget):
         self._estado_novo()
         self.ui.txt_Prod_Acabado.setFocus()
         logger.debug("Modo nova ficha técnica ativado")
+
+    def abrir_pesquisa_ficha(self):
+        from app.controllers.pesquisa_ficha_tecnica_controller import (
+            PesquisaFichaTecnicaController,
+        )
+
+        dialog = PesquisaFichaTecnicaController(self)
+        if dialog.exec() == QDialog.Accepted:
+            ficha = dialog.ficha_selecionada
+            if ficha:
+                self._carregar_ficha(ficha["id"])
+                logger.debug(
+                    f"Ficha técnica selecionada na pesquisa | "
+                    f"id={ficha.get('id')}"
+                )
 
     def abrir_pesquisa_produto_acabado(self):
         from app.controllers.pesquisa_produto_controller import (
