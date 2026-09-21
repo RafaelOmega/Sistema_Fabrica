@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'produtosorKIla.ui'
+## Form generated from reading UI file 'produtosZZNRhZ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -16,15 +16,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QDoubleSpinBox, QFrame,
-    QGridLayout, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QTableView, QVBoxLayout, QWidget)
+    QHBoxLayout, QLabel, QLineEdit, QPushButton,
+    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_Produtos(object):
     def setupUi(self, Produtos):
         if not Produtos.objectName():
             Produtos.setObjectName(u"Produtos")
-        Produtos.resize(998, 518)
+        Produtos.resize(552, 248)
         font = QFont()
         font.setFamilies([u"Segoe UI Semibold"])
         font.setPointSize(10)
@@ -36,8 +35,6 @@ class Ui_Produtos(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.frm_Cadastro = QFrame(Produtos)
         self.frm_Cadastro.setObjectName(u"frm_Cadastro")
-        self.frm_Cadastro.setMinimumSize(QSize(500, 0))
-        self.frm_Cadastro.setMaximumSize(QSize(500, 16777215))
         self.frm_Cadastro.setFrameShape(QFrame.Shape.StyledPanel)
         self.frm_Cadastro.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout = QVBoxLayout(self.frm_Cadastro)
@@ -66,6 +63,13 @@ class Ui_Produtos(object):
 
         self.horizontalLayout_4.addWidget(self.txt_Codigo)
 
+        self.bt_Pesquisar_Produtos = QPushButton(self.frm_Novo)
+        self.bt_Pesquisar_Produtos.setObjectName(u"bt_Pesquisar_Produtos")
+        self.bt_Pesquisar_Produtos.setMinimumSize(QSize(40, 30))
+        self.bt_Pesquisar_Produtos.setMaximumSize(QSize(40, 30))
+
+        self.horizontalLayout_4.addWidget(self.bt_Pesquisar_Produtos)
+
         self.bt_Novo = QPushButton(self.frm_Novo)
         self.bt_Novo.setObjectName(u"bt_Novo")
         self.bt_Novo.setMinimumSize(QSize(40, 30))
@@ -84,36 +88,29 @@ class Ui_Produtos(object):
         self.frm_Opcoes.setObjectName(u"frm_Opcoes")
         self.frm_Opcoes.setFrameShape(QFrame.Shape.StyledPanel)
         self.frm_Opcoes.setFrameShadow(QFrame.Shadow.Raised)
-        self.gridLayout = QGridLayout(self.frm_Opcoes)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.gridLayout.setContentsMargins(5, 5, 5, 5)
-        self.ch_Prod_Acabado = QCheckBox(self.frm_Opcoes)
-        self.ch_Prod_Acabado.setObjectName(u"ch_Prod_Acabado")
-
-        self.gridLayout.addWidget(self.ch_Prod_Acabado, 0, 0, 1, 1)
-
-        self.ch_Controla_Estoque = QCheckBox(self.frm_Opcoes)
-        self.ch_Controla_Estoque.setObjectName(u"ch_Controla_Estoque")
-
-        self.gridLayout.addWidget(self.ch_Controla_Estoque, 1, 2, 1, 1)
-
+        self.horizontalLayout_3 = QHBoxLayout(self.frm_Opcoes)
+        self.horizontalLayout_3.setSpacing(5)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(5, 5, 5, 5)
         self.ch_Mat_Prima = QCheckBox(self.frm_Opcoes)
         self.ch_Mat_Prima.setObjectName(u"ch_Mat_Prima")
 
-        self.gridLayout.addWidget(self.ch_Mat_Prima, 1, 0, 1, 1)
+        self.horizontalLayout_3.addWidget(self.ch_Mat_Prima)
+
+        self.ch_Prod_Acabado = QCheckBox(self.frm_Opcoes)
+        self.ch_Prod_Acabado.setObjectName(u"ch_Prod_Acabado")
+
+        self.horizontalLayout_3.addWidget(self.ch_Prod_Acabado)
 
         self.ch_Mao_Obra = QCheckBox(self.frm_Opcoes)
         self.ch_Mao_Obra.setObjectName(u"ch_Mao_Obra")
 
-        self.gridLayout.addWidget(self.ch_Mao_Obra, 0, 2, 1, 1)
+        self.horizontalLayout_3.addWidget(self.ch_Mao_Obra)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.ch_Controla_Estoque = QCheckBox(self.frm_Opcoes)
+        self.ch_Controla_Estoque.setObjectName(u"ch_Controla_Estoque")
 
-        self.gridLayout.addItem(self.horizontalSpacer_2, 0, 1, 1, 1)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_3, 1, 1, 1, 1)
+        self.horizontalLayout_3.addWidget(self.ch_Controla_Estoque)
 
 
         self.verticalLayout.addWidget(self.frm_Opcoes)
@@ -227,60 +224,8 @@ class Ui_Produtos(object):
 
         self.verticalLayout.addWidget(self.frm_Crud)
 
-        self.verticalSpacer = QSpacerItem(20, 273, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout.addItem(self.verticalSpacer)
-
 
         self.horizontalLayout.addWidget(self.frm_Cadastro)
-
-        self.frm_Pesquisar = QFrame(Produtos)
-        self.frm_Pesquisar.setObjectName(u"frm_Pesquisar")
-        self.frm_Pesquisar.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frm_Pesquisar.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_3 = QVBoxLayout(self.frm_Pesquisar)
-        self.verticalLayout_3.setSpacing(5)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(5, 5, 5, 5)
-        self.frm_Filtro = QFrame(self.frm_Pesquisar)
-        self.frm_Filtro.setObjectName(u"frm_Filtro")
-        self.frm_Filtro.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frm_Filtro.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_3 = QHBoxLayout(self.frm_Filtro)
-        self.horizontalLayout_3.setSpacing(5)
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.horizontalLayout_3.setContentsMargins(5, 5, 5, 5)
-        self.lb_Pesquisar = QLabel(self.frm_Filtro)
-        self.lb_Pesquisar.setObjectName(u"lb_Pesquisar")
-        self.lb_Pesquisar.setMinimumSize(QSize(0, 30))
-        self.lb_Pesquisar.setMaximumSize(QSize(16777215, 30))
-
-        self.horizontalLayout_3.addWidget(self.lb_Pesquisar)
-
-        self.txt_Pesquisar = QLineEdit(self.frm_Filtro)
-        self.txt_Pesquisar.setObjectName(u"txt_Pesquisar")
-        self.txt_Pesquisar.setMinimumSize(QSize(0, 30))
-        self.txt_Pesquisar.setMaximumSize(QSize(16777215, 30))
-
-        self.horizontalLayout_3.addWidget(self.txt_Pesquisar)
-
-        self.bt_Pesquisar = QPushButton(self.frm_Filtro)
-        self.bt_Pesquisar.setObjectName(u"bt_Pesquisar")
-        self.bt_Pesquisar.setMinimumSize(QSize(0, 30))
-        self.bt_Pesquisar.setMaximumSize(QSize(16777215, 30))
-
-        self.horizontalLayout_3.addWidget(self.bt_Pesquisar)
-
-
-        self.verticalLayout_3.addWidget(self.frm_Filtro)
-
-        self.tb_Produtos = QTableView(self.frm_Pesquisar)
-        self.tb_Produtos.setObjectName(u"tb_Produtos")
-
-        self.verticalLayout_3.addWidget(self.tb_Produtos)
-
-
-        self.horizontalLayout.addWidget(self.frm_Pesquisar)
 
 
         self.retranslateUi(Produtos)
@@ -291,11 +236,12 @@ class Ui_Produtos(object):
     def retranslateUi(self, Produtos):
         Produtos.setWindowTitle(QCoreApplication.translate("Produtos", u"Cadastro de Produtos", None))
         self.lb_Codigo.setText(QCoreApplication.translate("Produtos", u"C\u00f3digo:", None))
+        self.bt_Pesquisar_Produtos.setText(QCoreApplication.translate("Produtos", u"...", None))
         self.bt_Novo.setText(QCoreApplication.translate("Produtos", u"+", None))
-        self.ch_Prod_Acabado.setText(QCoreApplication.translate("Produtos", u"Produto Acabado", None))
-        self.ch_Controla_Estoque.setText(QCoreApplication.translate("Produtos", u"Controla Estoque?", None))
         self.ch_Mat_Prima.setText(QCoreApplication.translate("Produtos", u"Mat\u00e9ria Prima", None))
+        self.ch_Prod_Acabado.setText(QCoreApplication.translate("Produtos", u"Produto Acabado", None))
         self.ch_Mao_Obra.setText(QCoreApplication.translate("Produtos", u"M\u00e3o de obra", None))
+        self.ch_Controla_Estoque.setText(QCoreApplication.translate("Produtos", u"Controla Estoque?", None))
         self.lb_Descricao.setText(QCoreApplication.translate("Produtos", u"Descri\u00e7\u00e3o:", None))
         self.lb_Peso.setText(QCoreApplication.translate("Produtos", u"Peso do Saco:", None))
         self.txt_Peso.setSuffix(QCoreApplication.translate("Produtos", u" Kg", None))
@@ -305,7 +251,5 @@ class Ui_Produtos(object):
         self.bt_Editar.setText(QCoreApplication.translate("Produtos", u"Editar", None))
         self.bt_Limpar.setText(QCoreApplication.translate("Produtos", u"Limpar", None))
         self.bt_Excluir.setText(QCoreApplication.translate("Produtos", u"Excluir", None))
-        self.lb_Pesquisar.setText(QCoreApplication.translate("Produtos", u"Pesquisar:", None))
-        self.bt_Pesquisar.setText(QCoreApplication.translate("Produtos", u"Confirmar", None))
     # retranslateUi
 
