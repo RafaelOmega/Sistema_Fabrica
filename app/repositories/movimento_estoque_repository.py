@@ -173,3 +173,33 @@ class MovimentoEstoqueRepository:
                 "saldo_valor": float(ultimo.saldo_valor),
                 "custo_medio": float(ultimo.custo_medio),
             }
+
+    def listar_por_produto(self, produto_id):
+        """Kardex completo de um produto, em ordem cronológica."""
+        from app.models.produto import Produto
+
+        with session_scope() as session:
+            linhas = (
+                session.query(MovimentoEstoque, Produto.codigo,
+                              Produto.descricao)
+                .join(Produto, MovimentoEstoque.produto_id == Produto.id)
+                .filter(MovimentoEstoque.produto_id == produto_id)
+                .order_by(MovimentoEstoque.data_movimento.asc(),
+                          MovimentoEstoque.id.asc())
+                .all()
+            )
+            resultado = []
+            for mov, codigo, descricao in linhas:
+                session.expunge(mov)
+                resultado.append({
+                    "codigo": codigo,
+                    "descricao": descricao,
+                    "data": mov.data_movimento,
+                    "tipo": mov.tipo,
+                    "quantidade": float(mov.quantidade),
+                    "custo_unitario": float(mov.custo_unitario),
+                    "saldo_quantidade": float(mov.saldo_quantidade),
+                    "saldo_valor": float(mov.saldo_valor),
+                    "custo_medio": float(mov.custo_medio),
+                })
+            return resultado
