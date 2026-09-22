@@ -35,9 +35,11 @@ class EntradaController(QWidget):
         self._produto_atual_id = None
         self._item_edicao_row = None
         self._peso_produto = None
-        # ← NOVO: acumula alterações para commit transacional
+        # Acumula alterações para commit transacional
         self._alteracoes_custo = []
-        self._produtos_custo_detectado = set()  # ← NOVO: evita duplicação de detecção
+        self._produtos_custo_detectado = set()
+        # Modo produção (motivo com flag de baixa de ficha técnica)
+        self._modo_producao = False
 
         self._configurar_tabela()
         self._configurar_campos()
@@ -98,6 +100,11 @@ class EntradaController(QWidget):
             self._ao_selecionar_item
         )
 
+        # Ativa/desativa o modo produção conforme o motivo
+        self.ui.cmb_Motivo.currentIndexChanged.connect(
+            self._ao_trocar_motivo
+        )
+
     def _atualizar_total(self):
         itens = self.item_model.obter_todos()
         total = 0.0
@@ -107,12 +114,73 @@ class EntradaController(QWidget):
             total += qtde * custo
         self.ui.txt_Total_Itens.setText(f"R$ {total:.2f}".replace(".", ","))
 
+    # --- Modo produção (motivo com flag de produção) ---
+
+    def _ao_trocar_motivo(self):
+        """Ativa o modo produção quando o motivo tem a flag chk_Baixa_Ficha."""
+        self._atualizar_modo_producao(mostrar_aviso=True)
+
+    def _atualizar_modo_producao(self, mostrar_aviso=True):
+        motivo_id = self.ui.cmb_Motivo.currentData()
+        self._modo_producao = False
+
+        if not motivo_id:
+            return
+
+        try:
+            motivo = self.motivo_service.buscar_por_id(motivo_id)
+        except Exception as e:
+            logger.error(f"Erro ao buscar motivo: {e}", exc_info=True)
+            return
+
+        if motivo is not None and getattr(motivo, "producao", False):
+            self._modo_producao = True
+            if mostrar_aviso:
+                QMessageBox.information(
+                    self, "Modo Produção",
+                    "Produção ativada: informe o produto acabado (com ficha "
+                    "técnica cadastrada) e a quantidade em SACOS.\n\n"
+                    "A matéria-prima da ficha técnica será baixada do "
+                    "estoque proporcionalmente ao total de sacos do item."
+                )
+            logger.debug("Modo produção ativado")
+
+    def _verificar_ficha_tecnica(self, produto):
+        """Em modo produção, o produto acabado PRECISA ter ficha técnica."""
+        if not self._modo_producao:
+            return True
+
+        try:
+            ficha = self.entrada_service.buscar_ficha_por_produto(produto.id)
+        except Exception as e:
+            logger.error(
+                f"Erro ao buscar ficha técnica: {e}", exc_info=True)
+            QMessageBox.critical(
+                self, "Erro",
+                f"Erro ao verificar ficha técnica: {e}")
+            return False
+
+        if not ficha:
+            QMessageBox.warning(
+                self, "Aviso",
+                "Produto sem ficha técnica cadastrada.\n"
+                "Cadastre a ficha técnica antes de lançar produção."
+            )
+            return False
+
+        logger.info(
+            f"Produto acabado com ficha técnica | produto={produto.codigo} "
+            f"| ficha_id={ficha.id} | sacos_batida={ficha.sacos_batida}"
+        )
+        return True
+
     # --- Cabeçalho ---
 
     def novo(self):
         self.entrada_id = None
-        self._alteracoes_custo = []              # ← LIMPA alterações pendentes
-        self._produtos_custo_detectado = set()   # ← LIMPA controle de duplicação
+        self._alteracoes_custo = []
+        self._produtos_custo_detectado = set()
+        self._modo_producao = False
         self._limpar_campos()
         self._limpar_itens()
         self._limpar_selecao_itens()
@@ -160,8 +228,9 @@ class EntradaController(QWidget):
             entrada, itens = self.entrada_service.buscar_com_itens(entrada_id)
 
             self.entrada_id = entrada.id
-            self._alteracoes_custo = []              # ← LIMPA ao carregar
-            self._produtos_custo_detectado = set()   # ← LIMPA ao carregar
+            self._alteracoes_custo = []
+            self._produtos_custo_detectado = set()
+            self._modo_producao = False
             self.ui.txt_Sequencia.setText(entrada.sequencia or "")
             self.ui.dt_Entrada.setDate(
                 QDate(
@@ -176,6 +245,9 @@ class EntradaController(QWidget):
                 if self.ui.cmb_Motivo.itemData(i) == motivo_id:
                     self.ui.cmb_Motivo.setCurrentIndex(i)
                     break
+
+            # Reavalia o modo produção SEM popup ao carregar entrada salva
+            self._atualizar_modo_producao(mostrar_aviso=False)
 
             self.item_model.atualizar_dados(itens)
             self._atualizar_total()
@@ -197,20 +269,26 @@ class EntradaController(QWidget):
         motivo_id = self.ui.cmb_Motivo.currentData()
         itens = self.item_model.obter_todos()
 
+        sacos_produzidos = None
+        if self._modo_producao and itens:
+            sacos_produzidos = itens[0].get("quantidade")
+
         try:
-            # ← ALTERADO: usa salvar_com_alteracao_custo (transação única)
-            self.entrada_service.salvar_com_alteracao_custo(
+            self.entrada_service.salvar(
                 sequencia=sequencia,
                 data_entrada=data_entrada,
                 motivo_id=motivo_id,
                 itens_data=itens,
                 entrada_id=self.entrada_id,
                 alteracoes_custo=self._alteracoes_custo or None,
+                producao=self._modo_producao,
+                sacos_produzidos=sacos_produzidos,
             )
 
             logger.info(
                 f"Entrada salva | id={self.entrada_id} | "
-                f"sequencia={sequencia} | itens={len(itens)}"
+                f"sequencia={sequencia} | itens={len(itens)} | "
+                f"producao={self._modo_producao}"
             )
 
             QMessageBox.information(
@@ -317,12 +395,16 @@ class EntradaController(QWidget):
         if dialog.exec() == QDialog.Accepted:
             produto = dialog.produto_selecionado
             if produto:
+                # Em modo produção, exige ficha técnica
+                if not self._verificar_ficha_tecnica(produto):
+                    self._limpar_campos_item()
+                    return
+
                 self._produto_atual_id = produto.id
                 self.ui.txt_Cod_Prod.setText(produto.codigo or "")
                 self.ui.txt_Descricao_Prod.setText(produto.descricao or "")
                 self._peso_produto = getattr(produto, "peso", None)
                 self._verificar_regra_produto(produto.codigo or "")
-                # ← ALTERADO: usa regra do service em vez de CODIGO_MILHO
                 regra = self.entrada_service.obter_regra_produto(
                     produto.codigo or "")
                 if not regra:
@@ -341,11 +423,15 @@ class EntradaController(QWidget):
         try:
             produto = self.produto_service.buscar_por_codigo(codigo)
             if produto:
+                # Em modo produção, exige ficha técnica
+                if not self._verificar_ficha_tecnica(produto):
+                    self._limpar_campos_item()
+                    return
+
                 self._produto_atual_id = produto.id
                 self.ui.txt_Descricao_Prod.setText(produto.descricao or "")
                 self._peso_produto = getattr(produto, "peso", None)
                 self._verificar_regra_produto(produto.codigo or "")
-                # ← ALTERADO: usa regra do service em vez de CODIGO_MILHO
                 regra = self.entrada_service.obter_regra_produto(
                     produto.codigo or "")
                 if not regra:
@@ -366,9 +452,12 @@ class EntradaController(QWidget):
             logger.error(f"Erro ao pesquisar produto: {e}", exc_info=True)
             QMessageBox.critical(self, "Erro", f"Erro ao pesquisar: {e}")
 
-    # ← ALTERADO: _verificar_produto_milho → _verificar_regra_produto (usa service)
     def _verificar_regra_produto(self, codigo):
-        """Exibe campos especiais se o produto tiver regra configurada no service."""
+        """Exibe campos especiais se o produto tiver regra configurada."""
+        if self._modo_producao:
+            self._ocultar_campos_especiais()
+            return
+
         regra = self.entrada_service.obter_regra_produto(codigo.strip())
         tem_regra = regra is not None
 
@@ -385,13 +474,11 @@ class EntradaController(QWidget):
         else:
             self._ocultar_campos_especiais()
 
-    # ← ALTERADO: _ocultar_milho → _ocultar_campos_especiais
     def _ocultar_campos_especiais(self):
         self.ui.lb_Milho.setVisible(False)
         self.ui.txt_Milho.setVisible(False)
         self.ui.txt_Milho.clear()
 
-    # ← ALTERADO: _calcular_custo_milho → _calcular_custo_especial (usa divisor do service)
     def _calcular_custo_especial(self):
         """Calcula custo unitário dividindo o valor pelo divisor da regra."""
         valor_text = self.ui.txt_Milho.text().strip()
@@ -413,11 +500,10 @@ class EntradaController(QWidget):
         except ValueError:
             QMessageBox.warning(self, "Aviso", "Valor inválido.")
 
-    # ← ALTERADO: _verificar_alteracao_custo → _detectar_alteracao_custo (não commita, apenas armazena)
     def _detectar_alteracao_custo(self, codigo, custo_novo):
-        """Detecta alteração de custo e armazena para commit transacional posterior."""
+        """Detecta alteração de custo e armazena para commit transacional."""
         if self._produto_atual_id in self._produtos_custo_detectado:
-            return  # Já detectado para este produto nesta sessão
+            return
 
         try:
             produto = self.produto_service.buscar_por_codigo(codigo)
@@ -429,7 +515,6 @@ class EntradaController(QWidget):
             if abs(custo_cadastrado - custo_novo) < 0.0001:
                 return
 
-            # Armazena para commit posterior na mesma transação do salvar()
             self._alteracoes_custo.append({
                 "codigo_produto": codigo,
                 "produto_id": produto.id,
@@ -480,6 +565,33 @@ class EntradaController(QWidget):
             QMessageBox.warning(self, "Aviso", "Custo inválido.")
             return
 
+        # Modo produção: quantidade digitada = SACOS produzidos.
+        # Custo = custo cadastrado do produto acabado (sem cálculo pela
+        # ficha). O service baixa a MP proporcionalmente aos sacos.
+        if self._modo_producao:
+            item = {
+                "produto_id": self._produto_atual_id,
+                "codigo": codigo,
+                "descricao": descricao,
+                "unidade": "SACOS",
+                "quantidade": qtde_digitada,
+                "custo": custo,
+            }
+
+            if self._item_edicao_row is not None:
+                self.item_model.atualizar_item(self._item_edicao_row, item)
+                logger.debug(f"Item atualizado | row={self._item_edicao_row}")
+            else:
+                self.item_model.adicionar_item(item)
+                logger.debug("Item de produção adicionado à tabela")
+
+            self._limpar_campos_item()
+            self._limpar_selecao_itens()
+            self._item_edicao_row = None
+            self._atualizar_total()
+            self.ui.txt_Cod_Prod.setFocus()
+            return
+
         # Conversão KG: divide pelo peso do produto
         # SOMENTE na tabela, não altera txt_Qtde
         qtde_tabela = qtde_digitada
@@ -497,7 +609,6 @@ class EntradaController(QWidget):
                 f"= {qtde_tabela:.3f}"
             )
 
-        # ← ALTERADO: detecta alteração de custo (armazena, não commita)
         self._detectar_alteracao_custo(codigo, custo)
 
         item = {
@@ -688,8 +799,9 @@ class EntradaController(QWidget):
         self._item_edicao_row = None
         self._produto_atual_id = None
         self._peso_produto = None
-        self._alteracoes_custo = []              # ← LIMPA alterações pendentes
-        self._produtos_custo_detectado = set()   # ← LIMPA controle de duplicação
+        self._alteracoes_custo = []
+        self._produtos_custo_detectado = set()
+        self._modo_producao = False
 
         self._limpar_campos()
         self._limpar_itens()

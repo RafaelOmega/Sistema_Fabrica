@@ -1,30 +1,30 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-# Form generated from reading UI file 'motivo_entradafMyxsE.ui'
+## Form generated from reading UI file 'motivo_entradaurRoAk.ui'
 ##
-# Created by: Qt User Interface Compiler version 6.11.2
+## Created by: Qt User Interface Compiler version 6.11.2
 ##
-# WARNING! All changes made in this file will be lost when recompiling UI file!
+## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
-                               QLabel, QLineEdit, QPushButton, QSizePolicy,
-                               QSpacerItem, QTableView, QVBoxLayout, QWidget)
-
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QHBoxLayout,
+    QHeaderView, QLabel, QLineEdit, QPushButton,
+    QSizePolicy, QSpacerItem, QTableView, QVBoxLayout,
+    QWidget)
 
 class Ui_Motivo_Entrada(object):
     def setupUi(self, Motivo_Entrada):
         if not Motivo_Entrada.objectName():
             Motivo_Entrada.setObjectName(u"Motivo_Entrada")
-        Motivo_Entrada.resize(707, 387)
+        Motivo_Entrada.resize(852, 387)
         font = QFont()
         font.setFamilies([u"Segoe UI Semibold"])
         font.setPointSize(10)
@@ -71,10 +71,10 @@ class Ui_Motivo_Entrada(object):
 
         self.horizontalLayout_2.addWidget(self.bt_Novo)
 
-        self.horizontalSpacer = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
+
 
         self.verticalLayout.addWidget(self.frm_Codigo)
 
@@ -99,6 +99,14 @@ class Ui_Motivo_Entrada(object):
         self.txt_Descricao.setMaximumSize(QSize(16777215, 30))
 
         self.horizontalLayout_3.addWidget(self.txt_Descricao)
+
+        self.chk_Baixa_Ficha = QCheckBox(self.frm_Descricao)
+        self.chk_Baixa_Ficha.setObjectName(u"chk_Baixa_Ficha")
+        self.chk_Baixa_Ficha.setMinimumSize(QSize(0, 30))
+        self.chk_Baixa_Ficha.setMaximumSize(QSize(16777215, 30))
+
+        self.horizontalLayout_3.addWidget(self.chk_Baixa_Ficha)
+
 
         self.verticalLayout.addWidget(self.frm_Descricao)
 
@@ -138,12 +146,13 @@ class Ui_Motivo_Entrada(object):
 
         self.horizontalLayout_4.addWidget(self.bt_Excluir)
 
+
         self.verticalLayout.addWidget(self.frm_Crud)
 
-        self.verticalSpacer = QSpacerItem(
-            20, 248, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 248, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout.addItem(self.verticalSpacer)
+
 
         self.horizontalLayout.addWidget(self.frm_Entrada)
 
@@ -184,6 +193,7 @@ class Ui_Motivo_Entrada(object):
 
         self.horizontalLayout_5.addWidget(self.bt_Pesquisar)
 
+
         self.verticalLayout_2.addWidget(self.frm_Pesquisar)
 
         self.tb_Motivo_Entrada = QTableView(self.frm_Lista)
@@ -191,7 +201,9 @@ class Ui_Motivo_Entrada(object):
 
         self.verticalLayout_2.addWidget(self.tb_Motivo_Entrada)
 
+
         self.horizontalLayout.addWidget(self.frm_Lista)
+
 
         self.retranslateUi(Motivo_Entrada)
 
@@ -199,24 +211,16 @@ class Ui_Motivo_Entrada(object):
     # setupUi
 
     def retranslateUi(self, Motivo_Entrada):
-        Motivo_Entrada.setWindowTitle(QCoreApplication.translate(
-            "Motivo_Entrada", u"Motivo Entrada", None))
-        self.lb_Codigo.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"C\u00f3digo:", None))
-        self.bt_Novo.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"+", None))
-        self.lb_Descricao.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"Descri\u00e7\u00e3o:", None))
-        self.bt_Salvar.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"Salvar", None))
-        self.bt_Editar.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"Editar", None))
-        self.bt_Limpar.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"Limpar", None))
-        self.bt_Excluir.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"Excluir", None))
-        self.lb_Pesquisar.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"Pesquisar:", None))
-        self.bt_Pesquisar.setText(QCoreApplication.translate(
-            "Motivo_Entrada", u"Confirmar", None))
+        Motivo_Entrada.setWindowTitle(QCoreApplication.translate("Motivo_Entrada", u"Motivo Entrada", None))
+        self.lb_Codigo.setText(QCoreApplication.translate("Motivo_Entrada", u"C\u00f3digo:", None))
+        self.bt_Novo.setText(QCoreApplication.translate("Motivo_Entrada", u"+", None))
+        self.lb_Descricao.setText(QCoreApplication.translate("Motivo_Entrada", u"Descri\u00e7\u00e3o:", None))
+        self.chk_Baixa_Ficha.setText(QCoreApplication.translate("Motivo_Entrada", u"Baixa Ficha Tecnica", None))
+        self.bt_Salvar.setText(QCoreApplication.translate("Motivo_Entrada", u"Salvar", None))
+        self.bt_Editar.setText(QCoreApplication.translate("Motivo_Entrada", u"Editar", None))
+        self.bt_Limpar.setText(QCoreApplication.translate("Motivo_Entrada", u"Limpar", None))
+        self.bt_Excluir.setText(QCoreApplication.translate("Motivo_Entrada", u"Excluir", None))
+        self.lb_Pesquisar.setText(QCoreApplication.translate("Motivo_Entrada", u"Pesquisar:", None))
+        self.bt_Pesquisar.setText(QCoreApplication.translate("Motivo_Entrada", u"Confirmar", None))
     # retranslateUi
+

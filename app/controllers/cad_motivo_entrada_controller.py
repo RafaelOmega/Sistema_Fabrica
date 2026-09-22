@@ -99,17 +99,21 @@ class MotivoEntradaController(QWidget):
     def salvar(self):
         codigo = self.ui.txt_Codigo.text().strip()
         descricao = self.ui.txt_Descricao.text().strip()
+        # NOVO: flag de produção (chk_Baixa_Ficha)
+        producao = self.ui.chk_Baixa_Ficha.isChecked()
 
         try:
             self.service.salvar(
                 codigo=codigo,
                 descricao=descricao,
+                producao=producao,
                 motivo_id=self.motivo_selecionado_id,
             )
 
             logger.info(
                 f"Motivo de entrada salvo com sucesso | "
-                f"id={self.motivo_selecionado_id} | codigo={codigo}"
+                f"id={self.motivo_selecionado_id} | codigo={codigo} | "
+                f"producao={producao}"
             )
 
             QMessageBox.information(
@@ -206,16 +210,23 @@ class MotivoEntradaController(QWidget):
             "" if motivo.codigo is None else str(motivo.codigo))
         self.ui.txt_Descricao.setText(
             "" if motivo.descricao is None else str(motivo.descricao))
+        # NOVO: flag de produção
+        self.ui.chk_Baixa_Ficha.setChecked(
+            bool(getattr(motivo, "producao", False)))
 
     def _limpar_campos(self):
         self.ui.txt_Codigo.clear()
         self.ui.txt_Descricao.clear()
+        # NOVO: flag de produção
+        self.ui.chk_Baixa_Ficha.setChecked(False)
 
     def _limpar_selecao_tabela(self):
         self.ui.tb_Motivo_Entrada.clearSelection()
 
     def _habilitar_campos(self, habilitar):
         self.ui.txt_Descricao.setEnabled(habilitar)
+        # NOVO: checkbox da flag segue os campos
+        self.ui.chk_Baixa_Ficha.setEnabled(habilitar)
         # Código é sempre desabilitado (automático)
         self.ui.txt_Codigo.setEnabled(False)
 

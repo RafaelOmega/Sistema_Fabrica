@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>707</width>
+    <width>852</width>
     <height>387</height>
    </rect>
   </property>
@@ -210,6 +210,25 @@
              <width>16777215</width>
              <height>30</height>
             </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="chk_Baixa_Ficha">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Baixa Ficha Tecnica</string>
            </property>
           </widget>
          </item>

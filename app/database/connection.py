@@ -22,6 +22,7 @@ def init_db():
     from app.models.ficha_tecnica import (  # noqa: F401
         FichaTecnica, ItemFichaTecnica,
     )
+    from app.models.consumo_producao import ConsumoProducao  # noqa: F401
     from app.models.regra_produto_especial import (  # noqa: F401
         RegraProdutoEspecial,
     )
@@ -38,6 +39,7 @@ def init_db():
 
     _migrar_regras_produtos_especiais_padrao()
     _migrar_colunas_produto()
+    _migrar_colunas_motivo_entrada()
 
 
 def _migrar_colunas_produto():
@@ -101,6 +103,26 @@ def _migrar_regras_produtos_especiais_padrao():
                 divisor_custo=60,
             )
         )
+
+
+def _migrar_colunas_motivo_entrada():
+    """Adiciona a coluna producao em motivos_entrada para instalações
+    que já existiam antes desta versão (create_all não altera tabelas
+    existentes)."""
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+    colunas_existentes = {
+        col["name"] for col in inspector.get_columns("motivos_entrada")
+    }
+
+    if "producao" not in colunas_existentes:
+        logger.info("Adicionando coluna motivos_entrada.producao")
+        with engine.begin() as conn:
+            conn.execute(text(
+                "ALTER TABLE motivos_entrada ADD COLUMN "
+                "producao BOOLEAN NOT NULL DEFAULT false"
+            ))
 
 
 def get_session():

@@ -151,7 +151,7 @@ class EntradaRepository:
             )
 
     def _salvar_com_itens_inner(self, session, entrada, itens_data,
-                                 expunge=True):
+                                expunge=True):
         """Lógica interna de diff de itens + sincronização do kardex."""
         entrada_persistida = session.merge(entrada)
         session.flush()
@@ -229,10 +229,23 @@ class EntradaRepository:
         return entrada_persistida
 
     def excluir_por_id(self, entrada_id):
+        from app.repositories.consumo_producao_repository import (
+            ConsumoProducaoRepository,
+        )
+
         with session_scope() as session:
             entrada = session.query(Entrada).filter_by(id=entrada_id).first()
             if not entrada:
                 return False
+
+            # NOVO: remove os consumos de produção + seus movimentos de
+            # kardex ANTES do cascade apagar a entrada — os consumos têm
+            # FK para entradas e são a origem (origem_id) dos movimentos
+            # de tipo CONSUMO_PRODUCAO. Sem isso, a exclusão de uma
+            # entrada de produção deixaria movimentos órfãos no kardex.
+            ConsumoProducaoRepository().excluir_por_entrada(
+                session, entrada_id
+            )
 
             # Remove os movimentos de kardex de cada item ANTES do
             # cascade delete apagar os itens — senão perderíamos a

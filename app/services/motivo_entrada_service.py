@@ -43,7 +43,7 @@ class MotivoEntradaService:
         if len(descricao) > 255:
             raise ValueError("Descrição deve ter no máximo 255 caracteres.")
 
-    def salvar(self, codigo, descricao, motivo_id=None):
+    def salvar(self, codigo, descricao, producao=False, motivo_id=None):
         codigo = codigo.strip()
         descricao = descricao.strip()
 
@@ -67,6 +67,10 @@ class MotivoEntradaService:
 
         motivo.codigo = codigo
         motivo.descricao = descricao
+        # NOVO: flag de produção — entradas com este motivo dão baixa
+        # automática da matéria-prima da ficha técnica e entram o
+        # produto acabado no estoque.
+        motivo.producao = bool(producao)
 
         try:
             resultado = self.repo.salvar(motivo)
@@ -77,7 +81,8 @@ class MotivoEntradaService:
             raise ValueError("Já existe um motivo de entrada com este código.")
 
         logger.info(
-            f"Motivo de entrada salvo: ID={resultado.id}, codigo={resultado.codigo}")
+            f"Motivo de entrada salvo: ID={resultado.id}, codigo={resultado.codigo}, "
+            f"producao={resultado.producao}")
         return resultado
 
     def excluir(self, motivo_id):
