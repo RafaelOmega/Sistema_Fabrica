@@ -174,32 +174,45 @@ class MovimentoEstoqueRepository:
                 "custo_medio": float(ultimo.custo_medio),
             }
 
-    def listar_por_produto(self, produto_id):
-        """Kardex completo de um produto, em ordem cronológica."""
+    def listar_por_produto(self, produto_id, data_inicial=None,
+                           data_final=None):
+        """Kardex de um produto em ordem cronológica, com filtro opcional
+        de período. Retorna dados PLAIN (dicts), desacoplados da sessão —
+        os objetos ORM não podem ser usados fora de session_scope."""
         from app.models.produto import Produto
 
         with session_scope() as session:
-            linhas = (
+            query = (
                 session.query(MovimentoEstoque, Produto.codigo,
                               Produto.descricao)
                 .join(Produto, MovimentoEstoque.produto_id == Produto.id)
                 .filter(MovimentoEstoque.produto_id == produto_id)
-                .order_by(MovimentoEstoque.data_movimento.asc(),
-                          MovimentoEstoque.id.asc())
+            )
+            if data_inicial is not None:
+                query = query.filter(
+                    MovimentoEstoque.data_movimento >= data_inicial)
+            if data_final is not None:
+                query = query.filter(
+                    MovimentoEstoque.data_movimento <= data_final)
+
+            resultados = (
+                query.order_by(MovimentoEstoque.data_movimento,
+                               MovimentoEstoque.id)
                 .all()
             )
-            resultado = []
-            for mov, codigo, descricao in linhas:
-                session.expunge(mov)
-                resultado.append({
+
+            # Materializa DENTRO da sessão para evitar DetachedInstanceError
+            linhas = []
+            for mov, codigo, descricao in resultados:
+                linhas.append({
                     "codigo": codigo,
                     "descricao": descricao,
                     "data": mov.data_movimento,
                     "tipo": mov.tipo,
-                    "quantidade": float(mov.quantidade),
-                    "custo_unitario": float(mov.custo_unitario),
-                    "saldo_quantidade": float(mov.saldo_quantidade),
-                    "saldo_valor": float(mov.saldo_valor),
-                    "custo_medio": float(mov.custo_medio),
+                    "quantidade": float(mov.quantidade or 0),
+                    "custo_unitario": float(mov.custo_unitario or 0),
+                    "saldo_quantidade": float(mov.saldo_quantidade or 0),
+                    "saldo_valor": float(mov.saldo_valor or 0),
+                    "custo_medio": float(mov.custo_medio or 0),
                 })
-            return resultado
+            return linhas
