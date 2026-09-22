@@ -26,6 +26,7 @@ def init_db():
         RegraProdutoEspecial,
     )
     from app.models.saida import Saida, ItemSaida  # noqa: F401
+    from app.models.movimento_estoque import MovimentoEstoque  # noqa: F401
 
     logger.info("Criando tabelas no banco (se não existirem)")
     try:

@@ -1,105 +1,106 @@
-from sqlalchemy import func
-
 from app.database.connection import session_scope
-from app.models.entrada import Entrada, ItemEntrada
+from app.models.movimento_estoque import MovimentoEstoque
 from app.models.produto import Produto
-from app.models.saida import Saida, ItemSaida
 
 
 class EstoqueRepository:
+    """Lê o saldo de estoque diretamente do kardex (movimentos_estoque)
+    em vez de somar itens_entrada/itens_saida em tempo real a cada
+    consulta. Cada produto que controla estoque aparece com o saldo,
+    custo médio e valor total já calculados e gravados na última linha
+    do kardex até `data_limite` — só precisa ler, não recalcular.
+    """
+
     def listar_saldo(self, data_limite, ocultar_zerados=False):
         """
-        Calcula, para cada produto com controla_estoque=True, o saldo
-        em estoque até `data_limite` (inclusive): soma de quantidades
-        entradas menos soma de quantidades saídas, ambas filtradas
-        pela data do lançamento.
-
-        Produtos com controla_estoque=False (ex.: mão de obra, ou
-        qualquer item que não faça sentido ter saldo físico) NÃO
-        aparecem neste relatório, mesmo que tenham lançamentos de
-        entrada/saída registrados.
-
-        Retorna uma lista de dicts, um por produto:
+        Retorna uma lista de dicts, um por produto com
+        controla_estoque=True:
             {
                 "produto_id", "codigo", "descricao",
                 "qtd_entradas", "qtd_saidas", "saldo",
                 "custo", "valor_total",
             }
 
-        `custo` é o custo cadastrado ATUAL do produto (não um custo
-        médio histórico) e `valor_total` = saldo * custo. Isso é uma
-        aproximação — o sistema não mantém custo médio ponderado por
-        lançamento, só o custo "corrente" do produto (o mesmo usado em
-        Entrada/Ficha Técnica).
+        `custo` é o custo médio ponderado móvel do kardex naquela
+        data (não mais o custo cadastrado atual do produto), e
+        `valor_total` = saldo_quantidade * custo_médio, ambos já
+        gravados na última linha do kardex até `data_limite` — não
+        precisam ser recalculados aqui, só lidos.
         """
         with session_scope() as session:
-            entradas_sub = (
-                session.query(
-                    ItemEntrada.produto_id.label("produto_id"),
-                    func.sum(ItemEntrada.quantidade).label(
-                        "qtd_entradas"
-                    ),
-                )
-                .join(Entrada, Entrada.id == ItemEntrada.entrada_id)
-                .filter(Entrada.data_entrada <= data_limite)
-                .group_by(ItemEntrada.produto_id)
-                .subquery()
-            )
-
-            saidas_sub = (
-                session.query(
-                    ItemSaida.produto_id.label("produto_id"),
-                    func.sum(ItemSaida.quantidade).label("qtd_saidas"),
-                )
-                .join(Saida, Saida.id == ItemSaida.saida_id)
-                .filter(Saida.data_saida <= data_limite)
-                .group_by(ItemSaida.produto_id)
-                .subquery()
-            )
-
-            resultados = (
-                session.query(
-                    Produto.id,
-                    Produto.codigo,
-                    Produto.descricao,
-                    Produto.custo,
-                    entradas_sub.c.qtd_entradas,
-                    saidas_sub.c.qtd_saidas,
-                )
+            produtos = (
+                session.query(Produto)
                 .filter(Produto.controla_estoque.is_(True))
-                .outerjoin(
-                    entradas_sub,
-                    entradas_sub.c.produto_id == Produto.id,
-                )
-                .outerjoin(
-                    saidas_sub,
-                    saidas_sub.c.produto_id == Produto.id,
-                )
                 .order_by(Produto.descricao.asc())
                 .all()
             )
 
-            linhas = []
-            for (produto_id, codigo, descricao, custo,
-                 qtd_entradas, qtd_saidas) in resultados:
-                qtd_entradas = (
-                    float(qtd_entradas) if qtd_entradas else 0.0
+            produto_ids = [produto.id for produto in produtos]
+            movimentos = []
+            if produto_ids:
+                movimentos = (
+                    session.query(MovimentoEstoque)
+                    .filter(
+                        MovimentoEstoque.produto_id.in_(produto_ids),
+                        MovimentoEstoque.data_movimento <= data_limite,
+                    )
+                    .order_by(
+                        MovimentoEstoque.produto_id.asc(),
+                        MovimentoEstoque.data_movimento.asc(),
+                        MovimentoEstoque.id.asc(),
+                    )
+                    .all()
                 )
-                qtd_saidas = float(qtd_saidas) if qtd_saidas else 0.0
-                saldo = qtd_entradas - qtd_saidas
+
+            # A consulta já vem ordenada por (produto, data, id), então
+            # o último movimento de cada produto que passar pelo loop
+            # é sempre o mais recente até data_limite — dá para pegar
+            # o saldo corrente sem uma segunda consulta por produto.
+            agregados = {}
+            for mov in movimentos:
+                agregado = agregados.setdefault(
+                    mov.produto_id,
+                    {"qtd_entradas": 0.0, "qtd_saidas": 0.0, "ultimo": None},
+                )
+                qtd = float(mov.quantidade)
+                if qtd >= 0:
+                    agregado["qtd_entradas"] += qtd
+                else:
+                    agregado["qtd_saidas"] += -qtd
+                agregado["ultimo"] = mov
+
+            linhas = []
+            for produto in produtos:
+                agregado = agregados.get(produto.id)
+
+                if agregado is None:
+                    # Produto controla estoque mas não tem nenhum
+                    # movimento até a data — saldo zero, sem cair em
+                    # KeyError.
+                    qtd_entradas = 0.0
+                    qtd_saidas = 0.0
+                    saldo = 0.0
+                    valor_total = 0.0
+                    custo = float(produto.custo or 0)
+                else:
+                    qtd_entradas = agregado["qtd_entradas"]
+                    qtd_saidas = agregado["qtd_saidas"]
+                    ultimo = agregado["ultimo"]
+                    saldo = float(ultimo.saldo_quantidade)
+                    valor_total = float(ultimo.saldo_valor)
+                    custo = float(ultimo.custo_medio)
 
                 if ocultar_zerados and abs(saldo) < 1e-9:
                     continue
 
-                custo_f = float(custo) if custo else 0.0
                 linhas.append({
-                    "produto_id": produto_id,
-                    "codigo": codigo,
-                    "descricao": descricao,
+                    "produto_id": produto.id,
+                    "codigo": produto.codigo,
+                    "descricao": produto.descricao,
                     "qtd_entradas": qtd_entradas,
                     "qtd_saidas": qtd_saidas,
                     "saldo": saldo,
-                    "custo": custo_f,
-                    "valor_total": saldo * custo_f,
+                    "custo": custo,
+                    "valor_total": valor_total,
                 })
             return linhas

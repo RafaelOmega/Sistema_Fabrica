@@ -3,9 +3,16 @@ from sqlalchemy.exc import DataError
 from app.database.connection import session_scope
 from app.models.saida import Saida, ItemSaida
 from app.models.produto import Produto
+from app.models.movimento_estoque import TIPO_SAIDA
+from app.repositories.movimento_estoque_repository import (
+    MovimentoEstoqueRepository,
+)
 
 
 class SaidaRepository:
+    def __init__(self):
+        self.movimento_repo = MovimentoEstoqueRepository()
+
     def listar_todos(self):
         """Lista todas as saídas."""
         with session_scope() as session:
@@ -122,10 +129,6 @@ class SaidaRepository:
         Caso contrário, cria e é dona de uma nova session_scope(), e aí
         sim desanexa a saída antes de retornar, pois o "with" está
         prestes a fechar a sessão.
-
-        (Esse cuidado com expunge/sessão compartilhada é o mesmo
-        corrigido em EntradaRepository após um bug em produção —
-        aqui já nasce certo.)
         """
         if session:
             return self._salvar_com_itens_inner(
@@ -138,7 +141,7 @@ class SaidaRepository:
 
     def _salvar_com_itens_inner(self, session, saida, itens_data,
                                  expunge=True):
-        """Lógica interna de diff de itens."""
+        """Lógica interna de diff de itens + sincronização do kardex."""
         saida_persistida = session.merge(saida)
         session.flush()
 
@@ -154,12 +157,17 @@ class SaidaRepository:
             if item.get("id") is not None
         }
 
-        # 1. Excluir itens que não estão mais na lista
+        # 1. Excluir itens que não estão mais na lista (+ seu
+        # movimento de kardex).
         for item_id, item in itens_existentes_map.items():
             if item_id not in ids_novos:
+                self.movimento_repo.excluir_por_origem(
+                    session, "itens_saida", item_id
+                )
                 session.delete(item)
 
-        # 2. Atualizar existentes + inserir novos
+        # 2. Atualizar existentes + inserir novos.
+        itens_para_kardex = []
         for item_data in itens_data:
             item_id = item_data.get("id")
             if item_id and item_id in itens_existentes_map:
@@ -168,16 +176,32 @@ class SaidaRepository:
                 item.quantidade = item_data["quantidade"]
                 item.custo = item_data["custo"]
             else:
-                novo_item = ItemSaida(
+                item = ItemSaida(
                     saida_id=saida_persistida.id,
                     produto_id=item_data["produto_id"],
                     quantidade=item_data["quantidade"],
                     custo=item_data["custo"],
                 )
-                session.add(novo_item)
+                session.add(item)
+            itens_para_kardex.append(item)
 
         session.flush()
         session.refresh(saida_persistida)
+
+        # 3. Sincronizar o kardex com o estado final dos itens desta
+        # saída.
+        for item in itens_para_kardex:
+            self.movimento_repo.registrar_ou_atualizar(
+                session,
+                origem_tabela="itens_saida",
+                origem_id=item.id,
+                produto_id=item.produto_id,
+                quantidade=float(item.quantidade),
+                custo_unitario=float(item.custo),
+                data_movimento=saida_persistida.data_saida,
+                tipo=TIPO_SAIDA,
+            )
+
         if expunge:
             session.expunge(saida_persistida)
         return saida_persistida
@@ -187,5 +211,16 @@ class SaidaRepository:
             saida = session.query(Saida).filter_by(id=saida_id).first()
             if not saida:
                 return False
+
+            itens = (
+                session.query(ItemSaida)
+                .filter_by(saida_id=saida_id)
+                .all()
+            )
+            for item in itens:
+                self.movimento_repo.excluir_por_origem(
+                    session, "itens_saida", item.id
+                )
+
             session.delete(saida)
             return True

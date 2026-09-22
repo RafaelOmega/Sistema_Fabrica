@@ -3,10 +3,17 @@ from sqlalchemy.exc import DataError
 from app.database.connection import session_scope
 from app.models.entrada import Entrada, ItemEntrada
 from app.models.motivo_entrada import Motivo_Entrada
+from app.models.movimento_estoque import TIPO_ENTRADA
 from app.models.produto import Produto
+from app.repositories.movimento_estoque_repository import (
+    MovimentoEstoqueRepository,
+)
 
 
 class EntradaRepository:
+    def __init__(self):
+        self.movimento_repo = MovimentoEstoqueRepository()
+
     def listar_todos(self):
         """Lista todas as entradas com a descrição do motivo."""
         with session_scope() as session:
@@ -145,7 +152,7 @@ class EntradaRepository:
 
     def _salvar_com_itens_inner(self, session, entrada, itens_data,
                                  expunge=True):
-        """Lógica interna de diff de itens."""
+        """Lógica interna de diff de itens + sincronização do kardex."""
         entrada_persistida = session.merge(entrada)
         session.flush()
 
@@ -163,12 +170,21 @@ class EntradaRepository:
             if item.get("id") is not None
         }
 
-        # 1. Excluir itens que não estão mais na lista
+        # 1. Excluir itens que não estão mais na lista (+ seu
+        # movimento de kardex, para o saldo não ficar "fantasma").
         for item_id, item in itens_existentes_map.items():
             if item_id not in ids_novos:
+                self.movimento_repo.excluir_por_origem(
+                    session, "itens_entrada", item_id
+                )
                 session.delete(item)
 
-        # 2. Atualizar existentes + inserir novos
+        # 2. Atualizar existentes + inserir novos. Guardamos a
+        # referência de cada item (o objeto, não o id) porque o id de
+        # um item novo só é atribuído no flush logo abaixo — mas o
+        # SQLAlchemy preenche item.id no próprio objeto Python após o
+        # flush, então dá para usar a mesma lista depois.
+        itens_para_kardex = []
         for item_data in itens_data:
             item_id = item_data.get("id")
             if item_id and item_id in itens_existentes_map:
@@ -180,17 +196,34 @@ class EntradaRepository:
                 item.custo = item_data["custo"]
             else:
                 # Inserir novo item
-                novo_item = ItemEntrada(
+                item = ItemEntrada(
                     entrada_id=entrada_persistida.id,
                     produto_id=item_data["produto_id"],
                     unidade=item_data["unidade"],
                     quantidade=item_data["quantidade"],
                     custo=item_data["custo"],
                 )
-                session.add(novo_item)
+                session.add(item)
+            itens_para_kardex.append(item)
 
         session.flush()
         session.refresh(entrada_persistida)
+
+        # 3. Sincronizar o kardex com o estado final dos itens desta
+        # entrada (agora com item.id garantido para todos, inclusive
+        # os recém-inseridos).
+        for item in itens_para_kardex:
+            self.movimento_repo.registrar_ou_atualizar(
+                session,
+                origem_tabela="itens_entrada",
+                origem_id=item.id,
+                produto_id=item.produto_id,
+                quantidade=float(item.quantidade),
+                custo_unitario=float(item.custo),
+                data_movimento=entrada_persistida.data_entrada,
+                tipo=TIPO_ENTRADA,
+            )
+
         if expunge:
             session.expunge(entrada_persistida)
         return entrada_persistida
@@ -200,5 +233,19 @@ class EntradaRepository:
             entrada = session.query(Entrada).filter_by(id=entrada_id).first()
             if not entrada:
                 return False
+
+            # Remove os movimentos de kardex de cada item ANTES do
+            # cascade delete apagar os itens — senão perderíamos a
+            # referência (origem_id) para localizá-los.
+            itens = (
+                session.query(ItemEntrada)
+                .filter_by(entrada_id=entrada_id)
+                .all()
+            )
+            for item in itens:
+                self.movimento_repo.excluir_por_origem(
+                    session, "itens_entrada", item.id
+                )
+
             session.delete(entrada)
             return True
