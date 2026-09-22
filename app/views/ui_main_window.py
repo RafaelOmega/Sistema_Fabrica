@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowIXKcUD.ui'
+## Form generated from reading UI file 'main_windowwChXJw.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -43,6 +43,8 @@ class Ui_MainWindow(object):
         self.actionSaida.setObjectName(u"actionSaida")
         self.actionEstoque = QAction(MainWindow)
         self.actionEstoque.setObjectName(u"actionEstoque")
+        self.actionFichaKardexProduto = QAction(MainWindow)
+        self.actionFichaKardexProduto.setObjectName(u"actionFichaKardexProduto")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -119,6 +121,7 @@ class Ui_MainWindow(object):
         self.menuLan_amentos.addAction(self.actionEntrada)
         self.menuLan_amentos.addAction(self.actionSaida)
         self.menuRelatorios.addAction(self.actionEstoque)
+        self.menuRelatorios.addAction(self.actionFichaKardexProduto)
 
         self.retranslateUi(MainWindow)
 
@@ -133,6 +136,7 @@ class Ui_MainWindow(object):
         self.actionFicha_Tecnica.setText(QCoreApplication.translate("MainWindow", u"Ficha T\u00e9cnica", None))
         self.actionSaida.setText(QCoreApplication.translate("MainWindow", u"Saida", None))
         self.actionEstoque.setText(QCoreApplication.translate("MainWindow", u"Estoque", None))
+        self.actionFichaKardexProduto.setText(QCoreApplication.translate("MainWindow", u"Ficha Kardex do Produto", None))
         self.lb_Comandos.setText("")
         self.menuCadastros.setTitle(QCoreApplication.translate("MainWindow", u"Cadastros", None))
         self.menuLan_amentos.setTitle(QCoreApplication.translate("MainWindow", u"Lan\u00e7amentos", None))

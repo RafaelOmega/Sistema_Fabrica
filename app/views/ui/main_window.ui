@@ -186,6 +186,7 @@
      <string>Relatórios</string>
     </property>
     <addaction name="actionEstoque"/>
+    <addaction name="actionFichaKardexProduto"/>
    </widget>
    <addaction name="menuCadastros"/>
    <addaction name="menuLan_amentos"/>
@@ -219,6 +220,11 @@
   <action name="actionEstoque">
    <property name="text">
     <string>Estoque</string>
+   </property>
+  </action>
+  <action name="actionFichaKardexProduto">
+   <property name="text">
+    <string>Ficha Kardex do Produto</string>
    </property>
   </action>
  </widget>
