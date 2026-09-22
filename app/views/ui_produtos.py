@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'produtosZZNRhZ.ui'
+## Form generated from reading UI file 'produtosuFjCfM.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -24,6 +24,8 @@ class Ui_Produtos(object):
         if not Produtos.objectName():
             Produtos.setObjectName(u"Produtos")
         Produtos.resize(552, 248)
+        Produtos.setMinimumSize(QSize(552, 248))
+        Produtos.setMaximumSize(QSize(552, 248))
         font = QFont()
         font.setFamilies([u"Segoe UI Semibold"])
         font.setPointSize(10)

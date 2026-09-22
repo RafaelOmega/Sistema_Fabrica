@@ -40,7 +40,7 @@ class ItemEntrada(Base):
     )
     unidade = Column(String(10), nullable=False)
     quantidade = Column(Numeric(12, 3), nullable=False)
-    custo = Column(Numeric(12, 2), nullable=False)
+    custo = Column(Numeric(12, 4), nullable=False)
 
     entrada = relationship("Entrada", back_populates="itens")
     produto = relationship("Produto")

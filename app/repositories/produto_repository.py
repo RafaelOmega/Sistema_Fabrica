@@ -83,7 +83,7 @@ class ProdutoRepository:
             )
 
     def _atualizar_custo_inner(self, session, produto_id, novo_custo,
-                                expunge=True):
+                               expunge=True):
         produto = session.query(Produto).filter_by(id=produto_id).first()
         if not produto:
             return None
@@ -94,3 +94,19 @@ class ProdutoRepository:
         if expunge:
             session.expunge(produto)
         return custo_anterior
+
+    def contar_vinculos(self, produto_id):
+        """Conta vínculos do produto em entradas, saídas e fichas técnicas."""
+        from app.models.entrada import ItemEntrada
+        from app.models.saida import ItemSaida
+        from app.models.ficha_tecnica import ItemFichaTecnica
+
+        with session_scope() as session:
+            return {
+                "entradas": session.query(ItemEntrada)
+                .filter_by(produto_id=produto_id).count(),
+                "saidas": session.query(ItemSaida)
+                .filter_by(produto_id=produto_id).count(),
+                "fichas técnicas": session.query(ItemFichaTecnica)
+                .filter_by(produto_id=produto_id).count(),
+            }

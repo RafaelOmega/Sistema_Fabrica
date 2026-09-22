@@ -95,3 +95,10 @@ class ItemEntradaTableModel(QAbstractTableModel):
 
     def obter_todos(self):
         return list(self._itens)
+
+    @staticmethod
+    def _formatar_custo(valor):
+        if valor is None:
+            return ""
+        texto = f"{float(valor):.4f}".rstrip("0").rstrip(".")
+        return texto.replace(".", ",") if texto else "0"

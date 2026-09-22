@@ -77,7 +77,20 @@ class ProdutoService:
         return resultado
 
     def excluir(self, produto_id):
-        sucesso = self.repo.excluir_por_id(produto_id)
+        vinculos = self.repo.contar_vinculos(produto_id)
+        partes = [f"{n} item(ns) de {nome}" for nome,
+                  n in vinculos.items() if n]
+        if partes:
+            raise ValueError(
+                "Produto não pode ser excluído: vinculado a "
+                + ", ".join(partes) + ". Exclua/edite os documentos primeiro."
+            )
+        try:
+            sucesso = self.repo.excluir_por_id(produto_id)
+        except IntegrityError:
+            raise ValueError(
+                "Produto não pode ser excluído: existem registros vinculados."
+            )
         if not sucesso:
             logger.warning(
                 f"Tentativa de excluir produto inexistente: ID={produto_id}")

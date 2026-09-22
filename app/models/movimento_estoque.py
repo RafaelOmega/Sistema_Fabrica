@@ -47,7 +47,7 @@ class MovimentoEstoque(Base):
     # Quantidade ASSINADA: positiva para entrada, negativa para
     # saída/consumo. Simplifica o cálculo cumulativo em recalcular().
     quantidade = Column(Numeric(12, 3), nullable=False)
-    custo_unitario = Column(Numeric(12, 2), nullable=False, default=0)
+    custo_unitario = Column(Numeric(12, 4), nullable=False, default=0)
 
     # Saldo corrente logo APÓS este movimento. Recalculado sempre que
     # qualquer movimento do mesmo produto é criado, editado ou

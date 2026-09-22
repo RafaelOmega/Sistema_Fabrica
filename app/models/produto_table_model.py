@@ -98,15 +98,18 @@ class ProdutoTableModel(QAbstractTableModel):
     def _formatar_peso(valor):
         if valor is None:
             return ""
-        return f"{float(valor):.2f}".replace(".", ",")
+        texto = f"{float(valor):.4f}".rstrip("0").rstrip(".")
+        return texto.replace(".", ",") if texto else "0"
 
     @staticmethod
     def _formatar_custo(valor):
         if valor is None:
-            return "0,00"
+            return "0"
         if isinstance(valor, Decimal):
-            return format(valor, ".2f").replace(".", ",")
-        return f"{float(valor):.2f}".replace(".", ",")
+            texto = format(valor, ".4f").rstrip("0").rstrip(".")
+        else:
+            texto = f"{float(valor):.4f}".rstrip("0").rstrip(".")
+        return texto.replace(".", ",") if texto else "0"
 
     @staticmethod
     def _to_float(valor):

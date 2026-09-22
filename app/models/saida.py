@@ -36,7 +36,7 @@ class ItemSaida(Base):
         Integer, ForeignKey("produtos.id"), nullable=False
     )
     quantidade = Column(Numeric(12, 3), nullable=False)
-    custo = Column(Numeric(12, 2), nullable=False)
+    custo = Column(Numeric(12, 4), nullable=False)
 
     saida = relationship("Saida", back_populates="itens")
     produto = relationship("Produto")
