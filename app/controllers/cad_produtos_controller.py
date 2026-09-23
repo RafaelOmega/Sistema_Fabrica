@@ -186,13 +186,13 @@ class ProdutosController(QWidget):
         self.ui.bt_Limpar.setEnabled(limpar)
 
     def _estado_inicial(self):
-        self._aplicar_estado()
+        self._aplicar_estado(novo=True)
 
     def _estado_novo(self):
         self._aplicar_estado(campos=True, salvar=True, limpar=True)
 
     def _estado_linha_selecionada(self):
-        self._aplicar_estado(editar=True, excluir=True, limpar=True)
+        self._aplicar_estado(novo=True, editar=True, excluir=True, limpar=True)
 
     def _estado_edicao(self):
         self._aplicar_estado(campos=True, salvar=True,
