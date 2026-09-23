@@ -180,13 +180,13 @@
           <widget class="QLineEdit" name="txt_Sacos_Batida">
            <property name="minimumSize">
             <size>
-             <width>50</width>
+             <width>100</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>50</width>
+             <width>100</width>
              <height>30</height>
             </size>
            </property>

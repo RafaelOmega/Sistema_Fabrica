@@ -109,17 +109,13 @@ class FichaTecnicaController(QWidget):
     # --- Totais e cálculo unitário ---
 
     def _get_sacos_batida(self):
-        """Retorna sacos_batida como int (positivo), ou 0 se inválido.
-
-        Sacos por batida é sempre um número inteiro — não existe meio
-        saco — e a coluna no banco (fichas_tecnicas.sacos_batida) é
-        Integer."""
-        text = self.ui.txt_Sacos_Batida.text().strip()
+        """Retorna sacos_batida como float (positivo, até 4 casas), ou 0 se inválido."""
+        text = self.ui.txt_Sacos_Batida.text().strip().replace(",", ".")
         try:
-            valor = int(text)
-            return valor if valor > 0 else 0
+            valor = float(text)
+            return round(valor, 4) if valor > 0 else 0.0
         except (ValueError, TypeError):
-            return 0
+            return 0.0
 
     def _itens_para_soma(self):
         """Itens que entram no total de KG da batida/saco.

@@ -63,9 +63,10 @@ class MainWindowController(QMainWindow):
         self.ui.actionSaida.setEnabled(habilitar)
         self.ui.actionEstoque.setEnabled(habilitar)
         self.ui.actionFichaKardexProduto.setEnabled(habilitar)
+
     # --- Abertura de janelas MDI ---
 
-    def _abrir_janela_mdi(self, chave, titulo, criar_controller):
+    def _abrir_janela_mdi(self, chave, titulo, criar_controller, maximizar=False):
         """Abre uma janela no MDI. Se já estiver aberta e válida, traz para frente."""
         if chave in self._janelas_abertas:
             subwindow = self._janelas_abertas[chave]
@@ -85,9 +86,13 @@ class MainWindowController(QMainWindow):
             subwindow = QMdiSubWindow()
             subwindow.setWindowTitle(titulo)
             subwindow.setWidget(controller)
-
             self.ui.mdiArea.addSubWindow(subwindow)
-            subwindow.showMaximized()
+
+            if maximizar:
+                subwindow.showMaximized()
+            else:
+                subwindow.resize(controller.size())
+                subwindow.show()
 
             subwindow.destroyed.connect(
                 lambda _, c=chave: self._janelas_abertas.pop(c, None)
@@ -96,7 +101,6 @@ class MainWindowController(QMainWindow):
             self._janelas_abertas[chave] = subwindow
 
             logger.info(f"Janela '{titulo}' aberta no MDI")
-
         except Exception as e:
             logger.error(
                 f"Erro ao abrir janela '{titulo}': {e}", exc_info=True)
@@ -104,46 +108,45 @@ class MainWindowController(QMainWindow):
 
     def abrir_produtos(self):
         from app.controllers.cad_produtos_controller import ProdutosController
-
         self._abrir_janela_mdi(
-            "produtos", "Cadastro de Produtos", ProdutosController)
+            "produtos", "Cadastro de Produtos", ProdutosController,
+            maximizar=False)
 
     def abrir_motivo_entrada(self):
         from app.controllers.cad_motivo_entrada_controller import MotivoEntradaController
-
         self._abrir_janela_mdi(
-            "motivo_entrada", "Cadastro de Motivo de Entrada", MotivoEntradaController
-        )
+            "motivo_entrada", "Cadastro de Motivo de Entrada", MotivoEntradaController,
+            maximizar=True)
 
     def abrir_ficha_tecnica(self):
         from app.controllers.ficha_tecnica_controller import FichaTecnicaController
-
         self._abrir_janela_mdi(
-            "ficha_tecnica", "Cadastro de Ficha Técnica", FichaTecnicaController
-        )
+            "ficha_tecnica", "Cadastro de Ficha Técnica", FichaTecnicaController,
+            maximizar=True)
 
     def abrir_entrada(self):
         from app.controllers.cad_entrada_controller import EntradaController
-
         self._abrir_janela_mdi(
-            "entrada", "Entrada de Mercadorias", EntradaController)
+            "entrada", "Entrada de Mercadorias", EntradaController,
+            maximizar=True)
 
     def abrir_saida(self):
         from app.controllers.cad_saida_controller import SaidaController
-
         self._abrir_janela_mdi(
-            "saida", "Saída de Mercadorias", SaidaController)
+            "saida", "Saída de Mercadorias", SaidaController,
+            maximizar=True)
 
     def abrir_estoque(self):
         from app.controllers.estoque_controller import EstoqueController
-
         self._abrir_janela_mdi(
-            "estoque", "Estoque", EstoqueController)
+            "estoque", "Estoque", EstoqueController,
+            maximizar=True)
 
     def abrir_kardex(self):
         from app.controllers.kardex_controller import KardexController
         self._abrir_janela_mdi(
-            "kardex", "Ficha Kardex do Produto", KardexController)
+            "kardex", "Ficha Kardex do Produto", KardexController,
+            maximizar=True)
 
     def closeEvent(self, event):
         for subwindow in list(self._janelas_abertas.values()):

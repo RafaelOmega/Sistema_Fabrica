@@ -35,7 +35,7 @@ class FichaTecnicaService:
         # explicação equivalente em EntradaService._validar) para que
         # a mensagem específica não seja engolida pelo except.
         try:
-            sacos = int(sacos_batida)
+            sacos = float(sacos_batida)
         except (ValueError, TypeError):
             raise ValueError("Sacos por batida inválido.")
         if sacos <= 0:
@@ -93,7 +93,7 @@ class FichaTecnicaService:
             ficha.produto_id = produto_id
             ficha.codigo_produto = codigo_produto  # ← ADICIONADO (atualiza)
 
-        ficha.sacos_batida = int(sacos_batida)
+        ficha.sacos_batida = round(float(sacos_batida), 4)
 
         resultado = self.repo.salvar_com_itens(ficha, itens_data)
 

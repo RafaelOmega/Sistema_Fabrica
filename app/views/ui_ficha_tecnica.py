@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ficha_tecnicaYpvAKK.ui'
+## Form generated from reading UI file 'ficha_tecnicayLeczv.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.2
 ##
@@ -86,8 +86,8 @@ class Ui_Ficha_Tecnica(object):
 
         self.txt_Sacos_Batida = QLineEdit(self.frm_Ficha)
         self.txt_Sacos_Batida.setObjectName(u"txt_Sacos_Batida")
-        self.txt_Sacos_Batida.setMinimumSize(QSize(50, 30))
-        self.txt_Sacos_Batida.setMaximumSize(QSize(50, 30))
+        self.txt_Sacos_Batida.setMinimumSize(QSize(100, 30))
+        self.txt_Sacos_Batida.setMaximumSize(QSize(100, 30))
 
         self.horizontalLayout_6.addWidget(self.txt_Sacos_Batida)
 
